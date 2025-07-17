@@ -18,7 +18,9 @@ def process_image_compressor(request):
             return {'error': 'Invalid file type'}
         
         quality = int(request.form.get('quality', 85))
-        format_type = request.form.get('format', 'JPEG')
+        output_format = request.form.get('output_format', 'original')
+        max_width = request.form.get('max_width')
+        max_height = request.form.get('max_height')
         
         with tempfile.TemporaryDirectory() as temp_dir:
             # Save uploaded file
@@ -29,20 +31,36 @@ def process_image_compressor(request):
             # Get original file size
             original_size = os.path.getsize(filepath)
             
-            # Open and compress image
+            # Open and process image
             with Image.open(filepath) as img:
+                # Resize if dimensions specified
+                if max_width or max_height:
+                    max_width = int(max_width) if max_width else img.width
+                    max_height = int(max_height) if max_height else img.height
+                    img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
+                
+                # Determine output format
+                if output_format == 'original':
+                    format_type = img.format or 'JPEG'
+                else:
+                    format_type = output_format
+                
                 # Convert to RGB if saving as JPEG
                 if format_type == 'JPEG' and img.mode in ('RGBA', 'LA', 'P'):
                     img = img.convert('RGB')
                 
                 # Create output filename
                 base_name = os.path.splitext(filename)[0]
-                extension = '.jpg' if format_type == 'JPEG' else '.png'
+                extension = '.jpg' if format_type == 'JPEG' else '.png' if format_type == 'PNG' else '.webp'
                 output_filename = f'compressed_{base_name}{extension}'
                 output_path = os.path.join(temp_dir, output_filename)
                 
                 # Save compressed image
-                img.save(output_path, format=format_type, quality=quality, optimize=True)
+                save_kwargs = {'format': format_type, 'optimize': True}
+                if format_type in ['JPEG', 'WEBP']:
+                    save_kwargs['quality'] = quality
+                
+                img.save(output_path, **save_kwargs)
                 
                 # Get compressed file size
                 compressed_size = os.path.getsize(output_path)

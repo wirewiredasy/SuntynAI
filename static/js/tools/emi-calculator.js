@@ -1,519 +1,378 @@
-// EMI Calculator Tool - JavaScript
-// Handles EMI calculations with real-time updates and visualization
-
 class EMICalculator {
     constructor() {
-        this.chart = null;
-        this.currentResults = null;
-        this.isCalculating = false;
-        this.amortizationSchedule = [];
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.setupCharts();
-        this.setupCollaboration();
-        console.log('💰 EMI Calculator initialized');
+        this.setupSliders();
     }
 
     setupEventListeners() {
         const form = document.getElementById('emi-calculator-form');
-        const inputs = form?.querySelectorAll('input[type="number"]');
-
-        // Form submission
+        const inputs = ['loan-amount', 'interest-rate', 'loan-tenure'];
+        
         if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.calculateEMI();
-            });
+            form.addEventListener('submit', (e) => this.handleSubmit(e));
         }
+
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', () => this.calculateEMI());
+            }
+        });
 
         // Real-time calculation on input change
-        if (inputs) {
-            inputs.forEach(input => {
-                input.addEventListener('input', () => {
-                    this.debouncedCalculate();
-                });
-            });
-        }
-
-        // Export buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('[onclick*="exportToPDF"]')) {
-                e.preventDefault();
-                this.exportToPDF();
+        const sliders = ['amount-slider', 'rate-slider', 'tenure-slider'];
+        sliders.forEach(id => {
+            const slider = document.getElementById(id);
+            if (slider) {
+                slider.addEventListener('input', () => this.updateFromSlider(id));
             }
-            if (e.target.matches('[onclick*="exportToExcel"]')) {
-                e.preventDefault();
-                this.exportToExcel();
-            }
-            if (e.target.matches('[onclick*="printResults"]')) {
-                e.preventDefault();
-                this.printResults();
-            }
-        });
-
-        // Collaboration events
-        document.addEventListener('collaborationUpdate', (e) => {
-            this.handleCollaborationUpdate(e.detail);
         });
     }
 
-    setupCharts() {
-        const chartCanvas = document.getElementById('emi-chart');
-        if (chartCanvas && typeof Chart !== 'undefined') {
-            this.chart = new Chart(chartCanvas, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Principal', 'Interest'],
-                    datasets: [{
-                        data: [0, 0],
-                        backgroundColor: [
-                            '#10b981',
-                            '#f59e0b'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+    setupSliders() {
+        this.updateSliderValues();
+    }
+
+    updateFromSlider(sliderId) {
+        const slider = document.getElementById(sliderId);
+        if (!slider) return;
+
+        const value = slider.value;
+        
+        switch(sliderId) {
+            case 'amount-slider':
+                document.getElementById('loan-amount').value = value;
+                document.getElementById('amount-display').textContent = this.formatCurrency(value);
+                break;
+            case 'rate-slider':
+                document.getElementById('interest-rate').value = value;
+                document.getElementById('rate-display').textContent = value + '%';
+                break;
+            case 'tenure-slider':
+                document.getElementById('loan-tenure').value = value;
+                document.getElementById('tenure-display').textContent = value + ' years';
+                break;
+        }
+        
+        this.calculateEMI();
+    }
+
+    updateSliderValues() {
+        const loanAmount = document.getElementById('loan-amount')?.value || 500000;
+        const interestRate = document.getElementById('interest-rate')?.value || 8.5;
+        const loanTenure = document.getElementById('loan-tenure')?.value || 20;
+
+        const amountSlider = document.getElementById('amount-slider');
+        const rateSlider = document.getElementById('rate-slider');
+        const tenureSlider = document.getElementById('tenure-slider');
+
+        if (amountSlider) amountSlider.value = loanAmount;
+        if (rateSlider) rateSlider.value = interestRate;
+        if (tenureSlider) tenureSlider.value = loanTenure;
+        
+        // Update displays
+        document.getElementById('amount-display').textContent = this.formatCurrency(loanAmount);
+        document.getElementById('rate-display').textContent = interestRate + '%';
+        document.getElementById('tenure-display').textContent = loanTenure + ' years';
+    }
+
+    calculateEMI() {
+        const principal = parseFloat(document.getElementById('loan-amount')?.value || 0);
+        const rate = parseFloat(document.getElementById('interest-rate')?.value || 0);
+        const tenure = parseFloat(document.getElementById('loan-tenure')?.value || 0);
+        
+        if (principal <= 0 || rate <= 0 || tenure <= 0) return;
+        
+        const monthlyRate = rate / (12 * 100);
+        const tenureMonths = tenure * 12;
+        
+        let emi;
+        if (monthlyRate === 0) {
+            emi = principal / tenureMonths;
+        } else {
+            emi = principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths) / 
+                  (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+        }
+        
+        const totalAmount = emi * tenureMonths;
+        const totalInterest = totalAmount - principal;
+        
+        this.displayResults(emi, totalAmount, totalInterest, principal, rate, tenureMonths);
+        this.generateSchedule(principal, emi, monthlyRate, tenureMonths);
+    }
+
+    displayResults(emi, totalAmount, totalInterest, principal, rate, tenureMonths) {
+        const resultsCard = document.getElementById('results-card');
+        const emiAmount = document.getElementById('emi-amount');
+        const totalAmountEl = document.getElementById('total-amount');
+        const totalInterestEl = document.getElementById('total-interest');
+        
+        if (resultsCard) resultsCard.style.display = 'block';
+        if (emiAmount) emiAmount.textContent = this.formatCurrency(emi);
+        if (totalAmountEl) totalAmountEl.textContent = this.formatCurrency(totalAmount);
+        if (totalInterestEl) totalInterestEl.textContent = this.formatCurrency(totalInterest);
+        
+        this.createChart(principal, totalInterest);
+    }
+
+    createChart(principal, totalInterest) {
+        const ctx = document.getElementById('emi-chart');
+        if (!ctx) return;
+        
+        if (this.chart) {
+            this.chart.destroy();
+        }
+        
+        this.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Principal', 'Interest'],
+                datasets: [{
+                    data: [principal, totalInterest],
+                    backgroundColor: ['#198754', '#dc3545'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
                     }
                 }
-            });
-        }
-    }
-
-    setupCollaboration() {
-        // Setup collaboration room
-        this.collaborationRoom = `emi-calculator-${Date.now()}`;
-        
-        // Join collaboration room if WebSocket is available
-        if (window.wsClient && window.wsClient.isConnected()) {
-            window.wsClient.joinRoom(this.collaborationRoom, 'emi-calculator');
-        }
-    }
-
-    // Debounced calculation for real-time updates
-    debouncedCalculate = this.debounce(() => {
-        if (this.isFormValid()) {
-            this.calculateEMI();
-        }
-    }, 500);
-
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    isFormValid() {
-        const principal = this.getInputValue('principal');
-        const interestRate = this.getInputValue('interest_rate');
-        const tenureYears = this.getInputValue('tenure_years');
-        
-        return principal > 0 && interestRate > 0 && tenureYears > 0;
-    }
-
-    getInputValue(id) {
-        const input = document.getElementById(id);
-        return input ? parseFloat(input.value) || 0 : 0;
-    }
-
-    async calculateEMI() {
-        if (this.isCalculating) return;
-        
-        this.isCalculating = true;
-        
-        try {
-            const principal = this.getInputValue('principal');
-            const interestRate = this.getInputValue('interest_rate');
-            const tenureYears = this.getInputValue('tenure_years');
-            const processingFee = this.getInputValue('processing_fee');
-
-            if (!this.isFormValid()) {
-                this.showError('Please fill in all required fields with valid values');
-                return;
             }
+        });
+    }
 
-            const formData = new FormData();
-            formData.append('principal', principal);
-            formData.append('interest_rate', interestRate);
-            formData.append('tenure_years', tenureYears);
-            formData.append('processing_fee', processingFee);
+    generateSchedule(principal, emi, monthlyRate, tenureMonths) {
+        const scheduleCard = document.getElementById('schedule-card');
+        const scheduleBody = document.getElementById('schedule-body');
+        
+        if (!scheduleCard || !scheduleBody) return;
+        
+        let remainingBalance = principal;
+        let html = '';
+        
+        for (let month = 1; month <= Math.min(12, tenureMonths); month++) {
+            const interestPayment = remainingBalance * monthlyRate;
+            const principalPayment = emi - interestPayment;
+            remainingBalance -= principalPayment;
+            
+            html += `
+                <tr>
+                    <td>${month}</td>
+                    <td>${this.formatCurrency(emi)}</td>
+                    <td>${this.formatCurrency(principalPayment)}</td>
+                    <td>${this.formatCurrency(interestPayment)}</td>
+                    <td>${this.formatCurrency(Math.max(0, remainingBalance))}</td>
+                </tr>
+            `;
+        }
+        
+        scheduleBody.innerHTML = html;
+        scheduleCard.style.display = 'block';
+    }
 
+    async handleSubmit(e) {
+        e.preventDefault();
+        this.calculateEMI();
+    }
+
+    formatCurrency(amount) {
+        return '₹' + new Intl.NumberFormat('en-IN').format(Math.round(amount));
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new EMICalculator();
+});
+
+        // Update displays
+        const amountDisplay = document.getElementById('amount-display');
+        const rateDisplay = document.getElementById('rate-display');
+        const tenureDisplay = document.getElementById('tenure-display');
+
+        if (amountDisplay) amountDisplay.textContent = this.formatCurrency(loanAmount);
+        if (rateDisplay) rateDisplay.textContent = interestRate + '%';
+        if (tenureDisplay) tenureDisplay.textContent = loanTenure + ' years';
+    }
+
+    calculateEMI() {
+        const loanAmount = parseFloat(document.getElementById('loan-amount')?.value || 0);
+        const annualRate = parseFloat(document.getElementById('interest-rate')?.value || 0);
+        const tenureYears = parseFloat(document.getElementById('loan-tenure')?.value || 0);
+
+        if (loanAmount <= 0 || annualRate <= 0 || tenureYears <= 0) {
+            this.clearResults();
+            return;
+        }
+
+        // Calculate EMI
+        const monthlyRate = annualRate / 12 / 100;
+        const tenureMonths = tenureYears * 12;
+        
+        const emi = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths) / 
+                   (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+
+        const totalAmount = emi * tenureMonths;
+        const totalInterest = totalAmount - loanAmount;
+
+        this.updateResults({
+            emi: emi,
+            totalAmount: totalAmount,
+            totalInterest: totalInterest,
+            principal: loanAmount,
+            tenureMonths: tenureMonths
+        });
+
+        this.updateChart({
+            principal: loanAmount,
+            interest: totalInterest
+        });
+    }
+
+    updateResults(results) {
+        const elements = {
+            'emi-amount': this.formatCurrency(results.emi),
+            'total-amount': this.formatCurrency(results.totalAmount),
+            'total-interest': this.formatCurrency(results.totalInterest),
+            'monthly-breakdown': `₹${Math.round(results.emi)} per month for ${results.tenureMonths} months`
+        };
+
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        });
+
+        // Show results
+        const resultsCard = document.getElementById('results-card');
+        if (resultsCard) {
+            resultsCard.style.display = 'block';
+            resultsCard.classList.add('animate__animated', 'animate__fadeInUp');
+        }
+
+        // Generate amortization schedule
+        this.generateAmortizationSchedule(results);
+    }
+
+    generateAmortizationSchedule(results) {
+        const scheduleBody = document.getElementById('schedule-body');
+        if (!scheduleBody) return;
+
+        const loanAmount = results.principal;
+        const monthlyRate = parseFloat(document.getElementById('interest-rate').value) / 12 / 100;
+        const emi = results.emi;
+        
+        let balance = loanAmount;
+        let scheduleHTML = '';
+
+        // Show first 12 months
+        for (let month = 1; month <= Math.min(12, results.tenureMonths); month++) {
+            const interestPayment = balance * monthlyRate;
+            const principalPayment = emi - interestPayment;
+            balance -= principalPayment;
+
+            scheduleHTML += `
+                <tr>
+                    <td>${month}</td>
+                    <td>₹${Math.round(emi).toLocaleString()}</td>
+                    <td>₹${Math.round(principalPayment).toLocaleString()}</td>
+                    <td>₹${Math.round(interestPayment).toLocaleString()}</td>
+                    <td>₹${Math.round(Math.max(0, balance)).toLocaleString()}</td>
+                </tr>
+            `;
+        }
+
+        scheduleBody.innerHTML = scheduleHTML;
+    }
+
+    updateChart(data) {
+        const chartCanvas = document.getElementById('emi-chart');
+        if (!chartCanvas) return;
+
+        const ctx = chartCanvas.getContext('2d');
+        
+        // Destroy existing chart
+        if (this.chart) {
+            this.chart.destroy();
+        }
+
+        this.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Principal Amount', 'Interest Amount'],
+                datasets: [{
+                    data: [data.principal, data.interest],
+                    backgroundColor: ['#3b82f6', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    clearResults() {
+        const resultsCard = document.getElementById('results-card');
+        if (resultsCard) {
+            resultsCard.style.display = 'none';
+        }
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('loan_amount', document.getElementById('loan-amount').value);
+        formData.append('interest_rate', document.getElementById('interest-rate').value);
+        formData.append('loan_tenure', document.getElementById('loan-tenure').value);
+
+        try {
             const response = await fetch('/api/tools/emi-calculator', {
                 method: 'POST',
                 body: formData
             });
 
             const result = await response.json();
-
+            
             if (result.success) {
-                this.currentResults = result.results;
-                this.displayResults(result.results);
-                this.updateChart(result.results);
-                this.generateAmortizationSchedule(result.results);
-                this.broadcastCalculationUpdate(result.results);
-            } else {
-                this.showError(result.error || 'Failed to calculate EMI');
+                // Results already calculated on frontend, just log the API call
+                console.log('EMI calculation saved to history');
             }
         } catch (error) {
-            console.error('EMI calculation error:', error);
-            this.showError('Network error occurred while calculating EMI');
-        } finally {
-            this.isCalculating = false;
+            console.error('Error saving calculation:', error);
         }
-    }
-
-    displayResults(results) {
-        const resultCard = document.getElementById('results-card');
-        if (resultCard) {
-            resultCard.style.display = 'block';
-        }
-
-        // Update key result values
-        this.updateElement('emi-amount', this.formatCurrency(results.emi));
-        this.updateElement('total-amount', this.formatCurrency(results.total_payment));
-        this.updateElement('total-interest', this.formatCurrency(results.total_interest));
-        this.updateElement('total-cost', this.formatCurrency(results.total_payment + (results.processing_fee || 0)));
-
-        // Update breakdown
-        this.updateElement('principal-display', this.formatCurrency(results.principal_amount));
-        this.updateElement('interest-display', this.formatCurrency(results.total_interest));
-        this.updateElement('fee-display', this.formatCurrency(results.processing_fee || 0));
-        this.updateElement('total-cost-display', this.formatCurrency(results.total_payment + (results.processing_fee || 0)));
-    }
-
-    updateElement(id, value) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = value;
-        }
-    }
-
-    updateChart(results) {
-        if (this.chart) {
-            this.chart.data.datasets[0].data = [
-                results.principal_amount,
-                results.total_interest
-            ];
-            this.chart.update();
-        }
-    }
-
-    generateAmortizationSchedule(results) {
-        const scheduleTable = document.getElementById('schedule-table');
-        if (!scheduleTable || !results.schedule) return;
-
-        scheduleTable.innerHTML = '';
-        
-        results.schedule.forEach(payment => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${payment.month}</td>
-                <td>${this.formatCurrency(payment.emi)}</td>
-                <td>${this.formatCurrency(payment.principal)}</td>
-                <td>${this.formatCurrency(payment.interest)}</td>
-                <td>${this.formatCurrency(payment.balance)}</td>
-            `;
-            scheduleTable.appendChild(row);
-        });
-        
-        this.amortizationSchedule = results.schedule;
     }
 
     formatCurrency(amount) {
-        return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            maximumFractionDigits: 0
-        }).format(amount);
-    }
-
-    showError(message) {
-        if (window.app) {
-            window.app.showNotification(message, 'error');
-        }
-    }
-
-    // Export functions
-    exportToPDF() {
-        if (!this.currentResults) {
-            this.showError('No calculation results to export');
-            return;
-        }
-
-        // Create PDF content
-        const content = this.generatePDFContent();
-        
-        // Using browser's print function for PDF generation
-        const printWindow = window.open('', '', 'height=600,width=800');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>EMI Calculator Results</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        .result-section { margin-bottom: 20px; }
-                        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-                        .result-item { padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                        @media print { .no-print { display: none; } }
-                    </style>
-                </head>
-                <body>
-                    ${content}
-                    <div class="no-print" style="text-align: center; margin-top: 20px;">
-                        <button onclick="window.print()">Print / Save as PDF</button>
-                        <button onclick="window.close()">Close</button>
-                    </div>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-    }
-
-    exportToExcel() {
-        if (!this.currentResults) {
-            this.showError('No calculation results to export');
-            return;
-        }
-
-        // Create CSV content
-        const csvContent = this.generateCSVContent();
-        
-        // Download CSV file
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'emi_calculation_results.csv';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    printResults() {
-        if (!this.currentResults) {
-            this.showError('No calculation results to print');
-            return;
-        }
-
-        const printContent = this.generatePrintContent();
-        
-        const printWindow = window.open('', '', 'height=600,width=800');
-        printWindow.document.write(printContent);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-    }
-
-    generatePDFContent() {
-        const results = this.currentResults;
-        return `
-            <div class="header">
-                <h1>EMI Calculator Results</h1>
-                <p>Generated on ${new Date().toLocaleDateString()}</p>
-            </div>
-            
-            <div class="result-section">
-                <h2>Loan Details</h2>
-                <div class="result-grid">
-                    <div class="result-item">
-                        <strong>Principal Amount:</strong> ${this.formatCurrency(results.principal_amount)}
-                    </div>
-                    <div class="result-item">
-                        <strong>Interest Rate:</strong> ${results.interest_rate}% per annum
-                    </div>
-                    <div class="result-item">
-                        <strong>Tenure:</strong> ${results.tenure_months} months
-                    </div>
-                    <div class="result-item">
-                        <strong>Monthly EMI:</strong> ${this.formatCurrency(results.emi)}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="result-section">
-                <h2>Payment Summary</h2>
-                <div class="result-grid">
-                    <div class="result-item">
-                        <strong>Total Payment:</strong> ${this.formatCurrency(results.total_payment)}
-                    </div>
-                    <div class="result-item">
-                        <strong>Total Interest:</strong> ${this.formatCurrency(results.total_interest)}
-                    </div>
-                </div>
-            </div>
-            
-            ${this.generateScheduleTable()}
-        `;
-    }
-
-    generateCSVContent() {
-        const results = this.currentResults;
-        let csv = 'EMI Calculator Results\n\n';
-        csv += 'Principal Amount,' + results.principal_amount + '\n';
-        csv += 'Interest Rate,' + results.interest_rate + '%\n';
-        csv += 'Tenure,' + results.tenure_months + ' months\n';
-        csv += 'Monthly EMI,' + results.emi + '\n';
-        csv += 'Total Payment,' + results.total_payment + '\n';
-        csv += 'Total Interest,' + results.total_interest + '\n\n';
-        
-        csv += 'Amortization Schedule\n';
-        csv += 'Month,EMI,Principal,Interest,Balance\n';
-        
-        this.amortizationSchedule.forEach(payment => {
-            csv += `${payment.month},${payment.emi},${payment.principal},${payment.interest},${payment.balance}\n`;
-        });
-        
-        return csv;
-    }
-
-    generatePrintContent() {
-        return `
-            <html>
-                <head>
-                    <title>EMI Calculator Results</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                    </style>
-                </head>
-                <body>
-                    ${this.generatePDFContent()}
-                </body>
-            </html>
-        `;
-    }
-
-    generateScheduleTable() {
-        let table = '<table><thead><tr><th>Month</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead><tbody>';
-        
-        this.amortizationSchedule.forEach(payment => {
-            table += `<tr>
-                <td>${payment.month}</td>
-                <td>${this.formatCurrency(payment.emi)}</td>
-                <td>${this.formatCurrency(payment.principal)}</td>
-                <td>${this.formatCurrency(payment.interest)}</td>
-                <td>${this.formatCurrency(payment.balance)}</td>
-            </tr>`;
-        });
-        
-        table += '</tbody></table>';
-        return table;
-    }
-
-    // Collaboration methods
-    broadcastCalculationUpdate(results) {
-        if (window.wsClient && window.wsClient.isConnected()) {
-            window.wsClient.sendUpdate({
-                type: 'calculation-update',
-                results: {
-                    emi: results.emi,
-                    principal: results.principal_amount,
-                    interest: results.total_interest,
-                    totalPayment: results.total_payment
-                }
-            });
-        }
-    }
-
-    handleCollaborationUpdate(data) {
-        switch (data.type) {
-            case 'calculation-update':
-                this.handleRemoteCalculationUpdate(data.results);
-                break;
-        }
-    }
-
-    handleRemoteCalculationUpdate(results) {
-        if (window.app) {
-            window.app.showNotification(`${data.username} updated calculation: EMI ${this.formatCurrency(results.emi)}`, 'info');
-        }
-    }
-
-    // Public API
-    reset() {
-        this.currentResults = null;
-        this.amortizationSchedule = [];
-        
-        // Clear form
-        const form = document.getElementById('emi-calculator-form');
-        if (form) {
-            form.reset();
-        }
-        
-        // Hide results
-        const resultCard = document.getElementById('results-card');
-        if (resultCard) {
-            resultCard.style.display = 'none';
-        }
-        
-        // Reset chart
-        if (this.chart) {
-            this.chart.data.datasets[0].data = [0, 0];
-            this.chart.update();
-        }
-    }
-
-    getResults() {
-        return this.currentResults;
-    }
-
-    hasResults() {
-        return this.currentResults !== null;
+        return '₹' + Math.round(amount).toLocaleString('en-IN');
     }
 }
 
-// Global functions for export buttons
-function exportToPDF() {
-    if (window.emiCalculator) {
-        window.emiCalculator.exportToPDF();
-    }
-}
-
-function exportToExcel() {
-    if (window.emiCalculator) {
-        window.emiCalculator.exportToExcel();
-    }
-}
-
-function printResults() {
-    if (window.emiCalculator) {
-        window.emiCalculator.printResults();
-    }
-}
-
-function toggleFullSchedule() {
-    // This would expand the schedule table to show all months
-    if (window.app) {
-        window.app.showNotification('Full schedule view not implemented yet', 'info');
-    }
-}
-
-// Initialize EMI calculator
+// Initialize EMI Calculator
 const emiCalculator = new EMICalculator();
 
-// Export for global access
-window.EMICalculator = EMICalculator;
-window.emiCalculator = emiCalculator;
+// Load Chart.js if not already loaded
+if (typeof Chart === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    script.onload = () => {
+        if (typeof emiCalculator !== 'undefined') {
+            emiCalculator.calculateEMI();
+        }
+    };
+    document.head.appendChild(script);
+}

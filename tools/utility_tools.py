@@ -15,46 +15,55 @@ from barcode.writer import ImageWriter
 def process_qr_generator(request):
     """Process QR code generator tool"""
     try:
-        text = request.form.get('text', '')
-        size = int(request.form.get('size', 10))
-        border = int(request.form.get('border', 4))
-        fill_color = request.form.get('fill_color', 'black')
-        back_color = request.form.get('back_color', 'white')
+        content = request.form.get('content', '')
+        qr_type = request.form.get('type', 'text')
+        size = int(request.form.get('size', 200))
+        color = request.form.get('color', '#000000')
+        bg_color = request.form.get('bg_color', '#ffffff')
+        output_format = request.form.get('format', 'PNG')
         
-        if not text:
-            return {'error': 'Text is required'}
+        if not content:
+            return {'error': 'Content is required'}
         
         # Create QR code
         qr = qrcode.QRCode(
             version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=size,
-            border=border,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=size // 25,  # Scale box size based on total size
+            border=4,
         )
-        qr.add_data(text)
+        qr.add_data(content)
         qr.make(fit=True)
         
         # Create image
-        img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        img = qr.make_image(fill_color=color, back_color=bg_color)
         
-        # Convert to base64
-        buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
-        buffer.seek(0)
+        # Resize to exact dimensions
+        img = img.resize((size, size), Image.Resampling.NEAREST)
         
-        img_base64 = base64.b64encode(buffer.getvalue()).decode()
+        # Save to temp file and return download URL
+        import tempfile
+        from utils.file_handler import save_uploaded_file
         
-        return {
-            'success': True,
-            'results': {
-                'qr_code': f'data:image/png;base64,{img_base64}',
-                'text': text,
-                'size': size,
-                'border': border,
-                'fill_color': fill_color,
-                'back_color': back_color
+        with tempfile.NamedTemporaryFile(suffix=f'.{output_format.lower()}', delete=False) as temp_file:
+            img.save(temp_file.name, format=output_format)
+            
+            output_filename = f'qr_code_{uuid.uuid4().hex[:8]}.{output_format.lower()}'
+            final_path = save_uploaded_file(temp_file.name, output_filename)
+            
+            # Also create base64 for preview
+            buffer = io.BytesIO()
+            img.save(buffer, format=output_format)
+            buffer.seek(0)
+            img_base64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            return {
+                'success': True,
+                'message': 'QR code generated successfully',
+                'qr_image': f'data:image/{output_format.lower()};base64,{img_base64}',
+                'download_url': f'/uploads/{output_filename}',
+                'output_file': final_path
             }
-        }
     
     except Exception as e:
         logging.error(f"QR generator error: {str(e)}")

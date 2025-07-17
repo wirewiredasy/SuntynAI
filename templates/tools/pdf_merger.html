@@ -5,149 +5,162 @@
 {% block content %}
 <div class="container py-4">
     <div class="row">
-        <div class="col-md-8 mx-auto">
+        <div class="col-md-10 mx-auto">
             <div class="text-center mb-5">
                 <div class="tool-icon mb-3">
-                    <i class="ti ti-file-zip text-danger fs-1"></i>
+                    <i class="ti ti-file-plus text-danger fs-1"></i>
                 </div>
                 <h1 class="h3 mb-3">PDF Merger</h1>
                 <p class="text-muted">Combine multiple PDF files into a single document</p>
             </div>
             
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <form id="pdf-merger-form">
-                        <!-- File Upload Area -->
-                        <div class="drag-drop-zone mb-4" id="drop-zone">
-                            <div class="text-center">
-                                <i class="ti ti-cloud-upload text-primary fs-1 mb-3"></i>
-                                <h5>Drag & Drop PDF Files Here</h5>
-                                <p class="text-muted">or click to select files</p>
-                                <input type="file" id="file-input" multiple accept=".pdf" class="d-none">
-                                <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-                                    <i class="ti ti-file-plus"></i> Select PDFs
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Selected Files -->
-                        <div id="selected-files" class="mb-4" style="display: none;">
-                            <h6>Selected Files:</h6>
-                            <div id="files-list" class="sortable-list"></div>
-                            <div class="text-muted small mt-2">
-                                <i class="ti ti-info-circle"></i> Drag files to reorder them
-                            </div>
-                        </div>
-                        
-                        <!-- Merge Options -->
-                        <div class="merge-options mb-4" style="display: none;">
-                            <h6>Merge Options:</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="add-bookmarks" checked>
-                                        <label class="form-check-label" for="add-bookmarks">
-                                            Add bookmarks for each file
-                                        </label>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form id="pdf-merger-form">
+                                <!-- File Upload Area -->
+                                <div class="drag-drop-zone mb-4" id="drop-zone">
+                                    <div class="text-center">
+                                        <i class="ti ti-cloud-upload text-primary fs-1 mb-3"></i>
+                                        <h5>Drag & Drop PDF Files Here</h5>
+                                        <p class="text-muted">or click to select multiple files</p>
+                                        <input type="file" id="file-input" accept=".pdf" multiple class="d-none">
+                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                                            <i class="ti ti-file-plus"></i> Select PDF Files
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="optimize-size">
-                                        <label class="form-check-label" for="optimize-size">
-                                            Optimize file size
-                                        </label>
+                                
+                                <!-- File List -->
+                                <div id="file-list" class="mb-4" style="display: none;">
+                                    <h6>Selected Files:</h6>
+                                    <div id="sortable-files" class="list-group">
+                                        <!-- Dynamic file list will be added here -->
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">
+                                        <i class="ti ti-arrows-sort"></i> Drag files to reorder them
+                                    </small>
+                                </div>
+                                
+                                <!-- Merge Options -->
+                                <div id="merge-options" class="mb-4" style="display: none;">
+                                    <h6>Merge Options:</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Output Filename</label>
+                                            <input type="text" class="form-control" id="output-filename" value="merged_document.pdf">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Page Range (Optional)</label>
+                                            <input type="text" class="form-control" id="page-range" placeholder="e.g., 1-3,5,7-9">
+                                            <small class="text-muted">Leave empty to merge all pages</small>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="add-bookmarks">
+                                                <label class="form-check-label" for="add-bookmarks">
+                                                    Add bookmarks for each file
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="optimize-size">
+                                                <label class="form-check-label" for="optimize-size">
+                                                    Optimize file size
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Submit Button -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-success btn-lg" id="merge-btn" disabled>
-                                <i class="ti ti-file-zip"></i> Merge PDFs
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Progress -->
-            <div class="card mt-4" id="progress-card" style="display: none;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="loading-spinner me-3"></div>
-                        <div class="flex-grow-1">
-                            <div class="progress mb-2">
-                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                            </div>
-                            <small class="text-muted" id="progress-text">Preparing to merge...</small>
+                                
+                                <!-- Submit Button -->
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-success btn-lg" id="merge-btn" disabled>
+                                        <i class="ti ti-file-plus"></i> Merge PDFs
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Result -->
-            <div class="card mt-4" id="result-card" style="display: none;">
-                <div class="card-body text-center">
-                    <div class="result-success" id="success-result" style="display: none;">
-                        <i class="ti ti-check-circle text-success fs-1 mb-3"></i>
-                        <h5 class="text-success">PDFs Merged Successfully!</h5>
-                        <p class="text-muted mb-3" id="success-message"></p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <a href="#" class="btn btn-primary" id="download-btn">
-                                <i class="ti ti-download"></i> Download
-                            </a>
-                            <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
-                                <i class="ti ti-refresh"></i> Merge More
-                            </button>
+                
+                <div class="col-md-4">
+                    <!-- File Info -->
+                    <div class="card shadow-sm" id="info-card" style="display: none;">
+                        <div class="card-body">
+                            <h6 class="mb-3">
+                                <i class="ti ti-info-circle"></i> Merge Information
+                            </h6>
+                            <div class="mb-2">
+                                <small class="text-muted">Total Files:</small>
+                                <span class="fw-medium ms-2" id="total-files">0</span>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Total Size:</small>
+                                <span class="fw-medium ms-2" id="total-size">0 MB</span>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Estimated Pages:</small>
+                                <span class="fw-medium ms-2" id="estimated-pages">Unknown</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="result-error" id="error-result" style="display: none;">
-                        <i class="ti ti-alert-circle text-danger fs-1 mb-3"></i>
-                        <h5 class="text-danger">Merge Failed</h5>
-                        <p class="text-muted mb-3" id="error-message"></p>
-                        <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
-                            <i class="ti ti-refresh"></i> Try Again
-                        </button>
+                    <!-- Progress -->
+                    <div class="card shadow-sm mt-4" id="progress-card" style="display: none;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="loading-spinner me-3"></div>
+                                <div class="flex-grow-1">
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <small class="text-muted" id="progress-text">Merging PDFs...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Result -->
+                    <div class="card shadow-sm mt-4" id="result-card" style="display: none;">
+                        <div class="card-body text-center">
+                            <div class="result-success" id="success-result" style="display: none;">
+                                <i class="ti ti-check-circle text-success fs-1 mb-3"></i>
+                                <h6 class="text-success">PDFs Merged Successfully!</h6>
+                                <p class="text-muted mb-3" id="success-message"></p>
+                                
+                                <div class="d-flex justify-content-center gap-3">
+                                    <a href="#" class="btn btn-primary" id="download-btn">
+                                        <i class="ti ti-download"></i> Download
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                                        <i class="ti ti-refresh"></i> Merge More
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="result-error" id="error-result" style="display: none;">
+                                <i class="ti ti-alert-circle text-danger fs-1 mb-3"></i>
+                                <h6 class="text-danger">Merge Failed</h6>
+                                <p class="text-muted mb-3" id="error-message"></p>
+                                <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
+                                    <i class="ti ti-refresh"></i> Try Again
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Collaboration Panel -->
-<div class="position-fixed bottom-0 end-0 m-3" style="z-index: 1000;">
-    <div class="card shadow-sm" id="collaboration-panel" style="width: 300px; display: none;">
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex align-items-center">
-                <i class="ti ti-users me-2"></i>
-                <span>Collaboration</span>
-                <button class="btn-close btn-close-white ms-auto" onclick="toggleCollaboration()"></button>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="mb-3">
-                <small class="text-muted">Room ID:</small>
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control" id="room-id" placeholder="Enter room ID">
-                    <button class="btn btn-outline-primary" type="button" onclick="joinRoom()">Join</button>
-                </div>
-            </div>
-            <div id="collaboration-users" class="small">
-                <div class="text-muted">No users connected</div>
-            </div>
-        </div>
-    </div>
-    
-    <button class="btn btn-primary btn-sm" onclick="toggleCollaboration()">
-        <i class="ti ti-users"></i> Collaborate
-    </button>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="{{ url_for('static', filename='js/tools/pdf-merger.js') }}"></script>
 {% endblock %}

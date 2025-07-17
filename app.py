@@ -377,6 +377,13 @@ def create_app():
             logging.error(f"Error processing tool {tool_name}: {str(e)}")
             return jsonify({'error': 'Processing failed'}), 500
     
+    # File serving route
+    @app.route('/uploads/<filename>')
+    def uploaded_file(filename):
+        from flask import send_from_directory
+        upload_dir = os.path.join(app.root_path, 'uploads')
+        return send_from_directory(upload_dir, filename)
+    
     # Create tables
     with app.app_context():
         db.create_all()

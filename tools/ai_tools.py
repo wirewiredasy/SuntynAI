@@ -73,6 +73,26 @@ def process_text_summarizer(request):
         for sentence in top_sentences[:5]:  # Top 5 sentences as key points
             # Clean up sentence
             clean_sentence = re.sub(r'[^\w\s]', '', sentence)
+            if len(clean_sentence.split()) > 3:  # Only add meaningful sentences
+                key_points.append('• ' + sentence.strip())
+        
+        # Calculate stats
+        original_words = len(text.split())
+        summary_words = len(summary_text.split())
+        compression_ratio = round((1 - summary_words / original_words) * 100, 1)
+        
+        return {
+            'success': True,
+            'summary': summary_text,
+            'key_points': key_points,
+            'stats': {
+                'original_words': original_words,
+                'summary_words': summary_words,
+                'compression_ratio': compression_ratio,
+                'original_sentences': len(sentences),
+                'summary_sentences': len(summary)
+            }
+        }
             if len(clean_sentence) > 20:
                 key_points.append(clean_sentence[:100] + '...' if len(clean_sentence) > 100 else clean_sentence)
         

@@ -1,300 +1,244 @@
-// PDF Merger Tool - JavaScript
-// Handles PDF merging functionality with real-time collaboration
-
 class PDFMerger {
     constructor() {
-        this.files = [];
-        this.isProcessing = false;
-        this.sortableInstance = null;
-        this.collaborationRoom = null;
+        this.selectedFiles = [];
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.initializeSortable();
-        this.setupCollaboration();
-        console.log('📄 PDF Merger initialized');
+        this.setupDragDrop();
+        this.setupSortable();
     }
 
     setupEventListeners() {
-        const form = document.getElementById('pdf-merger-form');
         const fileInput = document.getElementById('file-input');
+        const form = document.getElementById('pdf-merger-form');
+        
+        if (fileInput) fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+        if (form) form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+
+    setupDragDrop() {
         const dropZone = document.getElementById('drop-zone');
+        if (!dropZone) return;
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-primary', 'bg-light');
+        });
 
-        // Form submission
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleMerge();
-            });
-        }
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary', 'bg-light');
+        });
 
-        // File input change
-        if (fileInput) {
-            fileInput.addEventListener('change', (e) => {
-                this.handleFileSelection(e.target.files);
-            });
-        }
-
-        // Drop zone events
-        if (dropZone) {
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                this.handleFileSelection(e.dataTransfer.files);
-            });
-        }
-
-        // Collaboration events
-        document.addEventListener('collaborationUpdate', (e) => {
-            this.handleCollaborationUpdate(e.detail);
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary', 'bg-light');
+            
+            const files = Array.from(e.dataTransfer.files).filter(file => 
+                file.type === 'application/pdf'
+            );
+            
+            if (files.length > 0) {
+                this.addFiles(files);
+            }
         });
     }
 
-    initializeSortable() {
-        const filesList = document.getElementById('files-list');
-        if (filesList && typeof Sortable !== 'undefined') {
-            this.sortableInstance = Sortable.create(filesList, {
+    setupSortable() {
+        const sortableFiles = document.getElementById('sortable-files');
+        if (!sortableFiles) return;
+        
+        // Initialize sortable functionality
+        if (typeof Sortable !== 'undefined') {
+            Sortable.create(sortableFiles, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
                 onEnd: (evt) => {
-                    this.handleFileReorder(evt.oldIndex, evt.newIndex);
+                    // Update file order
+                    const oldIndex = evt.oldIndex;
+                    const newIndex = evt.newIndex;
+                    
+                    const file = this.selectedFiles.splice(oldIndex, 1)[0];
+                    this.selectedFiles.splice(newIndex, 0, file);
+                    
+                    this.updateFileInfo();
                 }
             });
         }
     }
 
-    setupCollaboration() {
-        // Setup collaboration room
-        this.collaborationRoom = `pdf-merger-${Date.now()}`;
-        
-        // Join collaboration room if WebSocket is available
-        if (window.wsClient && window.wsClient.isConnected()) {
-            window.wsClient.joinRoom(this.collaborationRoom, 'pdf-merger');
-        }
+    handleFileSelect(e) {
+        const files = Array.from(e.target.files).filter(file => 
+            file.type === 'application/pdf'
+        );
+        this.addFiles(files);
     }
 
-    handleFileSelection(fileList) {
-        const files = Array.from(fileList);
-        const pdfFiles = files.filter(file => file.type === 'application/pdf');
+    addFiles(files) {
+        files.forEach(file => {
+            if (!this.selectedFiles.find(f => f.name === file.name && f.size === file.size)) {
+                this.selectedFiles.push(file);
+            }
+        });
         
-        if (pdfFiles.length !== files.length) {
-            this.showError('Please select only PDF files');
-            return;
-        }
-
-        if (pdfFiles.length === 0) {
-            this.showError('Please select at least one PDF file');
-            return;
-        }
-
-        this.files = [...this.files, ...pdfFiles];
-        this.updateFilesList();
-        this.updateMergeButton();
-        this.broadcastFileUpdate();
+        this.updateFileList();
+        this.updateFileInfo();
+        this.updateUI();
     }
 
-    updateFilesList() {
-        const filesList = document.getElementById('files-list');
-        const selectedFiles = document.getElementById('selected-files');
-        const mergeOptions = document.querySelector('.merge-options');
+    updateFileList() {
+        const fileList = document.getElementById('file-list');
+        const sortableFiles = document.getElementById('sortable-files');
         
-        if (!filesList) return;
-
-        filesList.innerHTML = '';
+        if (!fileList || !sortableFiles) return;
         
-        if (this.files.length === 0) {
-            selectedFiles.style.display = 'none';
-            mergeOptions.style.display = 'none';
+        if (this.selectedFiles.length === 0) {
+            fileList.style.display = 'none';
             return;
         }
-
-        selectedFiles.style.display = 'block';
-        mergeOptions.style.display = 'block';
-
-        this.files.forEach((file, index) => {
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item d-flex align-items-center justify-content-between p-3 bg-white border rounded mb-2';
-            fileItem.innerHTML = `
+        
+        fileList.style.display = 'block';
+        
+        sortableFiles.innerHTML = this.selectedFiles.map((file, index) => `
+            <div class="list-group-item d-flex justify-content-between align-items-center" data-index="${index}">
                 <div class="d-flex align-items-center">
-                    <div class="drag-handle me-3 text-muted cursor-move">
-                        <i class="ti ti-grip-vertical"></i>
-                    </div>
-                    <div class="file-icon me-3">
-                        <i class="ti ti-file-type-pdf text-danger fs-4"></i>
-                    </div>
-                    <div class="file-info">
-                        <div class="file-name fw-medium">${file.name}</div>
-                        <div class="file-size text-muted small">${this.formatFileSize(file.size)}</div>
+                    <i class="ti ti-file-text text-danger me-2"></i>
+                    <div>
+                        <div class="fw-medium">${file.name}</div>
+                        <small class="text-muted">${this.formatFileSize(file.size)}</small>
                     </div>
                 </div>
-                <div class="file-actions">
-                    <span class="badge bg-primary me-2">Page ${index + 1}</span>
+                <div>
+                    <i class="ti ti-grip-horizontal text-muted me-2" style="cursor: move;"></i>
                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="pdfMerger.removeFile(${index})">
                         <i class="ti ti-x"></i>
                     </button>
                 </div>
-            `;
-            filesList.appendChild(fileItem);
-        });
+            </div>
+        `).join('');
     }
 
     removeFile(index) {
-        this.files.splice(index, 1);
-        this.updateFilesList();
-        this.updateMergeButton();
-        this.broadcastFileUpdate();
+        this.selectedFiles.splice(index, 1);
+        this.updateFileList();
+        this.updateFileInfo();
+        this.updateUI();
     }
 
-    handleFileReorder(oldIndex, newIndex) {
-        const file = this.files.splice(oldIndex, 1)[0];
-        this.files.splice(newIndex, 0, file);
-        this.updateFilesList();
-        this.broadcastFileUpdate();
-    }
-
-    updateMergeButton() {
-        const mergeBtn = document.getElementById('merge-btn');
-        if (mergeBtn) {
-            mergeBtn.disabled = this.files.length < 2 || this.isProcessing;
+    updateFileInfo() {
+        const totalFiles = document.getElementById('total-files');
+        const totalSize = document.getElementById('total-size');
+        const infoCard = document.getElementById('info-card');
+        
+        if (totalFiles) totalFiles.textContent = this.selectedFiles.length;
+        
+        if (totalSize) {
+            const size = this.selectedFiles.reduce((total, file) => total + file.size, 0);
+            totalSize.textContent = this.formatFileSize(size);
+        }
+        
+        if (infoCard) {
+            infoCard.style.display = this.selectedFiles.length > 0 ? 'block' : 'none';
         }
     }
 
-    async handleMerge() {
-        if (this.files.length < 2) {
-            this.showError('Please select at least 2 PDF files to merge');
+    updateUI() {
+        const mergeOptions = document.getElementById('merge-options');
+        const mergeBtn = document.getElementById('merge-btn');
+        
+        const hasFiles = this.selectedFiles.length >= 2;
+        
+        if (mergeOptions) mergeOptions.style.display = hasFiles ? 'block' : 'none';
+        if (mergeBtn) mergeBtn.disabled = !hasFiles;
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        if (this.selectedFiles.length < 2) {
+            alert('Please select at least 2 PDF files to merge');
             return;
         }
+        
+        await this.mergePDFs();
+    }
 
-        this.isProcessing = true;
-        this.updateMergeButton();
-        this.showProgress('Preparing PDFs for merge...', 0);
-
+    async mergePDFs() {
+        const progressCard = document.getElementById('progress-card');
+        const resultCard = document.getElementById('result-card');
+        const progressText = document.getElementById('progress-text');
+        
+        if (progressCard) progressCard.style.display = 'block';
+        if (resultCard) resultCard.style.display = 'none';
+        
         try {
             const formData = new FormData();
-            
-            // Add files in order
-            this.files.forEach((file, index) => {
+            this.selectedFiles.forEach(file => {
                 formData.append('files', file);
             });
-
-            // Add options
-            const addBookmarks = document.getElementById('add-bookmarks').checked;
-            const optimizeSize = document.getElementById('optimize-size').checked;
             
-            formData.append('add-bookmarks', addBookmarks);
-            formData.append('optimize-size', optimizeSize);
-
-            // Show progress updates
-            this.showProgress('Merging PDFs...', 50);
-
+            // Add options
+            formData.append('output_filename', document.getElementById('output-filename')?.value || 'merged_document.pdf');
+            formData.append('add_bookmarks', document.getElementById('add-bookmarks')?.checked || false);
+            formData.append('optimize_size', document.getElementById('optimize-size')?.checked || false);
+            
             const response = await fetch('/api/tools/pdf-merger', {
                 method: 'POST',
                 body: formData
             });
-
+            
             const result = await response.json();
-
+            
+            if (progressCard) progressCard.style.display = 'none';
+            
             if (result.success) {
-                this.showProgress('Merge completed!', 100);
                 this.showSuccess(result);
-                this.broadcastMergeComplete(result);
             } else {
-                this.showError(result.error || 'Failed to merge PDFs');
+                this.showError(result.error || 'PDF merge failed');
             }
+            
         } catch (error) {
-            console.error('Merge error:', error);
-            this.showError('Network error occurred while merging PDFs');
-        } finally {
-            this.isProcessing = false;
-            this.updateMergeButton();
-            this.hideProgress();
-        }
-    }
-
-    showProgress(message, percentage) {
-        const progressCard = document.getElementById('progress-card');
-        const progressBar = progressCard?.querySelector('.progress-bar');
-        const progressText = progressCard?.querySelector('#progress-text');
-        
-        if (progressCard) {
-            progressCard.style.display = 'block';
-            if (progressBar) progressBar.style.width = percentage + '%';
-            if (progressText) progressText.textContent = message;
-        }
-
-        // Broadcast progress to collaborators
-        if (window.wsClient) {
-            window.wsClient.sendProgress(percentage, message);
-        }
-    }
-
-    hideProgress() {
-        const progressCard = document.getElementById('progress-card');
-        if (progressCard) {
-            progressCard.style.display = 'none';
+            if (progressCard) progressCard.style.display = 'none';
+            this.showError('Network error occurred');
         }
     }
 
     showSuccess(result) {
         const resultCard = document.getElementById('result-card');
-        const successResult = document.getElementById('success-result');
+        const successDiv = document.getElementById('success-result');
+        const errorDiv = document.getElementById('error-result');
         const successMessage = document.getElementById('success-message');
         const downloadBtn = document.getElementById('download-btn');
         
-        if (resultCard && successResult) {
-            resultCard.style.display = 'block';
-            successResult.style.display = 'block';
-            
-            if (successMessage) {
-                successMessage.textContent = result.message || 'PDFs merged successfully!';
-            }
-            
-            if (downloadBtn && result.download_url) {
-                downloadBtn.href = result.download_url;
-                downloadBtn.onclick = () => this.downloadFile(result.download_url, result.output_file);
-            }
+        if (resultCard) resultCard.style.display = 'block';
+        if (successDiv) successDiv.style.display = 'block';
+        if (errorDiv) errorDiv.style.display = 'none';
+        
+        if (successMessage) {
+            successMessage.textContent = `Merged ${this.selectedFiles.length} PDFs successfully!`;
+        }
+        
+        if (downloadBtn && result.download_url) {
+            downloadBtn.href = result.download_url;
+            downloadBtn.style.display = 'inline-block';
         }
     }
 
     showError(message) {
         const resultCard = document.getElementById('result-card');
-        const errorResult = document.getElementById('error-result');
+        const successDiv = document.getElementById('success-result');
+        const errorDiv = document.getElementById('error-result');
         const errorMessage = document.getElementById('error-message');
         
-        if (resultCard && errorResult) {
-            resultCard.style.display = 'block';
-            errorResult.style.display = 'block';
-            
-            if (errorMessage) {
-                errorMessage.textContent = message;
-            }
-        }
+        if (resultCard) resultCard.style.display = 'block';
+        if (successDiv) successDiv.style.display = 'none';
+        if (errorDiv) errorDiv.style.display = 'block';
         
-        if (window.app) {
-            window.app.showNotification(message, 'error');
+        if (errorMessage) {
+            errorMessage.textContent = message;
         }
-    }
-
-    downloadFile(url, filename) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename || 'merged-document.pdf';
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
     }
 
     formatFileSize(bytes) {
@@ -304,80 +248,10 @@ class PDFMerger {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-
-    // Collaboration methods
-    broadcastFileUpdate() {
-        if (window.wsClient && window.wsClient.isConnected()) {
-            window.wsClient.sendUpdate({
-                type: 'files-update',
-                files: this.files.map(f => ({ name: f.name, size: f.size }))
-            });
-        }
-    }
-
-    broadcastMergeComplete(result) {
-        if (window.wsClient && window.wsClient.isConnected()) {
-            window.wsClient.sendUpdate({
-                type: 'merge-complete',
-                result: result
-            });
-        }
-    }
-
-    handleCollaborationUpdate(data) {
-        switch (data.type) {
-            case 'files-update':
-                this.handleRemoteFileUpdate(data.files);
-                break;
-            case 'merge-complete':
-                this.handleRemoteMergeComplete(data.result);
-                break;
-        }
-    }
-
-    handleRemoteFileUpdate(files) {
-        // Show notification about collaborator's file changes
-        if (window.app) {
-            window.app.showNotification(`${data.username} updated the file list`, 'info');
-        }
-    }
-
-    handleRemoteMergeComplete(result) {
-        // Show notification about collaborator's merge completion
-        if (window.app) {
-            window.app.showNotification(`${data.username} completed PDF merge`, 'success');
-        }
-    }
-
-    // Public API
-    reset() {
-        this.files = [];
-        this.updateFilesList();
-        this.updateMergeButton();
-        
-        // Hide result cards
-        const resultCard = document.getElementById('result-card');
-        if (resultCard) {
-            resultCard.style.display = 'none';
-        }
-    }
-
-    getFiles() {
-        return this.files;
-    }
-
-    addFiles(files) {
-        this.handleFileSelection(files);
-    }
-
-    isReady() {
-        return this.files.length >= 2 && !this.isProcessing;
-    }
 }
 
-// Initialize PDF merger
-const pdfMerger = new PDFMerger();
-
-// Export for global access
-window.PDFMerger = PDFMerger;
-window.pdfMerger = pdfMerger;
+// Initialize when DOM is loaded
+let pdfMerger;
+document.addEventListener('DOMContentLoaded', () => {
+    pdfMerger = new PDFMerger();
+});

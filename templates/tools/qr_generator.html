@@ -5,249 +5,176 @@
 {% block content %}
 <div class="container py-4">
     <div class="row">
-        <div class="col-md-8 mx-auto">
+        <div class="col-md-10 mx-auto">
             <div class="text-center mb-5">
                 <div class="tool-icon mb-3">
-                    <i class="ti ti-qrcode text-purple fs-1"></i>
+                    <i class="ti ti-qrcode text-success fs-1"></i>
                 </div>
                 <h1 class="h3 mb-3">QR Code Generator</h1>
-                <p class="text-muted">Create customizable QR codes for any content</p>
+                <p class="text-muted">Generate QR codes for text, URLs, WiFi, and more</p>
             </div>
             
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <form id="qr-generator-form">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <!-- Content Input -->
-                                <div class="mb-3">
-                                    <label for="qr-type" class="form-label">QR Code Type</label>
-                                    <select class="form-select" id="qr-type" name="qr-type">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form id="qr-generator-form">
+                                <h6 class="mb-4">QR Code Settings</h6>
+                                
+                                <!-- QR Type -->
+                                <div class="mb-4">
+                                    <label class="form-label">QR Code Type</label>
+                                    <select class="form-select" id="qr-type">
                                         <option value="text">Plain Text</option>
                                         <option value="url">Website URL</option>
-                                        <option value="email">Email Address</option>
                                         <option value="phone">Phone Number</option>
-                                        <option value="sms">SMS Message</option>
+                                        <option value="email">Email</option>
                                         <option value="wifi">WiFi Network</option>
-                                        <option value="vcard">Contact Card</option>
                                     </select>
                                 </div>
                                 
-                                <!-- Dynamic Content Fields -->
-                                <div id="content-fields">
-                                    <!-- Text Content -->
-                                    <div class="content-field" id="text-field">
-                                        <div class="mb-3">
-                                            <label for="text-content" class="form-label">Text Content</label>
-                                            <textarea class="form-control" id="text-content" name="text-content" 
-                                                      placeholder="Enter your text here..." rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- URL Content -->
-                                    <div class="content-field" id="url-field" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="url-content" class="form-label">Website URL</label>
-                                            <input type="url" class="form-control" id="url-content" name="url-content" 
-                                                   placeholder="https://example.com">
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Email Content -->
-                                    <div class="content-field" id="email-field" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="email-content" class="form-label">Email Address</label>
-                                            <input type="email" class="form-control" id="email-content" name="email-content" 
-                                                   placeholder="example@email.com">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="email-subject" class="form-label">Subject (Optional)</label>
-                                            <input type="text" class="form-control" id="email-subject" name="email-subject" 
-                                                   placeholder="Email subject">
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Phone Content -->
-                                    <div class="content-field" id="phone-field" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="phone-content" class="form-label">Phone Number</label>
-                                            <input type="tel" class="form-control" id="phone-content" name="phone-content" 
-                                                   placeholder="+1234567890">
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- SMS Content -->
-                                    <div class="content-field" id="sms-field" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="sms-phone" class="form-label">Phone Number</label>
-                                            <input type="tel" class="form-control" id="sms-phone" name="sms-phone" 
-                                                   placeholder="+1234567890">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="sms-message" class="form-label">Message</label>
-                                            <textarea class="form-control" id="sms-message" name="sms-message" 
-                                                      placeholder="Your message here..." rows="2"></textarea>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- WiFi Content -->
-                                    <div class="content-field" id="wifi-field" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="wifi-ssid" class="form-label">Network Name (SSID)</label>
-                                            <input type="text" class="form-control" id="wifi-ssid" name="wifi-ssid" 
-                                                   placeholder="WiFi Network Name">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="wifi-password" class="form-label">Password</label>
-                                            <input type="password" class="form-control" id="wifi-password" name="wifi-password" 
-                                                   placeholder="WiFi Password">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="wifi-security" class="form-label">Security Type</label>
-                                            <select class="form-select" id="wifi-security" name="wifi-security">
-                                                <option value="WPA">WPA/WPA2</option>
-                                                <option value="WEP">WEP</option>
-                                                <option value="nopass">No Password</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- vCard Content -->
-                                    <div class="content-field" id="vcard-field" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="vcard-name" class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="vcard-name" name="vcard-name" 
-                                                   placeholder="John Doe">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="vcard-phone" class="form-label">Phone Number</label>
-                                            <input type="tel" class="form-control" id="vcard-phone" name="vcard-phone" 
-                                                   placeholder="+1234567890">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="vcard-email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="vcard-email" name="vcard-email" 
-                                                   placeholder="john@example.com">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="vcard-org" class="form-label">Organization</label>
-                                            <input type="text" class="form-control" id="vcard-org" name="vcard-org" 
-                                                   placeholder="Company Name">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <!-- Customization Options -->
-                                <h6>Customization Options</h6>
-                                
-                                <div class="mb-3">
-                                    <label for="size" class="form-label">Size: <span id="size-value">10</span></label>
-                                    <input type="range" class="form-range" id="size" name="size" 
-                                           min="5" max="20" value="10">
+                                <!-- Text Input -->
+                                <div id="text-input-group" class="mb-4">
+                                    <label class="form-label">Text Content</label>
+                                    <textarea class="form-control" id="qr-text" rows="3" placeholder="Enter your text here..."></textarea>
                                 </div>
                                 
-                                <div class="mb-3">
-                                    <label for="border" class="form-label">Border: <span id="border-value">4</span></label>
-                                    <input type="range" class="form-range" id="border" name="border" 
-                                           min="0" max="10" value="4">
+                                <!-- URL Input -->
+                                <div id="url-input-group" class="mb-4" style="display: none;">
+                                    <label class="form-label">Website URL</label>
+                                    <input type="url" class="form-control" id="qr-url" placeholder="https://example.com">
                                 </div>
+                                
+                                <!-- Phone Input -->
+                                <div id="phone-input-group" class="mb-4" style="display: none;">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="qr-phone" placeholder="+1234567890">
+                                </div>
+                                
+                                <!-- Email Input -->
+                                <div id="email-input-group" class="mb-4" style="display: none;">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="qr-email" placeholder="example@email.com">
+                                    <label class="form-label mt-2">Subject (Optional)</label>
+                                    <input type="text" class="form-control" id="email-subject" placeholder="Email subject">
+                                    <label class="form-label mt-2">Message (Optional)</label>
+                                    <textarea class="form-control" id="email-body" rows="2" placeholder="Email message"></textarea>
+                                </div>
+                                
+                                <!-- WiFi Input -->
+                                <div id="wifi-input-group" class="mb-4" style="display: none;">
+                                    <label class="form-label">Network Name (SSID)</label>
+                                    <input type="text" class="form-control" id="wifi-ssid" placeholder="WiFi Network Name">
+                                    <label class="form-label mt-2">Password</label>
+                                    <input type="password" class="form-control" id="wifi-password" placeholder="WiFi Password">
+                                    <label class="form-label mt-2">Security Type</label>
+                                    <select class="form-select" id="wifi-security">
+                                        <option value="WPA">WPA/WPA2</option>
+                                        <option value="WEP">WEP</option>
+                                        <option value="nopass">Open (No Password)</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Customization -->
+                                <hr>
+                                <h6 class="mb-3">Customization</h6>
                                 
                                 <div class="row">
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="fill-color" class="form-label">Foreground Color</label>
-                                            <input type="color" class="form-control form-control-color" id="fill-color" 
-                                                   name="fill-color" value="#000000">
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Size: <span id="size-display">200px</span></label>
+                                        <input type="range" class="form-range" id="qr-size" min="100" max="500" value="200" step="50">
                                     </div>
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="back-color" class="form-label">Background Color</label>
-                                            <input type="color" class="form-control form-control-color" id="back-color" 
-                                                   name="back-color" value="#ffffff">
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Output Format</label>
+                                        <select class="form-select" id="output-format">
+                                            <option value="PNG">PNG</option>
+                                            <option value="SVG">SVG</option>
+                                            <option value="JPG">JPG</option>
+                                        </select>
                                     </div>
                                 </div>
                                 
-                                <!-- Live Preview -->
-                                <div class="qr-preview text-center mb-3">
-                                    <div id="qr-preview-container" class="border rounded p-3 bg-light">
-                                        <div class="text-muted">
-                                            <i class="ti ti-qrcode fs-1"></i>
-                                            <p>QR Code preview will appear here</p>
-                                        </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Foreground Color</label>
+                                        <input type="color" class="form-control form-control-color" id="qr-color" value="#000000">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Background Color</label>
+                                        <input type="color" class="form-control form-control-color" id="qr-bg-color" value="#ffffff">
                                     </div>
                                 </div>
                                 
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary btn-lg">
-                                        <i class="ti ti-qrcode"></i> Generate QR Code
-                                    </button>
-                                </div>
-                            </div>
+                                <button type="submit" class="btn btn-success w-100 mt-4">
+                                    <i class="ti ti-qrcode"></i> Generate QR Code
+                                </button>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Result -->
-            <div class="card mt-4" id="result-card" style="display: none;">
-                <div class="card-body text-center">
-                    <div class="result-success" id="success-result" style="display: none;">
-                        <i class="ti ti-check-circle text-success fs-1 mb-3"></i>
-                        <h5 class="text-success">QR Code Generated Successfully!</h5>
-                        
-                        <div class="qr-result mb-4">
-                            <div class="qr-code-container d-inline-block p-3 bg-white border rounded shadow-sm">
-                                <img id="generated-qr" src="" alt="Generated QR Code" class="img-fluid">
-                            </div>
-                        </div>
-                        
-                        <div class="qr-info mb-3">
-                            <small class="text-muted">
-                                Type: <span id="qr-type-display"></span> |
-                                Size: <span id="qr-size-display"></span> |
-                                Format: PNG
-                            </small>
-                        </div>
-                        
-                        <div class="d-flex justify-content-center gap-3">
-                            <button class="btn btn-success" onclick="downloadQR()">
-                                <i class="ti ti-download"></i> Download PNG
-                            </button>
-                            <button class="btn btn-outline-primary" onclick="copyQRToClipboard()">
-                                <i class="ti ti-copy"></i> Copy Image
-                            </button>
-                            <button class="btn btn-outline-secondary" onclick="location.reload()">
-                                <i class="ti ti-refresh"></i> Generate New
-                            </button>
+                
+                <div class="col-md-6">
+                    <!-- Preview -->
+                    <div class="card shadow-sm" id="preview-section" style="display: none;">
+                        <div class="card-body text-center">
+                            <h6 class="mb-3">Preview</h6>
+                            <div id="qr-preview" class="mb-3"></div>
                         </div>
                     </div>
                     
-                    <div class="result-error" id="error-result" style="display: none;">
-                        <i class="ti ti-alert-circle text-danger fs-1 mb-3"></i>
-                        <h5 class="text-danger">Generation Failed</h5>
-                        <p class="text-muted mb-3" id="error-message"></p>
-                        <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
-                            <i class="ti ti-refresh"></i> Try Again
-                        </button>
+                    <!-- Progress -->
+                    <div class="card mt-4" id="progress-card" style="display: none;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="loading-spinner me-3"></div>
+                                <div class="flex-grow-1">
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <small class="text-muted" id="progress-text">Generating QR code...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Result -->
+                    <div class="card mt-4" id="result-card" style="display: none;">
+                        <div class="card-body text-center">
+                            <div class="result-success" id="success-result" style="display: none;">
+                                <i class="ti ti-check-circle text-success fs-1 mb-3"></i>
+                                <h5 class="text-success">QR Code Generated!</h5>
+                                <p class="text-muted mb-3" id="success-message"></p>
+                                
+                                <div id="result-preview" class="mb-4"></div>
+                                
+                                <div class="d-flex justify-content-center gap-3">
+                                    <a href="#" class="btn btn-primary" id="download-btn">
+                                        <i class="ti ti-download"></i> Download
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                                        <i class="ti ti-refresh"></i> Generate More
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="result-error" id="error-result" style="display: none;">
+                                <i class="ti ti-alert-circle text-danger fs-1 mb-3"></i>
+                                <h5 class="text-danger">Generation Failed</h5>
+                                <p class="text-muted mb-3" id="error-message"></p>
+                                <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
+                                    <i class="ti ti-refresh"></i> Try Again
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Real-time Collaboration -->
-<div class="position-fixed bottom-0 end-0 m-3" style="z-index: 1000;">
-    <button class="btn btn-primary btn-sm" onclick="toggleCollaboration()">
-        <i class="ti ti-users"></i> Share
-    </button>
-</div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="{{ url_for('static', filename='js/tools/qr-generator.js') }}"></script>
 {% endblock %}
