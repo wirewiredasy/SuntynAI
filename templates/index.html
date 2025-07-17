@@ -226,9 +226,6 @@
     </div>
 </div>
 
-<!-- Hero Animations Script -->
-<script src="{{ url_for('static', filename='js/hero-animations.js') }}"></script>
-
 <!-- Search Section -->
 <div class="container mb-5">
     <div class="row justify-content-center">
@@ -308,8 +305,8 @@
 <!-- Tools Section -->
 <div class="container" id="tools-section">
     <div class="text-center mb-5">
-        <h2 class="display-5 fw-bold">Professional Tool Categories</h2>
-        <p class="lead text-muted">Choose from 85+ carefully crafted tools across 8 main categories</p>
+        <h2 class="display-5 fw-bold hero-title">Professional Tool Categories</h2>
+        <p class="lead text-muted hero-subtitle">Choose from 85+ carefully crafted tools across 8 main categories</p>
     </div>
     
     {% for category_name, category_info in categories.items() %}
