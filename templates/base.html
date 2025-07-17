@@ -142,65 +142,135 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg glass-morphism fixed-top">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top professional-navbar">
+        <div class="container-fluid px-4">
+            <!-- Brand -->
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
-                <span class="text-2xl mr-2">🚀</span>
-                <span class="font-bold text-xl gradient-text">Suntyn AI</span>
+                <div class="brand-icon me-2">
+                    <span class="brand-emoji">🚀</span>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Suntyn AI</span>
+                    <span class="brand-tagline">Professional Tools</span>
+                </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
+            <!-- Navigation Items -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Tools
+                        <a class="nav-link nav-link-custom" href="{{ url_for('index') }}">
+                            <i class="ti ti-home me-1"></i>Home
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#pdf-tools">PDF Tools</a></li>
-                            <li><a class="dropdown-item" href="#image-tools">Image Tools</a></li>
-                            <li><a class="dropdown-item" href="#finance-tools">Finance Tools</a></li>
-                            <li><a class="dropdown-item" href="#ai-tools">AI Tools</a></li>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle nav-link-custom" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="ti ti-tools me-1"></i>Tools
+                        </a>
+                        <ul class="dropdown-menu custom-dropdown">
+                            <li class="dropdown-header">
+                                <i class="ti ti-category me-1"></i>Tool Categories
+                            </li>
+                            <li><a class="dropdown-item" href="#pdf-tools">
+                                <i class="ti ti-file-text me-2"></i>PDF Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="#image-tools">
+                                <i class="ti ti-photo me-2"></i>Image Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="#finance-tools">
+                                <i class="ti ti-calculator me-2"></i>Finance Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="#ai-tools">
+                                <i class="ti ti-brain me-2"></i>AI Tools
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-primary" href="#all-tools">
+                                <i class="ti ti-apps me-2"></i>View All Tools
+                            </a></li>
                         </ul>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="#pricing">
+                            <i class="ti ti-crown me-1"></i>Pricing
+                        </a>
+                    </li>
+                    
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="nav-link nav-link-custom" href="{{ url_for('dashboard') }}">
+                            <i class="ti ti-dashboard me-1"></i>Dashboard
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
                 
-                <ul class="navbar-nav">
+                <!-- Right Side Navigation -->
+                <ul class="navbar-nav align-items-center">
+                    <!-- Search -->
+                    <li class="nav-item me-2">
+                        <div class="search-container">
+                            <input type="text" class="form-control search-input" placeholder="Search tools...">
+                            <i class="ti ti-search search-icon"></i>
+                        </div>
+                    </li>
+                    
                     <!-- Theme Toggle -->
-                    <li class="nav-item">
-                        <button class="btn btn-outline-primary me-2" id="theme-toggle">
-                            <i class="ti ti-sun" id="theme-icon"></i>
+                    <li class="nav-item me-2">
+                        <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle theme">
+                            <i class="ti ti-sun theme-icon" id="theme-icon"></i>
                         </button>
                     </li>
                     
                     {% if current_user.is_authenticated %}
+                    <!-- User Menu -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            {{ current_user.username }}
+                        <a class="nav-link dropdown-toggle user-menu" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar">
+                                <i class="ti ti-user"></i>
+                            </div>
+                            <span class="user-name">{{ current_user.username }}</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                            <li class="dropdown-header">
+                                <div class="user-info">
+                                    <strong>{{ current_user.username }}</strong>
+                                    <small class="text-muted">{{ current_user.email }}</small>
+                                </div>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                <i class="ti ti-dashboard me-2"></i>Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" href="#profile">
+                                <i class="ti ti-user me-2"></i>Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="#settings">
+                                <i class="ti ti-settings me-2"></i>Settings
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                <i class="ti ti-logout me-2"></i>Logout
+                            </a></li>
                         </ul>
                     </li>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    <!-- Auth Buttons -->
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-primary auth-btn" href="{{ url_for('login') }}">
+                            <i class="ti ti-login me-1"></i>Login
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary" href="{{ url_for('signup') }}">Sign Up</a>
+                        <a class="btn btn-primary auth-btn" href="{{ url_for('signup') }}">
+                            <i class="ti ti-user-plus me-1"></i>Sign Up
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
