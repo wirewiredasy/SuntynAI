@@ -239,157 +239,57 @@ class SuntynAI {
     }
 
     initializeAnimations() {
-        // Initialize GSAP animations if available
-        if (typeof gsap !== 'undefined') {
-            // Register ScrollTrigger plugin
-            if (typeof ScrollTrigger !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger);
-
-                // Enhanced tool cards animation with stagger effect
-                gsap.utils.toArray('.tool-card').forEach((card, index) => {
-                    gsap.fromTo(card, 
-                        { 
-                            y: 80, 
-                            opacity: 0,
-                            scale: 0.8,
-                            rotationY: -15
-                        },
-                        { 
-                            y: 0, 
-                            opacity: 1,
-                            scale: 1,
-                            rotationY: 0,
-                            duration: 0.8,
-                            ease: "back.out(1.7)",
-                            delay: index * 0.1,
-                            scrollTrigger: {
-                                trigger: card,
-                                start: "top 85%",
-                                end: "bottom 15%",
-                                toggleActions: "play none none reverse",
-                                onEnter: () => card.classList.add('animate-in'),
-                                onLeave: () => card.classList.remove('animate-in')
-                            }
-                        }
-                    );
-                });
-
-                // Category headers animation
-                gsap.utils.toArray('.category-header').forEach(header => {
-                    gsap.fromTo(header,
-                        {
-                            x: -100,
-                            opacity: 0
-                        },
-                        {
-                            x: 0,
-                            opacity: 1,
-                            duration: 1,
-                            ease: "power2.out",
-                            scrollTrigger: {
-                                trigger: header,
-                                start: "top 90%",
-                                toggleActions: "play none none reverse"
-                            }
-                        }
-                    );
-                });
-
-                // Hero section elements animation
-                gsap.timeline()
-                    .fromTo('.hero-title', 
+        // Modern animation system with Lenis + GSAP
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Wait for smooth scroll to initialize
+            setTimeout(() => {
+                // Hero section timeline animation
+                const heroTl = gsap.timeline();
+                
+                if (document.querySelector('.hero-title')) {
+                    heroTl.fromTo('.hero-title', 
                         { y: 100, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 1, ease: "power2.out" }
-                    )
-                    .fromTo('.hero-subtitle',
+                        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+                    );
+                }
+                
+                if (document.querySelector('.hero-subtitle')) {
+                    heroTl.fromTo('.hero-subtitle',
                         { y: 50, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
-                        "-=0.5"
-                    )
-                    .fromTo('.hero-buttons',
+                        { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
+                        "-=0.6"
+                    );
+                }
+                
+                if (document.querySelector('.hero-buttons')) {
+                    heroTl.fromTo('.hero-buttons',
                         { y: 30, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-                        "-=0.3"
+                        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
+                        "-=0.4"
                     );
+                }
 
-                // Statistics counters animation
-                gsap.utils.toArray('.stat-number').forEach(stat => {
-                    const finalNumber = parseInt(stat.textContent);
-                    gsap.fromTo(stat,
-                        { textContent: 0 },
-                        {
-                            textContent: finalNumber,
-                            duration: 2,
-                            ease: "power2.out",
-                            snap: { textContent: 1 },
-                            scrollTrigger: {
-                                trigger: stat,
-                                start: "top 80%",
-                                toggleActions: "play none none none"
-                            }
-                        }
-                    );
-                });
-
-                // Features section animation
-                gsap.utils.toArray('.feature-item').forEach((feature, index) => {
-                    gsap.fromTo(feature,
-                        {
-                            y: 60,
-                            opacity: 0,
-                            scale: 0.9
-                        },
-                        {
-                            y: 0,
-                            opacity: 1,
-                            scale: 1,
-                            duration: 0.7,
-                            ease: "back.out(1.4)",
-                            delay: index * 0.2,
-                            scrollTrigger: {
-                                trigger: feature,
-                                start: "top 85%",
-                                toggleActions: "play none none reverse"
-                            }
-                        }
-                    );
-                });
-
-                // Parallax effect for background elements
-                gsap.utils.toArray('.parallax-element').forEach(element => {
+                // Enhanced parallax with better performance
+                gsap.utils.toArray('[data-parallax]').forEach(element => {
+                    const speed = parseFloat(element.dataset.parallax) || 0.5;
                     gsap.to(element, {
-                        yPercent: -50,
+                        yPercent: -50 * speed,
                         ease: "none",
                         scrollTrigger: {
                             trigger: element,
                             start: "top bottom",
                             end: "bottom top",
-                            scrub: true
+                            scrub: 1
                         }
                     });
                 });
 
-            } else {
-                console.warn('ScrollTrigger plugin not loaded');
-                // Enhanced fallback animation without ScrollTrigger
-                const timeline = gsap.timeline();
-
-                gsap.utils.toArray('.tool-card').forEach((card, index) => {
-                    timeline.fromTo(card, 
-                        { y: 80, opacity: 0, scale: 0.8 },
-                        { 
-                            y: 0, 
-                            opacity: 1,
-                            scale: 1,
-                            duration: 0.6,
-                            ease: "back.out(1.7)"
-                        },
-                        index * 0.1
-                    );
-                });
-            }
+                console.log('✨ Modern animation system initialized');
+            }, 300);
         } else {
-            // CSS-only fallback animations
+            // Fallback to CSS animations
             this.initializeCSSAnimations();
         }
     }

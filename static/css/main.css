@@ -2005,39 +2005,97 @@ html {
     animation: pulse 2s infinite;
 }
 
-/* Smooth Scrolling */
-html {
-    scroll-behavior: smooth;
+/* Smooth Scrolling with Lenis */
+html.lenis {
+    height: auto;
 }
 
-/* Scroll to Top Button */
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+/* Optimized scrolling performance */
+* {
+    will-change: auto;
+}
+
+.parallax-element {
+    will-change: transform;
+}
+
+.tool-card {
+    will-change: transform, opacity;
+}
+
+/* Enhanced Scroll to Top Button */
 .scroll-to-top-btn {
     position: fixed !important;
     bottom: 30px !important;
     right: 30px !important;
-    width: 50px !important;
-    height: 50px !important;
+    width: 56px !important;
+    height: 56px !important;
     border-radius: 50% !important;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
     color: white !important;
     border: none !important;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.25) !important;
     cursor: pointer !important;
     z-index: 1000 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 20px !important;
+    font-size: 22px !important;
+    backdrop-filter: blur(10px);
+}
+
+.scroll-to-top-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .scroll-to-top-btn:hover {
-    transform: translateY(-2px) scale(1.05) !important;
-    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-4px) scale(1.1) !important;
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4) !important;
+}
+
+.scroll-to-top-btn:hover::before {
+    opacity: 1;
 }
 
 .scroll-to-top-btn:active {
-    transform: translateY(0) scale(0.95) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+}
+
+.scroll-to-top-btn.visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+    .scroll-to-top-btn {
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 18px !important;
+    }
 }
 
 /* Enhanced Tool Card Animations */
