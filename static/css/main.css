@@ -1,9 +1,9 @@
 /* Suntyn AI - Main Styles */
 
 :root {
-    --primary-color: #3b82f6;
-    --secondary-color: #1e40af;
-    --accent-color: #f59e0b;
+    --primary-color: #6366f1;
+    --secondary-color: #8b5cf6;
+    --accent-color: #a855f7;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --error-color: #ef4444;
@@ -40,9 +40,9 @@ body {
     --text-primary: #f8fafc;
     --text-secondary: #e2e8f0;
     --border-color: #64748b;
-    --primary-color: #60a5fa;
-    --secondary-color: #3b82f6;
-    --accent-color: #fbbf24;
+    --primary-color: #818cf8;
+    --secondary-color: #a78bfa;
+    --accent-color: #c084fc;
     --success-color: #34d399;
     --warning-color: #fbbf24;
     --error-color: #f87171;
@@ -69,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -544,13 +544,15 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
 }
 
-.brand-emoji {
-    font-size: 2rem;
-    background: linear-gradient(135deg, #3b82f6, #1e40af);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+.brand-logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-logo svg {
+    filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.3));
 }
 
 .brand-text {
@@ -898,7 +900,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Footer */
 footer {
-    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    background: linear-gradient(135deg, #1e1b4b, #312e81, #3730a3);
     color: var(--text-primary);
     padding: 4rem 0 1rem;
     margin-top: auto;
@@ -912,16 +914,16 @@ footer::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, rgba(255, 193, 7, 0.05), rgba(59, 130, 246, 0.05));
+    background: linear-gradient(45deg, rgba(168, 85, 247, 0.05), rgba(139, 92, 246, 0.05));
     pointer-events: none;
 }
 
 .bg-gradient-dark {
-    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) !important;
+    background: linear-gradient(135deg, #1e1b4b, #312e81, #3730a3) !important;
 }
 
 .gradient-text-footer {
-    background: linear-gradient(135deg, #ffc107, #ff9800);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -941,7 +943,7 @@ footer::before {
 }
 
 .footer-links a:hover {
-    color: #ffc107;
+    color: var(--primary-color);
     text-decoration: none;
     transform: translateX(3px);
 }
@@ -964,8 +966,8 @@ footer::before {
 }
 
 .letter-link:hover {
-    background-color: #ffc107;
-    color: #1a1a2e !important;
+    background-color: var(--primary-color);
+    color: white !important;
     transform: translateY(-2px);
     text-decoration: none;
 }
@@ -977,18 +979,18 @@ footer::before {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: rgba(255, 193, 7, 0.1);
-    color: #ffc107;
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
     font-size: 1.2rem;
     text-decoration: none;
     transition: var(--transition);
 }
 
 .social-links a:hover {
-    background-color: #ffc107;
-    color: #1a1a2e;
+    background-color: var(--primary-color);
+    color: white;
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
 }
 
 .footer-bottom-links a {
@@ -1000,7 +1002,7 @@ footer::before {
 }
 
 .footer-bottom-links a:hover {
-    color: #ffc107;
+    color: var(--primary-color);
     text-decoration: none;
 }
 
@@ -1011,7 +1013,7 @@ footer::before {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #ffc107;
+    background-color: var(--primary-color);
     transition: width 0.3s ease;
 }
 
@@ -1019,8 +1021,8 @@ footer::before {
     width: 100%;
 }
 
-.hover-orange:hover {
-    color: #ff9800 !important;
+.hover-purple:hover {
+    color: var(--primary-color) !important;
     transform: scale(1.2);
 }
 
