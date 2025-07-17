@@ -1,3 +1,7 @@
+The code adds a smooth scroll-to-top button with enhanced user experience to the SuntynAI class.
+```
+
+```
 // Suntyn AI - Main Application JavaScript
 // Handles global app functionality, initialization, and utilities
 
@@ -11,7 +15,7 @@ class SuntynAI {
 
     async init() {
         if (this.isInitialized) return;
-        
+
         try {
             // Wait for DOM to be ready
             if (document.readyState === 'loading') {
@@ -27,7 +31,7 @@ class SuntynAI {
 
     initializeApp() {
         console.log('🚀 Initializing Suntyn AI...');
-        
+
         // Initialize core features
         this.initializeGlobalEventListeners();
         this.initializeTooltips();
@@ -39,16 +43,16 @@ class SuntynAI {
         this.initializeSearchFunctionality();
         this.initializeKeyboardShortcuts();
         this.initializePerformanceMonitoring();
-        
+
         // Initialize PWA features
         this.initializePWA();
-        
+
         // Initialize animations
         this.initializeAnimations();
-        
+
         // Set initialization flag
         this.isInitialized = true;
-        
+
         console.log('✅ Suntyn AI initialized successfully');
         this.showNotification('Application ready', 'success');
     }
@@ -62,13 +66,13 @@ class SuntynAI {
                     menu.classList.remove('show');
                 });
             }
-            
+
             // Handle copy buttons
             if (e.target.matches('[data-copy]') || e.target.closest('[data-copy]')) {
                 const button = e.target.closest('[data-copy]');
                 this.copyToClipboard(button.dataset.copy);
             }
-            
+
             // Handle download buttons
             if (e.target.matches('[data-download]') || e.target.closest('[data-download]')) {
                 const button = e.target.closest('[data-download]');
@@ -203,7 +207,7 @@ class SuntynAI {
                     searchInput.focus();
                 }
             }
-            
+
             // Escape to close modals
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal.show').forEach(modal => {
@@ -240,7 +244,7 @@ class SuntynAI {
             // Register ScrollTrigger plugin
             if (typeof ScrollTrigger !== 'undefined') {
                 gsap.registerPlugin(ScrollTrigger);
-                
+
                 // Enhanced tool cards animation with stagger effect
                 gsap.utils.toArray('.tool-card').forEach((card, index) => {
                     gsap.fromTo(card, 
@@ -369,7 +373,7 @@ class SuntynAI {
                 console.warn('ScrollTrigger plugin not loaded');
                 // Enhanced fallback animation without ScrollTrigger
                 const timeline = gsap.timeline();
-                
+
                 gsap.utils.toArray('.tool-card').forEach((card, index) => {
                     timeline.fromTo(card, 
                         { y: 80, opacity: 0, scale: 0.8 },
@@ -480,13 +484,13 @@ class SuntynAI {
     handleFileDrop(event, zone) {
         const files = Array.from(event.dataTransfer.files);
         const input = zone.querySelector('input[type="file"]');
-        
+
         if (input) {
             // Create a new FileList and assign to input
             const dt = new DataTransfer();
             files.forEach(file => dt.items.add(file));
             input.files = dt.files;
-            
+
             // Trigger change event
             input.dispatchEvent(new Event('change', { bubbles: true }));
         }
@@ -495,7 +499,7 @@ class SuntynAI {
     handleFileInput(input) {
         const files = Array.from(input.files);
         const zone = input.closest('.drag-drop-zone');
-        
+
         if (zone && files.length > 0) {
             // Update UI to show selected files
             const fileList = zone.querySelector('.file-list') || this.createFileList(zone);
@@ -540,7 +544,7 @@ class SuntynAI {
     performSearch(query) {
         const cards = document.querySelectorAll('.tool-card');
         const categories = document.querySelectorAll('.category-section');
-        
+
         if (!query.trim()) {
             cards.forEach(card => card.parentElement.style.display = 'block');
             categories.forEach(cat => cat.style.display = 'block');
@@ -552,7 +556,7 @@ class SuntynAI {
             const title = card.querySelector('.card-title').textContent.toLowerCase();
             const description = card.querySelector('.card-text').textContent.toLowerCase();
             const matches = title.includes(query.toLowerCase()) || description.includes(query.toLowerCase());
-            
+
             card.parentElement.style.display = matches ? 'block' : 'none';
             if (matches) visibleCount++;
         });
@@ -619,17 +623,17 @@ class SuntynAI {
     async handleToolFormSubmission(form) {
         const formData = new FormData(form);
         const toolName = form.dataset.tool || window.location.pathname.split('/').pop();
-        
+
         try {
             this.showProgress('Processing...', 0);
-            
+
             const response = await fetch(`/api/tools/${toolName}`, {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 this.showToolResult(result);
                 this.showNotification('Processing completed successfully!', 'success');
@@ -650,7 +654,7 @@ class SuntynAI {
             progressCard.style.display = 'block';
             const progressBar = progressCard.querySelector('.progress-bar');
             const progressText = progressCard.querySelector('#progress-text');
-            
+
             if (progressBar) progressBar.style.width = percentage + '%';
             if (progressText) progressText.textContent = message;
         }
@@ -666,11 +670,11 @@ class SuntynAI {
     showToolResult(result) {
         const resultCard = document.getElementById('result-card');
         const successResult = document.getElementById('success-result');
-        
+
         if (resultCard && successResult) {
             resultCard.style.display = 'block';
             successResult.style.display = 'block';
-            
+
             // Update result content based on tool type
             this.updateResultContent(result);
         }
@@ -680,16 +684,16 @@ class SuntynAI {
         const resultCard = document.getElementById('result-card');
         const errorResult = document.getElementById('error-result');
         const errorMessageEl = document.getElementById('error-message');
-        
+
         if (resultCard && errorResult) {
             resultCard.style.display = 'block';
             errorResult.style.display = 'block';
-            
+
             if (errorMessageEl) {
                 errorMessageEl.textContent = errorMessage;
             }
         }
-        
+
         this.showNotification(errorMessage, 'error');
     }
 
@@ -705,3 +709,4 @@ const app = new SuntynAI();
 // Export for global access
 window.SuntynAI = SuntynAI;
 window.app = app;
+```

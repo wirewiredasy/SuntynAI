@@ -315,10 +315,22 @@
                         </a>
                         {% endif %}
                         {% endfor %}
-                        <a href="{{ url_for(tool_category.replace(' ', '_').lower() + '_tools') }}" 
+                        {% set category_url_map = {
+                            'PDF Tools': 'pdf_tools',
+                            'Image Tools': 'image_tools', 
+                            'Video/Audio Tools': 'video_tools',
+                            'Finance Tools': 'finance_tools',
+                            'Utility Tools': 'dev_tools',
+                            'AI Tools': 'ai_tools',
+                            'Student Tools': 'student_tools',
+                            'Government Tools': 'government_tools'
+                        } %}
+                        {% if tool_category in category_url_map %}
+                        <a href="{{ url_for(category_url_map[tool_category]) }}" 
                            class="btn btn-outline-primary btn-sm mt-2">
                             View All {{ tool_category }}
                         </a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}

@@ -259,6 +259,12 @@ def create_app():
         return render_template('category.html', 
                              category='Government Tools',
                              tools=TOOL_CATEGORIES['Government Tools']['tools'])
+
+    @app.route('/utility-tools')
+    def utility_tools():
+        return render_template('category.html', 
+                             category='Utility Tools',
+                             tools=TOOL_CATEGORIES['Utility Tools']['tools'])
     
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -344,7 +350,8 @@ def create_app():
     def process_tool_api(tool_name):
         """API endpoint to process tools"""
         try:
-            from tools.tool_processor import processor
+            from tools.tool_processor import ToolProcessor
+            processor = ToolProcessor()
             
             # Record start time for performance tracking
             start_time = datetime.now()
@@ -357,23 +364,36 @@ def create_app():
             
             # Log tool usage if user is authenticated
             if current_user.is_authenticated and result.get('success'):
-                history = ToolHistory(
-                    user_id=current_user.id,
-                    tool_name=tool_name,
-                    processing_time=processing_time,
-                    file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
-                )
-                db.session.add(history)
-                db.session.commit()
+                try:
+                    history = ToolHistory(
+                        user_id=current_user.id,
+                        tool_name=tool_name,
+                        processing_time=processing_time,
+                        file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
+                    )
+                    db.session.add(history)
+                    db.session.commit()
+                except Exception as db_error:
+                    logging.warning(f"Failed to log tool history: {str(db_error)}")
             
             # Add processing time to result
             result['processing_time'] = f"{processing_time:.2f}s"
             
             return jsonify(result)
             
+        except ImportError as import_error:
+            logging.error(f"Tool processor import error: {str(import_error)}")
+            return jsonify({
+                'success': False,
+                'error': 'Tool processor not available. Please try again later.'
+            }), 503
+            
         except Exception as e:
-            logger.error(f"Tool processing error: {str(e)}")
-            return jsonify({'error': f'Tool processing failed: {str(e)}'}), 500
+            logging.error(f"Tool processing error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'error': f'Tool processing failed: {str(e)}'
+            }), 500
         
 
     
