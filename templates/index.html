@@ -3,86 +3,226 @@
 {% block title %}Suntyn AI - 85+ Professional AI Tools Platform{% endblock %}
 
 {% block content %}
-<div class="hero-section gradient-bg text-white py-5 mb-5">
-    <div class="container">
-        <div class="row align-items-center">
+<!-- Advanced Hero Section -->
+<div class="hero-section-modern position-relative overflow-hidden">
+    <!-- Animated Background -->
+    <div class="hero-bg-animated">
+        <div class="bg-layer bg-layer-1"></div>
+        <div class="bg-layer bg-layer-2"></div>
+        <div class="bg-layer bg-layer-3"></div>
+        <div class="floating-particles">
+            <div class="particle particle-1"></div>
+            <div class="particle particle-2"></div>
+            <div class="particle particle-3"></div>
+            <div class="particle particle-4"></div>
+            <div class="particle particle-5"></div>
+            <div class="particle particle-6"></div>
+        </div>
+    </div>
+    
+    <!-- Glass Overlay -->
+    <div class="hero-glass-overlay"></div>
+    
+    <div class="container position-relative" style="z-index: 10;">
+        <div class="row align-items-center min-vh-100 py-5">
             <div class="col-lg-6">
-                <div class="hero-content animate__animated animate__fadeInUp">
-                    <h1 class="display-4 fw-bold mb-4">
-                        Professional AI Tools Platform
+                <div class="hero-content-modern">
+                    <!-- Badge -->
+                    <div class="hero-badge animate__animated animate__fadeInDown animate__delay-1s">
+                        <span class="badge-glow">
+                            <i class="ti ti-sparkles"></i>
+                            85+ Professional Tools
+                        </span>
+                    </div>
+                    
+                    <!-- Main Heading -->
+                    <h1 class="hero-title animate__animated animate__fadeInUp">
+                        <span class="title-line-1">Transform Your</span>
+                        <span class="title-line-2 gradient-text-advanced">Workflow</span>
+                        <span class="title-line-3">with AI Power</span>
                     </h1>
-                    <p class="lead mb-4">
-                        Access 85+ powerful tools for PDF processing, image editing, financial calculations, and AI-powered content creation. All in one place.
+                    
+                    <!-- Subtitle -->
+                    <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+                        Experience the future of productivity with our comprehensive suite of AI-powered tools. 
+                        From PDF processing to image editing, financial calculations to content creation - 
+                        <span class="highlight-text">everything you need in one powerful platform.</span>
                     </p>
-                    <div class="d-flex gap-3 mb-4">
-                        <a href="#tools-section" class="btn btn-light btn-lg">
-                            <i class="ti ti-tools"></i> Explore Tools
+                    
+                    <!-- Action Buttons -->
+                    <div class="hero-actions animate__animated animate__fadeInUp animate__delay-2s">
+                        <a href="#tools-section" class="btn-modern btn-modern-primary">
+                            <span class="btn-text">
+                                <i class="ti ti-rocket"></i>
+                                Start Creating
+                            </span>
+                            <div class="btn-glow"></div>
                         </a>
                         {% if not current_user.is_authenticated %}
-                        <a href="{{ url_for('signup') }}" class="btn btn-outline-light btn-lg">
-                            <i class="ti ti-user-plus"></i> Get Started
+                        <a href="{{ url_for('signup') }}" class="btn-modern btn-modern-secondary">
+                            <span class="btn-text">
+                                <i class="ti ti-user-plus"></i>
+                                Join Free
+                            </span>
                         </a>
                         {% endif %}
                     </div>
-                    <div class="stats-row d-flex gap-4">
-                        <div class="stat-item">
-                            <div class="h3 mb-0">85+</div>
-                            <small class="text-white-50">Tools Available</small>
+                    
+                    <!-- Enhanced Stats -->
+                    <div class="hero-stats animate__animated animate__fadeInUp animate__delay-3s">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="ti ti-tools"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-count="85">0</div>
+                                <div class="stat-label">AI Tools</div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="h3 mb-0">8</div>
-                            <small class="text-white-50">Categories</small>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="ti ti-category"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-count="8">0</div>
+                                <div class="stat-label">Categories</div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="h3 mb-0">24/7</div>
-                            <small class="text-white-50">Available</small>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="ti ti-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-count="10000">0</div>
+                                <div class="stat-label">Users</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="ti ti-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">Available</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trust Indicators -->
+                    <div class="trust-indicators animate__animated animate__fadeInUp animate__delay-4s">
+                        <div class="trust-item">
+                            <i class="ti ti-shield-check text-success"></i>
+                            <span>Secure & Private</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="ti ti-zap text-warning"></i>
+                            <span>Lightning Fast</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="ti ti-device-mobile text-info"></i>
+                            <span>Mobile Ready</span>
                         </div>
                     </div>
                 </div>
             </div>
+            
             <div class="col-lg-6">
-                <div class="hero-image animate__animated animate__fadeInRight">
-                    <div class="position-relative">
-                        <svg viewBox="0 0 400 300" class="w-100" style="max-width: 500px;">
-                            <defs>
-                                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <!-- Background -->
-                            <rect width="400" height="300" fill="url(#gradient1)" rx="20" opacity="0.1"/>
-                            
-                            <!-- Tool Icons -->
-                            <g class="tool-icons">
-                                <circle cx="100" cy="80" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
-                                <text x="100" y="85" text-anchor="middle" fill="white" font-size="16">📄</text>
-                                
-                                <circle cx="200" cy="60" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
-                                <text x="200" y="65" text-anchor="middle" fill="white" font-size="16">🖼️</text>
-                                
-                                <circle cx="300" cy="90" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
-                                <text x="300" y="95" text-anchor="middle" fill="white" font-size="16">💰</text>
-                                
-                                <circle cx="150" cy="150" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
-                                <text x="150" y="155" text-anchor="middle" fill="white" font-size="16">🤖</text>
-                                
-                                <circle cx="250" cy="180" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
-                                <text x="250" y="185" text-anchor="middle" fill="white" font-size="16">⚡</text>
-                            </g>
-                            
-                            <!-- Connection Lines -->
-                            <g class="connection-lines" stroke="rgba(255,255,255,0.3)" stroke-width="2">
-                                <line x1="100" y1="80" x2="150" y2="150"/>
-                                <line x1="200" y1="60" x2="150" y2="150"/>
-                                <line x1="300" y1="90" x2="250" y2="180"/>
-                                <line x1="150" y1="150" x2="250" y2="180"/>
-                            </g>
-                        </svg>
+                <div class="hero-visual-modern animate__animated animate__fadeInRight animate__delay-1s">
+                    <!-- 3D Tool Showcase -->
+                    <div class="tool-showcase-3d">
+                        <!-- Central Hub -->
+                        <div class="central-hub">
+                            <div class="hub-core">
+                                <i class="ti ti-cpu"></i>
+                            </div>
+                            <div class="hub-ring hub-ring-1"></div>
+                            <div class="hub-ring hub-ring-2"></div>
+                            <div class="hub-ring hub-ring-3"></div>
+                        </div>
+                        
+                        <!-- Orbiting Tools -->
+                        <div class="orbiting-tools">
+                            <div class="tool-orbit tool-orbit-1">
+                                <div class="tool-node tool-pdf">
+                                    <i class="ti ti-file-text"></i>
+                                    <span class="tool-label">PDF Tools</span>
+                                </div>
+                            </div>
+                            <div class="tool-orbit tool-orbit-2">
+                                <div class="tool-node tool-image">
+                                    <i class="ti ti-photo"></i>
+                                    <span class="tool-label">Image Editor</span>
+                                </div>
+                            </div>
+                            <div class="tool-orbit tool-orbit-3">
+                                <div class="tool-node tool-finance">
+                                    <i class="ti ti-calculator"></i>
+                                    <span class="tool-label">Financial</span>
+                                </div>
+                            </div>
+                            <div class="tool-orbit tool-orbit-4">
+                                <div class="tool-node tool-ai">
+                                    <i class="ti ti-brain"></i>
+                                    <span class="tool-label">AI Content</span>
+                                </div>
+                            </div>
+                            <div class="tool-orbit tool-orbit-5">
+                                <div class="tool-node tool-utility">
+                                    <i class="ti ti-qrcode"></i>
+                                    <span class="tool-label">Utilities</span>
+                                </div>
+                            </div>
+                            <div class="tool-orbit tool-orbit-6">
+                                <div class="tool-node tool-convert">
+                                    <i class="ti ti-transform"></i>
+                                    <span class="tool-label">Converters</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Connection Beams -->
+                        <div class="connection-beams">
+                            <div class="beam beam-1"></div>
+                            <div class="beam beam-2"></div>
+                            <div class="beam beam-3"></div>
+                            <div class="beam beam-4"></div>
+                        </div>
+                        
+                        <!-- Data Flow Particles -->
+                        <div class="data-flow">
+                            <div class="flow-particle flow-particle-1"></div>
+                            <div class="flow-particle flow-particle-2"></div>
+                            <div class="flow-particle flow-particle-3"></div>
+                            <div class="flow-particle flow-particle-4"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature Cards Preview -->
+                    <div class="feature-cards-preview">
+                        <div class="preview-card preview-card-1">
+                            <i class="ti ti-file-zip"></i>
+                            <span>Compress</span>
+                        </div>
+                        <div class="preview-card preview-card-2">
+                            <i class="ti ti-palette"></i>
+                            <span>Design</span>
+                        </div>
+                        <div class="preview-card preview-card-3">
+                            <i class="ti ti-chart-line"></i>
+                            <span>Analyze</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-mouse">
+            <div class="scroll-wheel"></div>
+        </div>
+        <div class="scroll-text">Scroll to explore</div>
     </div>
 </div>
 
