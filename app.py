@@ -1,3 +1,4 @@
+
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
@@ -13,7 +14,7 @@ from datetime import datetime
 from config import Config
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 class Base(DeclarativeBase):
     pass
@@ -35,7 +36,7 @@ def create_app():
                      cors_allowed_origins="*",
                      ping_timeout=60,
                      ping_interval=25,
-                     max_http_buffer_size=16 * 1024 * 1024,  # 16MB
+                     max_http_buffer_size=16 * 1024 * 1024,
                      async_mode='threading',
                      logger=False,
                      engineio_logger=False)
@@ -43,12 +44,8 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
     
-    # Import models and socket events
+    # Import models
     from models import User, Tool, UserActivity, ToolHistory
-    # from socket_events import register_socket_events
-    
-    # Register socket events (disabled for stability)
-    # register_socket_events(socketio)
     
     @login_manager.user_loader
     def load_user(user_id):
@@ -139,21 +136,22 @@ def create_app():
         most_used_tools = []
         
         if current_user.is_authenticated:
-            # Get recent tools for logged-in user
-            recent_activities = UserActivity.query.filter_by(user_id=current_user.id)\
-                .order_by(UserActivity.created_at.desc()).limit(6).all()
-            recent_tools = [activity.tool_name for activity in recent_activities]
-            
-            # Get most used tools
-            from sqlalchemy import func
-            most_used = db.session.query(
-                UserActivity.tool_name, 
-                func.count(UserActivity.id).label('count')
-            ).filter_by(user_id=current_user.id)\
-             .group_by(UserActivity.tool_name)\
-             .order_by(func.count(UserActivity.id).desc())\
-             .limit(6).all()
-            most_used_tools = [tool[0] for tool in most_used]
+            try:
+                recent_activities = UserActivity.query.filter_by(user_id=current_user.id)\
+                    .order_by(UserActivity.created_at.desc()).limit(6).all()
+                recent_tools = [activity.tool_name for activity in recent_activities]
+                
+                from sqlalchemy import func
+                most_used = db.session.query(
+                    UserActivity.tool_name, 
+                    func.count(UserActivity.id).label('count')
+                ).filter_by(user_id=current_user.id)\
+                 .group_by(UserActivity.tool_name)\
+                 .order_by(func.count(UserActivity.id).desc())\
+                 .limit(6).all()
+                most_used_tools = [tool[0] for tool in most_used]
+            except Exception as e:
+                logging.warning(f"Error fetching user activities: {str(e)}")
         
         return render_template('index.html', 
                              categories=TOOL_CATEGORIES,
@@ -163,11 +161,16 @@ def create_app():
     @app.route('/dashboard')
     @login_required
     def dashboard():
-        user_activities = UserActivity.query.filter_by(user_id=current_user.id)\
-            .order_by(UserActivity.created_at.desc()).limit(20).all()
-        
-        tool_history = ToolHistory.query.filter_by(user_id=current_user.id)\
-            .order_by(ToolHistory.created_at.desc()).limit(10).all()
+        try:
+            user_activities = UserActivity.query.filter_by(user_id=current_user.id)\
+                .order_by(UserActivity.created_at.desc()).limit(20).all()
+            
+            tool_history = ToolHistory.query.filter_by(user_id=current_user.id)\
+                .order_by(ToolHistory.created_at.desc()).limit(10).all()
+        except Exception as e:
+            logging.warning(f"Error fetching dashboard data: {str(e)}")
+            user_activities = []
+            tool_history = []
         
         return render_template('dashboard.html',
                              activities=user_activities,
@@ -322,13 +325,16 @@ def create_app():
     def tool_page(tool_name):
         # Log tool access
         if current_user.is_authenticated:
-            activity = UserActivity(
-                user_id=current_user.id,
-                tool_name=tool_name,
-                action='accessed'
-            )
-            db.session.add(activity)
-            db.session.commit()
+            try:
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    tool_name=tool_name,
+                    action='accessed'
+                )
+                db.session.add(activity)
+                db.session.commit()
+            except Exception as e:
+                logging.warning(f"Error logging tool access: {str(e)}")
         
         # Find which category this tool belongs to
         tool_category = None
@@ -350,10 +356,11 @@ def create_app():
     def process_tool_api(tool_name):
         """API endpoint to process tools"""
         try:
+            # Import the processor
             from tools.tool_processor import ToolProcessor
             processor = ToolProcessor()
             
-            # Record start time for performance tracking
+            # Record start time
             start_time = datetime.now()
             
             # Process the tool
@@ -362,7 +369,7 @@ def create_app():
             # Calculate processing time
             processing_time = (datetime.now() - start_time).total_seconds()
             
-            # Log tool usage if user is authenticated
+            # Log tool usage if user is authenticated and successful
             if current_user.is_authenticated and result.get('success'):
                 try:
                     history = ToolHistory(
@@ -406,7 +413,10 @@ def create_app():
     
     # Create tables
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except Exception as e:
+            logging.error(f"Database initialization error: {str(e)}")
     
     return app
 
