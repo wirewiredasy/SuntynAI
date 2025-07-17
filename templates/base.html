@@ -566,35 +566,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Main Application Scripts with error handling -->
     <script>
-        function loadScript(src, onError) {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onerror = onError || function() {
-                console.warn('Failed to load script:', src);
-            };
-            document.head.appendChild(script);
-        }
+        // Global error handler for missing libraries
+        window.addEventListener('error', function(e) {
+            if (e.message.includes('Lenis') || e.message.includes('gsap')) {
+                console.warn('External library failed to load, using fallbacks');
+            }
+        });
+    </script>
 
-        // Safe script loading with fallbacks
-        const scripts = [
-            '{{ url_for("static", filename="js/websocket.js") }}',
-            '{{ url_for("static", filename="js/drag-drop.js") }}',
-            '{{ url_for("static", filename="js/theme.js") }}',
-            '{{ url_for("static", filename="js/smooth-scroll.js") }}',
-            '{{ url_for("static", filename="js/scroll-to-top.js") }}',
-            '{{ url_for("static", filename="js/main.js") }}'
-        ];
+    <!-- Core application scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/smooth-scroll.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scroll-to-top.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/drag-drop.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/websocket.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-        scripts.forEach(src => {
-            try {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onerror = function() {
-                    console.warn('Failed to load script:', src);
-                };
-                document.head.appendChild(script);
-            } catch (error) {
-                console.warn('Error loading script:', src, error);
+    <!-- Initialize smooth scrolling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize smooth scroll manager
+            if (typeof SmoothScrollManager !== 'undefined') {
+                window.smoothScroll = new SmoothScrollManager();
             }
         });
     </script>

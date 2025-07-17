@@ -6,10 +6,20 @@ class SmoothScrollManager {
     constructor() {
         this.lenis = null;
         this.isInitialized = false;
+        this.scrollToTopButton = null;
         this.init();
     }
 
     init() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initializeScroll());
+        } else {
+            this.initializeScroll();
+        }
+    }
+
+    initializeScroll() {
         // Check if Lenis is available
         if (typeof Lenis === 'undefined') {
             console.warn('Lenis is not loaded, falling back to native smooth scroll');
@@ -20,34 +30,39 @@ class SmoothScrollManager {
         try {
             // Initialize Lenis smooth scroll
             this.lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+            });
 
-        // Listen for scroll events
-        this.lenis.on('scroll', (e) => {
-            this.onScroll(e);
-        });
+            // Listen for scroll events
+            this.lenis.on('scroll', (e) => {
+                this.onScroll(e);
+            });
 
-        // Integrate with GSAP ScrollTrigger
-        this.setupGSAPIntegration();
+            // Integrate with GSAP ScrollTrigger
+            this.setupGSAPIntegration();
 
-        // Start the animation loop
-        this.raf();
+            // Start the animation loop
+            this.raf();
 
-        // Handle resize
-        window.addEventListener('resize', () => {
-            this.lenis.resize();
-        });
+            // Handle resize
+            window.addEventListener('resize', () => {
+                if (this.lenis) {
+                    this.lenis.resize();
+                }
+            });
 
-        this.isInitialized = true;
+            // Initialize scroll to top button
+            this.initScrollToTopButton();
+
+            this.isInitialized = true;
             console.log('🚀 Lenis smooth scroll initialized');
         } catch (error) {
             console.error('Failed to initialize Lenis:', error);
@@ -106,7 +121,24 @@ class SmoothScrollManager {
         });
     }
 
+    initScrollToTopButton() {
+        // Create scroll to top button if it doesn't exist
+        if (!document.querySelector('.scroll-to-top-btn')) {
+            const button = document.createElement('button');
+            button.className = 'scroll-to-top-btn';
+            button.innerHTML = '<i class="ti ti-arrow-up"></i>';
+            button.setAttribute('aria-label', 'Scroll to top');
+            button.addEventListener('click', () => this.scrollToTop());
+            document.body.appendChild(button);
+            this.scrollToTopButton = button;
+        } else {
+            this.scrollToTopButton = document.querySelector('.scroll-to-top-btn');
+        }
+    }
+
     raf() {
+        if (!this.lenis) return;
+        
         const animate = (time) => {
             this.lenis.raf(time);
             requestAnimationFrame(animate);

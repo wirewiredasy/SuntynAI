@@ -661,42 +661,61 @@ class SuntynAI {
     }
 
     initializePerformanceMonitoring() {
-        // Monitor performance
+        // Monitor performance using modern Performance API
         if ('performance' in window) {
             window.addEventListener('load', () => {
-                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-                if (loadTime > 0) {
-                    console.log(`Page load time: ${loadTime}ms`);
-                } else {
-                    console.log('Page load time measurement not available');
-                }
+                setTimeout(() => {
+                    if (performance.getEntriesByType) {
+                        const navigation = performance.getEntriesByType('navigation')[0];
+                        if (navigation) {
+                            const loadTime = navigation.loadEventEnd - navigation.fetchStart;
+                            console.log(`Page load time: ${Math.round(loadTime)}ms`);
+                        }
+                    } else {
+                        const loadTime = performance.now();
+                        console.log(`Page load time: ${Math.round(loadTime)}ms`);
+                    }
+                }, 100);
             });
         }
 
         // Safe Chart.js cleanup
-        if (typeof Chart !== 'undefined' && Chart.instances) {
+        if (typeof Chart !== 'undefined') {
             window.addEventListener('beforeunload', () => {
-                if (Chart.instances && typeof Chart.instances.forEach === 'function') {
-                    Chart.instances.forEach(chart => {
-                        if (chart && typeof chart.destroy === 'function') {
-                            chart.destroy();
-                        }
-                    });
+                try {
+                    if (Chart.instances && Array.isArray(Chart.instances)) {
+                        Chart.instances.forEach(chart => {
+                            if (chart && typeof chart.destroy === 'function') {
+                                chart.destroy();
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.warn('Chart cleanup error:', error);
                 }
             });
         }
     }
 
     initializePWA() {
-        // Register service worker
+        // Register service worker with proper error handling
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js', {
+                    scope: '/'
+                })
                 .then(registration => {
-                    console.log('✅ Service Worker registered successfully:', registration.scope);
+                    console.log('✅ Service Worker registered successfully');
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        console.log('Service Worker update found');
+                    });
                 })
                 .catch(error => {
-                    console.warn('Service Worker registration failed:', error);
+                    console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
                 });
+            });
         }
 
         // Handle PWA install prompt
