@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <!-- Left Side - Login Form -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="w-100" style="max-width: 400px;">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-3 fw-normal">Welcome Back</h1>
+                    <p class="text-muted">Sign in to your Suntyn AI account</p>
+                </div>
+                
+                <form method="POST" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                        <div class="invalid-feedback">
+                            Please enter your username.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="ti ti-eye"></i>
+                            </button>
+                        </div>
+                        <div class="invalid-feedback">
+                            Please enter your password.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <i class="ti ti-login"></i> Sign In
+                    </button>
+                    
+                    <div class="text-center">
+                        <a href="#" class="text-muted">Forgot your password?</a>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="text-muted">Don't have an account?</p>
+                    <a href="{{ url_for('signup') }}" class="btn btn-outline-primary">
+                        <i class="ti ti-user-plus"></i> Create Account
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side - Hero Section -->
+        <div class="col-md-6 gradient-bg d-flex align-items-center justify-content-center">
+            <div class="text-center text-white">
+                <div class="mb-4">
+                    <i class="ti ti-rocket fs-1 mb-3"></i>
+                    <h2 class="fw-bold mb-3">Suntyn AI</h2>
+                    <p class="lead">Professional AI Tools Platform</p>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="mb-2">
+                            <i class="ti ti-tools fs-2"></i>
+                        </div>
+                        <h4>85+</h4>
+                        <small class="text-white-50">Tools</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-2">
+                            <i class="ti ti-users fs-2"></i>
+                        </div>
+                        <h4>10K+</h4>
+                        <small class="text-white-50">Users</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-2">
+                            <i class="ti ti-shield-check fs-2"></i>
+                        </div>
+                        <h4>100%</h4>
+                        <small class="text-white-50">Secure</small>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="text-white-50">
+                        Join thousands of professionals using our platform for their daily productivity needs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('ti-eye');
+        icon.classList.toggle('ti-eye-off');
+    });
+    
+    // Auto-focus on username field
+    document.getElementById('username').focus();
+});
+</script>
+{% endblock %}

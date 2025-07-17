@@ -1,0 +1,296 @@
+import os
+import logging
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from werkzeug.middleware.proxy_fix import ProxyFix
+from sqlalchemy.orm import DeclarativeBase
+import json
+from datetime import datetime
+from config import Config
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
+class Base(DeclarativeBase):
+    pass
+
+# Initialize extensions
+db = SQLAlchemy(model_class=Base)
+socketio = SocketIO()
+login_manager = LoginManager()
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key")
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+    
+    # Initialize extensions
+    db.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Please log in to access this page.'
+    
+    # Import models and socket events
+    from models import User, Tool, UserActivity, ToolHistory
+    from socket_events import register_socket_events
+    
+    # Register socket events
+    register_socket_events(socketio)
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    
+    # Tool categories configuration
+    TOOL_CATEGORIES = {
+        'PDF Tools': {
+            'icon': 'file-text',
+            'color': 'red',
+            'tools': [
+                'PDF Merger', 'PDF Splitter', 'PDF Compressor', 'PDF to Word',
+                'PDF to Excel', 'PDF to PowerPoint', 'Word to PDF', 'Excel to PDF',
+                'PowerPoint to PDF', 'PDF Password Remover', 'PDF Watermark',
+                'PDF Page Extractor', 'PDF Converter', 'PDF Editor'
+            ]
+        },
+        'Image Tools': {
+            'icon': 'image',
+            'color': 'blue',
+            'tools': [
+                'Image Compressor', 'Image Resizer', 'Image Converter', 'Background Remover',
+                'Image Cropper', 'Image Enhancer', 'Watermark Remover', 'Meme Generator',
+                'Image Filter', 'Photo Editor', 'Collage Maker', 'Image Optimizer'
+            ]
+        },
+        'Video/Audio Tools': {
+            'icon': 'play-circle',
+            'color': 'green',
+            'tools': [
+                'Video Compressor', 'Video Converter', 'Audio Converter', 'Video Trimmer',
+                'Audio Trimmer', 'Video Merger', 'Audio Merger', 'Video to Audio',
+                'Audio to Video', 'Video Editor', 'Audio Editor', 'Screen Recorder'
+            ]
+        },
+        'Finance Tools': {
+            'icon': 'dollar-sign',
+            'color': 'yellow',
+            'tools': [
+                'EMI Calculator', 'GST Calculator', 'Currency Converter', 'Loan Calculator',
+                'Investment Calculator', 'Tax Calculator', 'Profit Calculator',
+                'Expense Tracker', 'Budget Planner', 'Salary Calculator'
+            ]
+        },
+        'Utility Tools': {
+            'icon': 'tool',
+            'color': 'purple',
+            'tools': [
+                'QR Code Generator', 'Barcode Generator', 'Password Generator', 'URL Shortener',
+                'Text Case Converter', 'JSON Formatter', 'XML Formatter', 'Base64 Encoder',
+                'Hash Generator', 'Unit Converter', 'Color Picker', 'UUID Generator'
+            ]
+        },
+        'AI Tools': {
+            'icon': 'brain',
+            'color': 'pink',
+            'tools': [
+                'Text Summarizer', 'Resume Generator', 'Business Name Generator',
+                'Blog Title Generator', 'Product Description', 'Script Writer',
+                'Ad Copy Generator', 'FAQ Generator', 'Content Rewriter',
+                'Grammar Checker', 'Plagiarism Checker', 'Keyword Extractor'
+            ]
+        },
+        'Student Tools': {
+            'icon': 'book',
+            'color': 'indigo',
+            'tools': [
+                'Assignment Planner', 'Study Schedule', 'GPA Calculator', 'Citation Generator',
+                'Research Helper', 'Note Taker', 'Flashcard Maker', 'Quiz Generator',
+                'Essay Writer', 'Presentation Maker', 'Mind Map Creator'
+            ]
+        },
+        'Government Tools': {
+            'icon': 'shield',
+            'color': 'gray',
+            'tools': [
+                'Aadhaar Validator', 'PAN Validator', 'GST Validator', 'Passport Checker',
+                'Voter ID Checker', 'Driving License Checker', 'Ration Card Reader',
+                'Document Verifier', 'Legal Term Explainer', 'Rent Agreement Reader'
+            ]
+        }
+    }
+    
+    # Routes
+    @app.route('/')
+    def index():
+        recent_tools = []
+        most_used_tools = []
+        
+        if current_user.is_authenticated:
+            # Get recent tools for logged-in user
+            recent_activities = UserActivity.query.filter_by(user_id=current_user.id)\
+                .order_by(UserActivity.created_at.desc()).limit(6).all()
+            recent_tools = [activity.tool_name for activity in recent_activities]
+            
+            # Get most used tools
+            from sqlalchemy import func
+            most_used = db.session.query(
+                UserActivity.tool_name, 
+                func.count(UserActivity.id).label('count')
+            ).filter_by(user_id=current_user.id)\
+             .group_by(UserActivity.tool_name)\
+             .order_by(func.count(UserActivity.id).desc())\
+             .limit(6).all()
+            most_used_tools = [tool[0] for tool in most_used]
+        
+        return render_template('index.html', 
+                             categories=TOOL_CATEGORIES,
+                             recent_tools=recent_tools,
+                             most_used_tools=most_used_tools)
+    
+    @app.route('/dashboard')
+    @login_required
+    def dashboard():
+        user_activities = UserActivity.query.filter_by(user_id=current_user.id)\
+            .order_by(UserActivity.created_at.desc()).limit(20).all()
+        
+        tool_history = ToolHistory.query.filter_by(user_id=current_user.id)\
+            .order_by(ToolHistory.created_at.desc()).limit(10).all()
+        
+        return render_template('dashboard.html',
+                             activities=user_activities,
+                             history=tool_history)
+    
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        if request.method == 'POST':
+            username = request.form.get('username')
+            password = request.form.get('password')
+            
+            user = User.query.filter_by(username=username).first()
+            
+            if user and check_password_hash(user.password_hash, password):
+                login_user(user)
+                return redirect(url_for('index'))
+            else:
+                flash('Invalid username or password')
+        
+        return render_template('auth/login.html')
+    
+    @app.route('/signup', methods=['GET', 'POST'])
+    def signup():
+        if request.method == 'POST':
+            username = request.form.get('username')
+            email = request.form.get('email')
+            password = request.form.get('password')
+            
+            if User.query.filter_by(username=username).first():
+                flash('Username already exists')
+                return render_template('auth/signup.html')
+            
+            if User.query.filter_by(email=email).first():
+                flash('Email already exists')
+                return render_template('auth/signup.html')
+            
+            user = User(
+                username=username,
+                email=email,
+                password_hash=generate_password_hash(password)
+            )
+            
+            db.session.add(user)
+            db.session.commit()
+            
+            login_user(user)
+            return redirect(url_for('index'))
+        
+        return render_template('auth/signup.html')
+    
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for('index'))
+    
+    # Tool routes
+    @app.route('/tools/<tool_name>')
+    def tool_page(tool_name):
+        # Log tool access
+        if current_user.is_authenticated:
+            activity = UserActivity(
+                user_id=current_user.id,
+                tool_name=tool_name,
+                action='accessed'
+            )
+            db.session.add(activity)
+            db.session.commit()
+        
+        # Map tool names to templates
+        tool_templates = {
+            'pdf-merger': 'tools/pdf_merger.html',
+            'image-compressor': 'tools/image_compressor.html',
+            'emi-calculator': 'tools/emi_calculator.html',
+            'qr-generator': 'tools/qr_generator.html',
+            'text-summarizer': 'tools/text_summarizer.html'
+        }
+        
+        template = tool_templates.get(tool_name, 'tools/default.html')
+        return render_template(template, tool_name=tool_name)
+    
+    # API endpoints for tools
+    @app.route('/api/tools/<tool_name>', methods=['POST'])
+    def process_tool(tool_name):
+        try:
+            # Import tool processors
+            from tools.pdf_tools import process_pdf_merger
+            from tools.image_tools import process_image_compressor
+            from tools.finance_tools import process_emi_calculator
+            from tools.utility_tools import process_qr_generator
+            from tools.ai_tools import process_text_summarizer
+            
+            # Map tool processors
+            processors = {
+                'pdf-merger': process_pdf_merger,
+                'image-compressor': process_image_compressor,
+                'emi-calculator': process_emi_calculator,
+                'qr-generator': process_qr_generator,
+                'text-summarizer': process_text_summarizer
+            }
+            
+            if tool_name in processors:
+                result = processors[tool_name](request)
+                
+                # Log tool usage
+                if current_user.is_authenticated:
+                    activity = UserActivity(
+                        user_id=current_user.id,
+                        tool_name=tool_name,
+                        action='used'
+                    )
+                    db.session.add(activity)
+                    db.session.commit()
+                
+                return jsonify(result)
+            else:
+                return jsonify({'error': 'Tool not found'}), 404
+        
+        except Exception as e:
+            logging.error(f"Error processing tool {tool_name}: {str(e)}")
+            return jsonify({'error': 'Processing failed'}), 500
+    
+    # Create tables
+    with app.app_context():
+        db.create_all()
+    
+    return app
+
+# Create app instance
+app = create_app()
+
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

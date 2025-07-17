@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-circle bg-primary text-white me-3">
+                            {{ current_user.username[0].upper() }}
+                        </div>
+                        <div>
+                            <h5 class="mb-0">{{ current_user.username }}</h5>
+                            <small class="text-muted">{{ current_user.email }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="nav nav-pills flex-column">
+                        <a class="nav-link active" href="#overview" data-bs-toggle="pill">
+                            <i class="ti ti-dashboard me-2"></i> Overview
+                        </a>
+                        <a class="nav-link" href="#activity" data-bs-toggle="pill">
+                            <i class="ti ti-activity me-2"></i> Activity
+                        </a>
+                        <a class="nav-link" href="#history" data-bs-toggle="pill">
+                            <i class="ti ti-history me-2"></i> History
+                        </a>
+                        <a class="nav-link" href="#settings" data-bs-toggle="pill">
+                            <i class="ti ti-settings me-2"></i> Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Overview Tab -->
+                <div class="tab-pane fade show active" id="overview">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Dashboard Overview</h2>
+                        <div class="badge bg-primary">
+                            {% if current_user.is_premium %}Premium{% else %}Free{% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <div class="text-primary mb-2">
+                                        <i class="ti ti-tools fs-2"></i>
+                                    </div>
+                                    <h4 class="mb-0">{{ activities|length }}</h4>
+                                    <small class="text-muted">Tools Used</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <div class="text-success mb-2">
+                                        <i class="ti ti-file fs-2"></i>
+                                    </div>
+                                    <h4 class="mb-0">{{ history|length }}</h4>
+                                    <small class="text-muted">Files Processed</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <div class="text-warning mb-2">
+                                        <i class="ti ti-clock fs-2"></i>
+                                    </div>
+                                    <h4 class="mb-0">
+                                        {{ (history|sum(attribute='processing_time') or 0)|round(2) }}s
+                                    </h4>
+                                    <small class="text-muted">Processing Time</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <div class="text-info mb-2">
+                                        <i class="ti ti-calendar fs-2"></i>
+                                    </div>
+                                    <h4 class="mb-0">{{ current_user.created_at.strftime('%b %Y') }}</h4>
+                                    <small class="text-muted">Member Since</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Activity</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if activities %}
+                            <div class="activity-timeline">
+                                {% for activity in activities[:10] %}
+                                <div class="activity-item d-flex align-items-center mb-3">
+                                    <div class="activity-icon bg-primary text-white rounded-circle me-3">
+                                        <i class="ti ti-tool"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>{{ activity.tool_name.replace('-', ' ').title() }}</strong>
+                                            <small class="text-muted">{{ activity.created_at.strftime('%m/%d/%Y %H:%M') }}</small>
+                                        </div>
+                                        <small class="text-muted">{{ activity.action.title() }}</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="ti ti-activity text-muted fs-1"></i>
+                                <p class="text-muted mt-2">No recent activity</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity Tab -->
+                <div class="tab-pane fade" id="activity">
+                    <h2 class="mb-4">Activity Log</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            {% if activities %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tool</th>
+                                            <th>Action</th>
+                                            <th>Date</th>
+                                            <th>IP Address</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for activity in activities %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ activity.tool_name.replace('-', ' ').title() }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{% if activity.action == 'used' %}success{% elif activity.action == 'accessed' %}info{% else %}secondary{% endif %}">
+                                                    {{ activity.action.title() }}
+                                                </span>
+                                            </td>
+                                            <td>{{ activity.created_at.strftime('%m/%d/%Y %H:%M:%S') }}</td>
+                                            <td>{{ activity.ip_address or 'N/A' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="ti ti-list text-muted fs-1"></i>
+                                <p class="text-muted mt-2">No activity records found</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- History Tab -->
+                <div class="tab-pane fade" id="history">
+                    <h2 class="mb-4">Processing History</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            {% if history %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tool</th>
+                                            <th>Processing Time</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in history %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ item.tool_name.replace('-', ' ').title() }}</strong>
+                                            </td>
+                                            <td>{{ (item.processing_time or 0)|round(2) }}s</td>
+                                            <td>{{ item.created_at.strftime('%m/%d/%Y %H:%M:%S') }}</td>
+                                            <td>
+                                                {% if item.file_path %}
+                                                <a href="/uploads/{{ item.file_path }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                    <i class="ti ti-download"></i> Download
+                                                </a>
+                                                {% endif %}
+                                                <a href="{{ url_for('tool_page', tool_name=item.tool_name) }}" class="btn btn-sm btn-outline-success">
+                                                    <i class="ti ti-repeat"></i> Use Again
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="ti ti-history text-muted fs-1"></i>
+                                <p class="text-muted mt-2">No processing history found</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings">
+                    <h2 class="mb-4">Account Settings</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Profile Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" class="form-control" value="{{ current_user.username }}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" value="{{ current_user.email }}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Member Since</label>
+                                            <input type="text" class="form-control" value="{{ current_user.created_at.strftime('%B %d, %Y') }}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Account Type</label>
+                                            <input type="text" class="form-control" value="{% if current_user.is_premium %}Premium{% else %}Free{% endif %}" readonly>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Preferences</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="notifications" checked>
+                                        <label class="form-check-label" for="notifications">
+                                            Email Notifications
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="dark-mode">
+                                        <label class="form-check-label" for="dark-mode">
+                                            Dark Mode
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="auto-save" checked>
+                                        <label class="form-check-label" for="auto-save">
+                                            Auto-save Files
+                                        </label>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary">Save Preferences</button>
+                                        <button class="btn btn-outline-danger">Change Password</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.activity-timeline {
+    position: relative;
+}
+
+.activity-item {
+    position: relative;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.nav-pills .nav-link {
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+</style>
+{% endblock %}

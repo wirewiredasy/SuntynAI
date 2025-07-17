@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Image Compressor - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="text-center mb-5">
+                <div class="tool-icon mb-3">
+                    <i class="ti ti-photo-down text-info fs-1"></i>
+                </div>
+                <h1 class="h3 mb-3">Image Compressor</h1>
+                <p class="text-muted">Reduce image file size while maintaining quality</p>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="image-compressor-form">
+                        <!-- File Upload Area -->
+                        <div class="drag-drop-zone mb-4" id="drop-zone">
+                            <div class="text-center">
+                                <i class="ti ti-cloud-upload text-primary fs-1 mb-3"></i>
+                                <h5>Drag & Drop Image Here</h5>
+                                <p class="text-muted">or click to select an image</p>
+                                <input type="file" id="file-input" accept="image/*" class="d-none">
+                                <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                                    <i class="ti ti-photo-plus"></i> Select Image
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div id="image-preview" class="mb-4" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Original Image:</h6>
+                                    <div class="image-container">
+                                        <img id="original-image" class="img-fluid rounded" alt="Original">
+                                        <div class="image-info mt-2">
+                                            <small class="text-muted">
+                                                Size: <span id="original-size">-</span> |
+                                                Dimensions: <span id="original-dimensions">-</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Compressed Preview:</h6>
+                                    <div class="image-container">
+                                        <img id="compressed-image" class="img-fluid rounded" alt="Compressed" style="display: none;">
+                                        <div class="placeholder-preview d-flex align-items-center justify-content-center bg-light rounded" style="height: 200px;">
+                                            <span class="text-muted">Preview will appear here</span>
+                                        </div>
+                                        <div class="image-info mt-2">
+                                            <small class="text-muted">
+                                                Size: <span id="compressed-size">-</span> |
+                                                Saved: <span id="size-reduction">-</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Compression Options -->
+                        <div class="compression-options mb-4" style="display: none;">
+                            <h6>Compression Settings:</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="quality" class="form-label">Quality: <span id="quality-value">85</span>%</label>
+                                        <input type="range" class="form-range" id="quality" min="10" max="100" value="85">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="format" class="form-label">Output Format</label>
+                                        <select class="form-select" id="format">
+                                            <option value="JPEG">JPEG</option>
+                                            <option value="PNG">PNG</option>
+                                            <option value="WEBP">WebP</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="optimize" checked>
+                                        <label class="form-check-label" for="optimize">
+                                            Optimize for web
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="progressive">
+                                        <label class="form-check-label" for="progressive">
+                                            Progressive JPEG
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg" id="compress-btn" disabled>
+                                <i class="ti ti-photo-down"></i> Compress Image
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Progress -->
+            <div class="card mt-4" id="progress-card" style="display: none;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="loading-spinner me-3"></div>
+                        <div class="flex-grow-1">
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <small class="text-muted" id="progress-text">Compressing image...</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Result -->
+            <div class="card mt-4" id="result-card" style="display: none;">
+                <div class="card-body text-center">
+                    <div class="result-success" id="success-result" style="display: none;">
+                        <i class="ti ti-check-circle text-success fs-1 mb-3"></i>
+                        <h5 class="text-success">Image Compressed Successfully!</h5>
+                        <div class="compression-stats mb-3">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="stat-item">
+                                        <div class="h5 mb-0" id="final-size">-</div>
+                                        <small class="text-muted">Final Size</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-item">
+                                        <div class="h5 mb-0 text-success" id="size-saved">-</div>
+                                        <small class="text-muted">Size Saved</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-item">
+                                        <div class="h5 mb-0 text-info" id="compression-ratio">-</div>
+                                        <small class="text-muted">Compression</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="#" class="btn btn-primary" id="download-btn">
+                                <i class="ti ti-download"></i> Download
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                                <i class="ti ti-refresh"></i> Compress Another
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="result-error" id="error-result" style="display: none;">
+                        <i class="ti ti-alert-circle text-danger fs-1 mb-3"></i>
+                        <h5 class="text-danger">Compression Failed</h5>
+                        <p class="text-muted mb-3" id="error-message"></p>
+                        <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
+                            <i class="ti ti-refresh"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Collaboration -->
+<div class="position-fixed bottom-0 end-0 m-3" style="z-index: 1000;">
+    <button class="btn btn-primary btn-sm" onclick="toggleCollaboration()">
+        <i class="ti ti-users"></i> Share
+    </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tools/image-compressor.js') }}"></script>
+{% endblock %}

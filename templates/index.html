@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block title %}Suntyn AI - 85+ Professional AI Tools Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section gradient-bg text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content animate__animated animate__fadeInUp">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Professional AI Tools Platform
+                    </h1>
+                    <p class="lead mb-4">
+                        Access 85+ powerful tools for PDF processing, image editing, financial calculations, and AI-powered content creation. All in one place.
+                    </p>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="#tools-section" class="btn btn-light btn-lg">
+                            <i class="ti ti-tools"></i> Explore Tools
+                        </a>
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('signup') }}" class="btn btn-outline-light btn-lg">
+                            <i class="ti ti-user-plus"></i> Get Started
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="stats-row d-flex gap-4">
+                        <div class="stat-item">
+                            <div class="h3 mb-0">85+</div>
+                            <small class="text-white-50">Tools Available</small>
+                        </div>
+                        <div class="stat-item">
+                            <div class="h3 mb-0">8</div>
+                            <small class="text-white-50">Categories</small>
+                        </div>
+                        <div class="stat-item">
+                            <div class="h3 mb-0">24/7</div>
+                            <small class="text-white-50">Available</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image animate__animated animate__fadeInRight">
+                    <div class="position-relative">
+                        <svg viewBox="0 0 400 300" class="w-100" style="max-width: 500px;">
+                            <defs>
+                                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Background -->
+                            <rect width="400" height="300" fill="url(#gradient1)" rx="20" opacity="0.1"/>
+                            
+                            <!-- Tool Icons -->
+                            <g class="tool-icons">
+                                <circle cx="100" cy="80" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
+                                <text x="100" y="85" text-anchor="middle" fill="white" font-size="16">📄</text>
+                                
+                                <circle cx="200" cy="60" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
+                                <text x="200" y="65" text-anchor="middle" fill="white" font-size="16">🖼️</text>
+                                
+                                <circle cx="300" cy="90" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
+                                <text x="300" y="95" text-anchor="middle" fill="white" font-size="16">💰</text>
+                                
+                                <circle cx="150" cy="150" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
+                                <text x="150" y="155" text-anchor="middle" fill="white" font-size="16">🤖</text>
+                                
+                                <circle cx="250" cy="180" r="25" fill="rgba(255,255,255,0.2)" class="floating-icon"/>
+                                <text x="250" y="185" text-anchor="middle" fill="white" font-size="16">⚡</text>
+                            </g>
+                            
+                            <!-- Connection Lines -->
+                            <g class="connection-lines" stroke="rgba(255,255,255,0.3)" stroke-width="2">
+                                <line x1="100" y1="80" x2="150" y2="150"/>
+                                <line x1="200" y1="60" x2="150" y2="150"/>
+                                <line x1="300" y1="90" x2="250" y2="180"/>
+                                <line x1="150" y1="150" x2="250" y2="180"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="search-section">
+                <div class="position-relative">
+                    <input type="text" id="tool-search" class="form-control form-control-lg" placeholder="Search tools...">
+                    <i class="ti ti-search position-absolute top-50 end-0 translate-middle-y me-3"></i>
+                </div>
+                <div class="search-filters mt-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-primary btn-sm filter-btn active" data-filter="all">All</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="pdf">PDF</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="image">Image</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="finance">Finance</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="ai">AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Access Section -->
+{% if current_user.is_authenticated and (recent_tools or most_used_tools) %}
+<div class="container mb-5">
+    <div class="row">
+        {% if recent_tools %}
+        <div class="col-md-6">
+            <h3 class="mb-3">
+                <i class="ti ti-clock text-primary"></i>
+                Recently Used
+            </h3>
+            <div class="row">
+                {% for tool in recent_tools %}
+                <div class="col-md-6 mb-3">
+                    <div class="card tool-card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ tool.replace('-', ' ').title() }}</h6>
+                            <a href="{{ url_for('tool_page', tool_name=tool) }}" class="btn btn-sm btn-primary">
+                                Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if most_used_tools %}
+        <div class="col-md-6">
+            <h3 class="mb-3">
+                <i class="ti ti-trending-up text-success"></i>
+                Most Used
+            </h3>
+            <div class="row">
+                {% for tool in most_used_tools %}
+                <div class="col-md-6 mb-3">
+                    <div class="card tool-card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ tool.replace('-', ' ').title() }}</h6>
+                            <a href="{{ url_for('tool_page', tool_name=tool) }}" class="btn btn-sm btn-success">
+                                Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Tools Section -->
+<div class="container" id="tools-section">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">Professional Tool Categories</h2>
+        <p class="lead text-muted">Choose from 85+ carefully crafted tools across 8 main categories</p>
+    </div>
+    
+    {% for category_name, category_info in categories.items() %}
+    <div class="category-section mb-5" data-category="{{ category_name.lower().replace(' ', '-') }}">
+        <div class="category-header d-flex align-items-center mb-4">
+            <div class="category-icon me-3">
+                <div class="rounded-circle bg-{{ category_info.color }}-100 text-{{ category_info.color }}-600 p-3">
+                    <i class="ti ti-{{ category_info.icon }} fs-4"></i>
+                </div>
+            </div>
+            <div>
+                <h3 class="mb-1">{{ category_name }}</h3>
+                <p class="text-muted mb-0">{{ category_info.tools|length }} tools available</p>
+            </div>
+        </div>
+        
+        <div class="row tool-grid">
+            {% for tool in category_info.tools %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card tool-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="tool-icon mb-3">
+                            <div class="rounded-circle bg-{{ category_info.color }}-100 text-{{ category_info.color }}-600 p-3 d-inline-flex">
+                                <i class="ti ti-{{ category_info.icon }} fs-4"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title">{{ tool }}</h5>
+                        <p class="card-text text-muted small mb-3">
+                            {% if 'PDF' in tool %}
+                            Process and manipulate PDF documents
+                            {% elif 'Image' in tool %}
+                            Edit and enhance images
+                            {% elif 'Calculator' in tool %}
+                            Perform financial calculations
+                            {% elif 'Generator' in tool %}
+                            Generate content with AI
+                            {% else %}
+                            Professional tool for productivity
+                            {% endif %}
+                        </p>
+                        <a href="{{ url_for('tool_page', tool_name=tool.lower().replace(' ', '-')) }}" 
+                           class="btn btn-{{ category_info.color }} btn-sm">
+                            <i class="ti ti-arrow-right"></i> Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Features Section -->
+<div class="bg-light py-5 mt-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Why Choose Suntyn AI?</h2>
+            <p class="lead text-muted">Advanced features for professional productivity</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-primary-100 text-primary p-3 d-inline-flex">
+                            <i class="ti ti-zap fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Real-time Processing</h4>
+                    <p class="text-muted">Get instant results with real-time processing and live collaboration features.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-success-100 text-success p-3 d-inline-flex">
+                            <i class="ti ti-shield-check fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Secure & Private</h4>
+                    <p class="text-muted">Your data is processed securely with local-first approach and end-to-end encryption.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-info-100 text-info p-3 d-inline-flex">
+                            <i class="ti ti-device-mobile fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Mobile Responsive</h4>
+                    <p class="text-muted">Works perfectly on all devices with PWA support for offline usage.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-warning-100 text-warning p-3 d-inline-flex">
+                            <i class="ti ti-users fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Team Collaboration</h4>
+                    <p class="text-muted">Collaborate with team members in real-time with shared workspaces.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-danger-100 text-danger p-3 d-inline-flex">
+                            <i class="ti ti-robot fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>AI-Powered</h4>
+                    <p class="text-muted">Leverage advanced AI for content generation, analysis, and automation.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-purple-100 text-purple p-3 d-inline-flex">
+                            <i class="ti ti-download fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Offline Support</h4>
+                    <p class="text-muted">Continue working even without internet with our PWA offline capabilities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="gradient-bg text-white py-5 mt-5">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+        <p class="lead mb-4">Join thousands of professionals using Suntyn AI for their daily productivity needs.</p>
+        {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('signup') }}" class="btn btn-light btn-lg me-3">
+            <i class="ti ti-user-plus"></i> Sign Up Free
+        </a>
+        {% endif %}
+        <a href="#tools-section" class="btn btn-outline-light btn-lg">
+            <i class="ti ti-tools"></i> Explore Tools
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('tool-search');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const toolCards = document.querySelectorAll('.tool-card');
+    
+    // Search tools
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        toolCards.forEach(card => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const description = card.querySelector('.card-text').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.parentElement.style.display = 'block';
+            } else {
+                card.parentElement.style.display = 'none';
+            }
+        });
+    });
+    
+    // Filter by category
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active filter button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide categories
+            const categories = document.querySelectorAll('.category-section');
+            categories.forEach(category => {
+                if (filter === 'all' || category.dataset.category.includes(filter)) {
+                    category.style.display = 'block';
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Animate hero stats
+    const stats = document.querySelectorAll('.stat-item .h3');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const finalValue = parseInt(target.textContent.replace('+', '').replace('/', ''));
+                
+                if (!isNaN(finalValue)) {
+                    let currentValue = 0;
+                    const increment = finalValue / 30;
+                    
+                    const counter = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= finalValue) {
+                            currentValue = finalValue;
+                            clearInterval(counter);
+                        }
+                        target.textContent = Math.floor(currentValue) + (target.textContent.includes('+') ? '+' : '');
+                    }, 50);
+                }
+            }
+        });
+    });
+    
+    stats.forEach(stat => observer.observe(stat));
+    
+    // Floating animation for hero icons
+    gsap.to('.floating-icon', {
+        y: -10,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "power2.inOut",
+        stagger: 0.2
+    });
+});
+</script>
+{% endblock %}
