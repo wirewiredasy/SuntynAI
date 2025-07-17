@@ -222,7 +222,24 @@ class SuntynAI {
         if ('performance' in window) {
             window.addEventListener('load', () => {
                 const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-                console.log(`Page load time: ${loadTime}ms`);
+                if (loadTime > 0) {
+                    console.log(`Page load time: ${loadTime}ms`);
+                } else {
+                    console.log('Page load time measurement not available');
+                }
+            });
+        }
+
+        // Safe Chart.js cleanup
+        if (typeof Chart !== 'undefined' && Chart.instances) {
+            window.addEventListener('beforeunload', () => {
+                if (Chart.instances && typeof Chart.instances.forEach === 'function') {
+                    Chart.instances.forEach(chart => {
+                        if (chart && typeof chart.destroy === 'function') {
+                            chart.destroy();
+                        }
+                    });
+                }
             });
         }
     }
@@ -286,7 +303,8 @@ class SuntynAI {
                 this.createFloatingIcons();
 
                 // Enhanced parallax with better performance
-                gsap.utils.toArray('[data-parallax]').forEach(element => {
+                const parallaxElements = document.querySelectorAll('[data-parallax]');
+                parallaxElements.forEach(element => {
                     const speed = parseFloat(element.dataset.parallax) || 0.5;
                     gsap.to(element, {
                         yPercent: -50 * speed,

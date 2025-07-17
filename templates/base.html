@@ -574,14 +574,30 @@
             };
             document.head.appendChild(script);
         }
-    </script>
 
-    <script src="{{ url_for('static', filename='js/websocket.js') }}" onerror="console.warn('WebSocket script failed to load')"></script>
-    <script src="{{ url_for('static', filename='js/drag-drop.js') }}" onerror="console.warn('Drag-drop script failed to load')"></script>
-    <script src="{{ url_for('static', filename='js/theme.js') }}" onerror="console.warn('Theme script failed to load')"></script>
-    <script src="{{ url_for('static', filename='js/smooth-scroll.js') }}" onerror="console.warn('Smooth scroll script failed to load')"></script>
-    <script src="{{ url_for('static', filename='js/scroll-to-top.js') }}" onerror="console.warn('Scroll to top script failed to load')"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}" onerror="console.warn('Main script failed to load')"></script>
+        // Safe script loading with fallbacks
+        const scripts = [
+            '{{ url_for("static", filename="js/websocket.js") }}',
+            '{{ url_for("static", filename="js/drag-drop.js") }}',
+            '{{ url_for("static", filename="js/theme.js") }}',
+            '{{ url_for("static", filename="js/smooth-scroll.js") }}',
+            '{{ url_for("static", filename="js/scroll-to-top.js") }}',
+            '{{ url_for("static", filename="js/main.js") }}'
+        ];
+
+        scripts.forEach(src => {
+            try {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onerror = function() {
+                    console.warn('Failed to load script:', src);
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                console.warn('Error loading script:', src, error);
+            }
+        });
+    </script>
 
     {% block extra_js %}{% endblock %}
 
