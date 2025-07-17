@@ -239,18 +239,18 @@ class ThemeManager {
         const isDark = this.isDarkMode();
         return {
             primary: isDark ? '#60a5fa' : '#3b82f6',
-            secondary: isDark ? '#1e40af' : '#1e40af',
+            secondary: isDark ? '#3b82f6' : '#1e40af',
             success: isDark ? '#34d399' : '#10b981',
             warning: isDark ? '#fbbf24' : '#f59e0b',
             danger: isDark ? '#f87171' : '#ef4444',
             info: isDark ? '#60a5fa' : '#3b82f6',
             light: isDark ? '#f8fafc' : '#f8fafc',
-            dark: isDark ? '#1f2937' : '#1f2937',
+            dark: isDark ? '#0f172a' : '#1f2937',
             background: isDark ? '#0f172a' : '#ffffff',
-            surface: isDark ? '#1e293b' : '#f8fafc',
-            text: isDark ? '#f1f5f9' : '#1f2937',
-            textSecondary: isDark ? '#cbd5e1' : '#6b7280',
-            border: isDark ? '#475569' : '#e5e7eb'
+            surface: isDark ? '#334155' : '#f8fafc',
+            text: isDark ? '#f8fafc' : '#1f2937',
+            textSecondary: isDark ? '#e2e8f0' : '#6b7280',
+            border: isDark ? '#64748b' : '#e5e7eb'
         };
     }
 
