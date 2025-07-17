@@ -10,8 +10,16 @@ class SmoothScrollManager {
     }
 
     init() {
-        // Initialize Lenis smooth scroll
-        this.lenis = new Lenis({
+        // Check if Lenis is available
+        if (typeof Lenis === 'undefined') {
+            console.warn('Lenis is not loaded, falling back to native smooth scroll');
+            this.initFallbackScroll();
+            return;
+        }
+
+        try {
+            // Initialize Lenis smooth scroll
+            this.lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             direction: 'vertical',
@@ -40,7 +48,18 @@ class SmoothScrollManager {
         });
 
         this.isInitialized = true;
-        console.log('🚀 Lenis smooth scroll initialized');
+            console.log('🚀 Lenis smooth scroll initialized');
+        } catch (error) {
+            console.error('Failed to initialize Lenis:', error);
+            this.initFallbackScroll();
+        }
+    }
+
+    initFallbackScroll() {
+        // Fallback to native smooth scrolling
+        document.documentElement.style.scrollBehavior = 'smooth';
+        this.isInitialized = true;
+        console.log('🚀 Fallback smooth scroll initialized');
     }
 
     setupGSAPIntegration() {
@@ -275,8 +294,17 @@ class AnimationUtils {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize smooth scroll
-    window.smoothScroll = new SmoothScrollManager();
+    // Wait for Lenis to be available
+    const initSmoothScroll = () => {
+        if (typeof Lenis !== 'undefined') {
+            window.smoothScroll = new SmoothScrollManager();
+        } else {
+            console.warn('Lenis not loaded, retrying in 100ms...');
+            setTimeout(initSmoothScroll, 100);
+        }
+    };
+    
+    initSmoothScroll();
     
     // Apply animations with improved performance
     setTimeout(() => {

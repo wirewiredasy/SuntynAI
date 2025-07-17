@@ -10,6 +10,8 @@ const STATIC_ASSETS = [
   '/',
   '/static/css/main.css',
   '/static/js/main.js',
+  '/static/js/smooth-scroll.js',
+  '/static/js/scroll-to-top.js',
   '/static/js/websocket.js',
   '/static/js/drag-drop.js',
   '/static/js/theme.js',
@@ -18,10 +20,7 @@ const STATIC_ASSETS = [
   '/static/js/tools/emi-calculator.js',
   '/static/js/tools/qr-generator.js',
   '/static/js/tools/text-summarizer.js',
-  '/manifest.json',
-  '/login',
-  '/signup',
-  '/dashboard'
+  '/manifest.json'
 ];
 
 // Dynamic assets to cache on request

@@ -228,6 +228,17 @@ class SuntynAI {
     }
 
     initializePWA() {
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('✅ Service Worker registered successfully:', registration.scope);
+                })
+                .catch(error => {
+                    console.warn('Service Worker registration failed:', error);
+                });
+        }
+
         // Handle PWA install prompt
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -271,6 +282,9 @@ class SuntynAI {
                     );
                 }
 
+                // Create floating icons if they don't exist
+                this.createFloatingIcons();
+
                 // Enhanced parallax with better performance
                 gsap.utils.toArray('[data-parallax]').forEach(element => {
                     const speed = parseFloat(element.dataset.parallax) || 0.5;
@@ -286,11 +300,48 @@ class SuntynAI {
                     });
                 });
 
+                // Animate floating icons if they exist
+                const floatingIcons = document.querySelectorAll('.floating-icon');
+                if (floatingIcons.length > 0) {
+                    gsap.to(floatingIcons, {
+                        y: -20,
+                        rotation: 360,
+                        duration: 6,
+                        ease: "none",
+                        repeat: -1,
+                        stagger: 0.5
+                    });
+                }
+
                 console.log('✨ Modern animation system initialized');
             }, 300);
         } else {
             // Fallback to CSS animations
             this.initializeCSSAnimations();
+        }
+    }
+
+    createFloatingIcons() {
+        // Create floating background icons if hero section exists
+        const heroSection = document.querySelector('.hero-section');
+        if (heroSection && !document.querySelector('.floating-icon')) {
+            const icons = ['🚀', '💡', '⚡', '🎯', '🔧', '📊'];
+            
+            icons.forEach((icon, index) => {
+                const iconEl = document.createElement('div');
+                iconEl.className = 'floating-icon';
+                iconEl.textContent = icon;
+                iconEl.style.cssText = `
+                    position: absolute;
+                    font-size: 2rem;
+                    opacity: 0.1;
+                    pointer-events: none;
+                    z-index: 0;
+                    top: ${Math.random() * 80 + 10}%;
+                    left: ${Math.random() * 80 + 10}%;
+                `;
+                heroSection.appendChild(iconEl);
+            });
         }
     }
 
