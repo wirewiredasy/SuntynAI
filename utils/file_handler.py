@@ -1,3 +1,7 @@
+"""
+File handling utilities for Suntyn AI platform
+"""
+
 import os
 import shutil
 import tempfile
@@ -5,32 +9,33 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 import logging
 
+logger = logging.getLogger(__name__)
+
 def ensure_upload_directory():
-    """Ensure upload directory exists"""
+    """Ensure uploads directory exists"""
     upload_dir = os.path.join(current_app.root_path, 'uploads')
     if not os.path.exists(upload_dir):
         os.makedirs(upload_dir)
     return upload_dir
 
-def save_uploaded_file(file_path, filename):
-    """Save uploaded file to uploads directory"""
+def save_uploaded_file(source_path, filename):
+    """Save a file to the uploads directory"""
     try:
         upload_dir = ensure_upload_directory()
         safe_filename = secure_filename(filename)
         
         # Add timestamp to avoid conflicts
-        import time
-        timestamp = int(time.time())
-        name, ext = os.path.splitext(safe_filename)
-        final_filename = f"{name}_{timestamp}{ext}"
+        from datetime import datetime
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
+        safe_filename = f"{timestamp}{safe_filename}"
         
-        final_path = os.path.join(upload_dir, final_filename)
-        shutil.copy2(file_path, final_path)
+        destination_path = os.path.join(upload_dir, safe_filename)
+        shutil.copy2(source_path, destination_path)
         
-        return final_filename
-    
+        return destination_path
+        
     except Exception as e:
-        logging.error(f"Error saving file: {str(e)}")
+        logger.error(f"Error saving file {filename}: {str(e)}")
         raise
 
 def get_file_path(filename):
@@ -46,9 +51,8 @@ def delete_file(filename):
             os.remove(file_path)
             return True
         return False
-    
     except Exception as e:
-        logging.error(f"Error deleting file: {str(e)}")
+        logger.error(f"Error deleting file {filename}: {str(e)}")
         return False
 
 def get_file_size(file_path):
@@ -58,56 +62,34 @@ def get_file_size(file_path):
     except:
         return 0
 
-def get_file_extension(filename):
-    """Get file extension"""
-    return os.path.splitext(filename)[1].lower().lstrip('.')
-
-def is_allowed_file(filename, allowed_extensions):
-    """Check if file extension is allowed"""
-    return '.' in filename and get_file_extension(filename) in allowed_extensions
-
-def create_temp_file(suffix=''):
-    """Create temporary file"""
-    return tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
-
-def cleanup_temp_files(file_paths):
-    """Clean up temporary files"""
-    for file_path in file_paths:
-        try:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-        except:
-            pass
-
-def compress_file(file_path, compression_level=6):
-    """Compress file using gzip"""
-    import gzip
+def format_file_size(bytes_size):
+    """Format file size in human readable format"""
+    if bytes_size == 0:
+        return "0 B"
     
+    size_names = ["B", "KB", "MB", "GB", "TB"]
+    size_index = 0
+    
+    while bytes_size >= 1024 and size_index < len(size_names) - 1:
+        bytes_size /= 1024.0
+        size_index += 1
+    
+    return f"{bytes_size:.1f} {size_names[size_index]}"
+
+def cleanup_temp_files():
+    """Clean up temporary files older than 1 hour"""
     try:
-        with open(file_path, 'rb') as f_in:
-            with gzip.open(f'{file_path}.gz', 'wb', compresslevel=compression_level) as f_out:
-                shutil.copyfileobj(f_in, f_out)
-        return f'{file_path}.gz'
+        temp_dir = tempfile.gettempdir()
+        current_time = time.time()
+        
+        for filename in os.listdir(temp_dir):
+            file_path = os.path.join(temp_dir, filename)
+            if os.path.isfile(file_path):
+                file_age = current_time - os.path.getctime(file_path)
+                if file_age > 3600:  # 1 hour
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
     except Exception as e:
-        logging.error(f"Error compressing file: {str(e)}")
-        return None
-
-def get_mime_type(filename):
-    """Get MIME type of file"""
-    import mimetypes
-    return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-
-def validate_file_size(file, max_size_mb=16):
-    """Validate file size"""
-    max_size_bytes = max_size_mb * 1024 * 1024
-    file.seek(0, os.SEEK_END)
-    size = file.tell()
-    file.seek(0)
-    return size <= max_size_bytes
-
-def generate_unique_filename(original_filename):
-    """Generate unique filename"""
-    import uuid
-    name, ext = os.path.splitext(secure_filename(original_filename))
-    unique_id = str(uuid.uuid4())[:8]
-    return f"{name}_{unique_id}{ext}"
+        logger.error(f"Error cleaning temp files: {str(e)}")

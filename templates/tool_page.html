@@ -1,0 +1,613 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tool_display_name }} - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Tool Header -->
+    <div class="tool-header bg-gradient-primary text-white py-4 mb-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                        <div class="tool-icon me-3">
+                            {% if tool_info %}
+                            <i class="ti ti-{{ tool_info.icon }} fs-1"></i>
+                            {% else %}
+                            <i class="ti ti-tool fs-1"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h1 class="h2 mb-1">{{ tool_display_name }}</h1>
+                            <p class="mb-0 opacity-75">
+                                {% if tool_category %}{{ tool_category }} - {% endif %}
+                                Professional AI-powered tool
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="tool-stats">
+                        <small class="d-block">Free to use</small>
+                        <small class="d-block">Secure processing</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <!-- Tool Interface -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="ti ti-upload text-primary"></i>
+                            Upload & Process
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Dynamic tool interface based on tool type -->
+                        <div id="tool-interface">
+                            <!-- File Upload Tools -->
+                            {% if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'image-compressor', 'image-resizer', 'image-converter', 'background-remover'] %}
+                            <div class="upload-area" id="upload-area">
+                                <div class="upload-zone text-center p-5 border border-dashed rounded">
+                                    <i class="ti ti-cloud-upload fs-1 text-muted mb-3"></i>
+                                    <h5>Drop files here or click to upload</h5>
+                                    <p class="text-muted mb-3">
+                                        {% if 'pdf' in tool_name %}
+                                        Supports: PDF files (max 16MB each)
+                                        {% elif 'image' in tool_name %}
+                                        Supports: JPG, PNG, GIF, WebP (max 16MB each)
+                                        {% endif %}
+                                    </p>
+                                    <input type="file" id="file-input" 
+                                           {% if 'pdf' in tool_name %}accept=".pdf"{% endif %}
+                                           {% if 'image' in tool_name %}accept="image/*"{% endif %}
+                                           {% if tool_name == 'pdf-merger' %}multiple{% endif %}
+                                           class="d-none">
+                                    <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                                        <i class="ti ti-upload me-2"></i>Select Files
+                                    </button>
+                                </div>
+                                
+                                <!-- File List -->
+                                <div id="file-list" class="mt-3" style="display: none;"></div>
+                                
+                                <!-- Options Panel -->
+                                <div id="options-panel" class="mt-4" style="display: none;">
+                                    {% if tool_name == 'image-compressor' %}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Quality</label>
+                                            <input type="range" class="form-range" id="quality" min="10" max="100" value="85">
+                                            <small class="text-muted">Quality: <span id="quality-value">85</span>%</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Max Width (px)</label>
+                                            <input type="number" class="form-control" id="max-width" placeholder="Auto">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Max Height (px)</label>
+                                            <input type="number" class="form-control" id="max-height" placeholder="Auto">
+                                        </div>
+                                    </div>
+                                    {% elif tool_name == 'image-resizer' %}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Width (px)</label>
+                                            <input type="number" class="form-control" id="width" value="800" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Height (px)</label>
+                                            <input type="number" class="form-control" id="height" value="600" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" id="maintain-ratio" checked>
+                                                <label class="form-check-label" for="maintain-ratio">
+                                                    Maintain aspect ratio
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Process Button -->
+                                <div class="text-center mt-4">
+                                    <button type="button" id="process-btn" class="btn btn-success btn-lg" style="display: none;">
+                                        <i class="ti ti-play me-2"></i>Process Files
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Calculator Tools -->
+                            {% elif tool_name in ['emi-calculator', 'gst-calculator', 'loan-calculator', 'investment-calculator'] %}
+                            <form id="calculator-form">
+                                {% if tool_name == 'emi-calculator' %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Loan Amount (₹)</label>
+                                        <input type="number" class="form-control" id="principal" placeholder="100000" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Interest Rate (% per annum)</label>
+                                        <input type="number" class="form-control" id="rate" step="0.01" placeholder="10.5" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Tenure (months)</label>
+                                        <input type="number" class="form-control" id="tenure" placeholder="60" required>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="ti ti-calculator me-2"></i>Calculate
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Text Tools -->
+                            {% elif tool_name in ['text-summarizer', 'content-rewriter', 'grammar-checker'] %}
+                            <form id="text-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Enter your text</label>
+                                    <textarea class="form-control" id="input-text" rows="8" placeholder="Paste your text here..." required></textarea>
+                                </div>
+                                {% if tool_name == 'text-summarizer' %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Max sentences in summary</label>
+                                        <input type="number" class="form-control" id="max-sentences" value="3" min="1" max="10">
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="ti ti-brain me-2"></i>Process Text
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Generator Tools -->
+                            {% elif tool_name in ['qr-code-generator', 'barcode-generator', 'password-generator'] %}
+                            <form id="generator-form">
+                                {% if tool_name == 'qr-code-generator' %}
+                                <div class="mb-3">
+                                    <label class="form-label">Text or URL</label>
+                                    <textarea class="form-control" id="qr-text" rows="3" placeholder="Enter text or URL to encode" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Size</label>
+                                        <select class="form-control" id="qr-size">
+                                            <option value="8">Small (8)</option>
+                                            <option value="10" selected>Medium (10)</option>
+                                            <option value="12">Large (12)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Border</label>
+                                        <input type="number" class="form-control" id="qr-border" value="4" min="1" max="10">
+                                    </div>
+                                </div>
+                                {% elif tool_name == 'password-generator' %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Password Length</label>
+                                        <input type="range" class="form-range" id="password-length" min="4" max="50" value="12">
+                                        <small class="text-muted">Length: <span id="length-value">12</span></small>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="include-uppercase" checked>
+                                            <label class="form-check-label">Uppercase</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="include-lowercase" checked>
+                                            <label class="form-check-label">Lowercase</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="include-numbers" checked>
+                                            <label class="form-check-label">Numbers</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="include-symbols" checked>
+                                            <label class="form-check-label">Symbols</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="ti ti-wand me-2"></i>Generate
+                                    </button>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Processing Status -->
+                        <div id="processing-status" class="text-center mt-4" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Processing...</span>
+                            </div>
+                            <p class="mt-2">Processing your request...</p>
+                        </div>
+                        
+                        <!-- Results Area -->
+                        <div id="results-area" class="mt-4" style="display: none;">
+                            <div class="alert alert-success">
+                                <h5><i class="ti ti-check-circle me-2"></i>Processing Complete!</h5>
+                                <div id="result-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Tool Info -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="ti ti-info-circle text-info"></i>
+                            About This Tool
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            {% if 'pdf-merger' == tool_name %}
+                            Combine multiple PDF files into a single document. Perfect for merging reports, contracts, or presentations.
+                            {% elif 'pdf-splitter' == tool_name %}
+                            Split large PDF files into individual pages or specific page ranges for easier management.
+                            {% elif 'image-compressor' == tool_name %}
+                            Reduce image file sizes while maintaining quality. Great for web optimization and storage.
+                            {% elif 'emi-calculator' == tool_name %}
+                            Calculate monthly EMI payments for loans with detailed breakdowns of principal and interest.
+                            {% elif 'qr-code-generator' == tool_name %}
+                            Generate QR codes for URLs, text, contact info, and more. Customizable size and design.
+                            {% elif 'text-summarizer' == tool_name %}
+                            Create concise summaries of long text using advanced AI algorithms. Save time and extract key points.
+                            {% else %}
+                            Professional tool for {{ tool_display_name.lower() }} with enterprise-grade features and security.
+                            {% endif %}
+                        </p>
+                        
+                        <h6>Features:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="ti ti-check text-success me-2"></i>Fast processing</li>
+                            <li><i class="ti ti-check text-success me-2"></i>Secure & private</li>
+                            <li><i class="ti ti-check text-success me-2"></i>No registration required</li>
+                            <li><i class="ti ti-check text-success me-2"></i>Professional quality</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Related Tools -->
+                {% if tool_category and tool_info %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="ti ti-{{ tool_info.icon }} text-{{ tool_info.color }}"></i>
+                            Related Tools
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% for related_tool in tool_info.tools[:5] %}
+                        {% if related_tool.replace(' ', '-').lower() != tool_name %}
+                        <a href="{{ url_for('tool_page', tool_name=related_tool.replace(' ', '-').lower()) }}" 
+                           class="d-block text-decoration-none mb-2 p-2 rounded bg-light">
+                            <i class="ti ti-arrow-right text-muted me-2"></i>
+                            {{ related_tool }}
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                        <a href="{{ url_for(tool_category.replace(' ', '_').lower() + '_tools') }}" 
+                           class="btn btn-outline-primary btn-sm mt-2">
+                            View All {{ tool_category }}
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tool-specific JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toolName = '{{ tool_name }}';
+    
+    // File upload handling
+    const fileInput = document.getElementById('file-input');
+    const uploadArea = document.getElementById('upload-area');
+    const fileList = document.getElementById('file-list');
+    const optionsPanel = document.getElementById('options-panel');
+    const processBtn = document.getElementById('process-btn');
+    
+    if (fileInput) {
+        // File selection
+        fileInput.addEventListener('change', handleFileSelection);
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('border-primary');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('border-primary');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-primary');
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelection();
+        });
+    }
+    
+    // Quality slider
+    const qualitySlider = document.getElementById('quality');
+    const qualityValue = document.getElementById('quality-value');
+    if (qualitySlider) {
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = this.value;
+        });
+    }
+    
+    // Password length slider
+    const lengthSlider = document.getElementById('password-length');
+    const lengthValue = document.getElementById('length-value');
+    if (lengthSlider) {
+        lengthSlider.addEventListener('input', function() {
+            lengthValue.textContent = this.value;
+        });
+    }
+    
+    // Form submissions
+    const calculatorForm = document.getElementById('calculator-form');
+    const textForm = document.getElementById('text-form');
+    const generatorForm = document.getElementById('generator-form');
+    
+    if (calculatorForm) {
+        calculatorForm.addEventListener('submit', handleFormSubmit);
+    }
+    if (textForm) {
+        textForm.addEventListener('submit', handleFormSubmit);
+    }
+    if (generatorForm) {
+        generatorForm.addEventListener('submit', handleFormSubmit);
+    }
+    
+    // Process button
+    if (processBtn) {
+        processBtn.addEventListener('click', processFiles);
+    }
+    
+    function handleFileSelection() {
+        const files = fileInput.files;
+        if (files.length > 0) {
+            displayFileList(files);
+            if (optionsPanel) optionsPanel.style.display = 'block';
+            if (processBtn) processBtn.style.display = 'block';
+        }
+    }
+    
+    function displayFileList(files) {
+        let html = '<h6>Selected Files:</h6><ul class="list-group">';
+        for (let file of files) {
+            html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${file.name} 
+                        <span class="badge bg-primary rounded-pill">${formatFileSize(file.size)}</span>
+                     </li>`;
+        }
+        html += '</ul>';
+        fileList.innerHTML = html;
+        fileList.style.display = 'block';
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function processFiles() {
+        const formData = new FormData();
+        
+        // Add files
+        for (let file of fileInput.files) {
+            if (toolName === 'pdf-merger') {
+                formData.append('files', file);
+            } else {
+                formData.append('file', file);
+            }
+        }
+        
+        // Add options
+        if (document.getElementById('quality')) {
+            formData.append('quality', document.getElementById('quality').value);
+        }
+        if (document.getElementById('max-width')) {
+            formData.append('max_width', document.getElementById('max-width').value);
+        }
+        if (document.getElementById('max-height')) {
+            formData.append('max_height', document.getElementById('max-height').value);
+        }
+        if (document.getElementById('width')) {
+            formData.append('width', document.getElementById('width').value);
+        }
+        if (document.getElementById('height')) {
+            formData.append('height', document.getElementById('height').value);
+        }
+        if (document.getElementById('maintain-ratio')) {
+            formData.append('maintain_ratio', document.getElementById('maintain-ratio').checked);
+        }
+        
+        submitRequest(formData);
+    }
+    
+    function handleFormSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        
+        // Get form data based on tool type
+        if (toolName === 'emi-calculator') {
+            formData.append('principal', document.getElementById('principal').value);
+            formData.append('rate', document.getElementById('rate').value);
+            formData.append('tenure', document.getElementById('tenure').value);
+        } else if (toolName === 'text-summarizer') {
+            formData.append('text', document.getElementById('input-text').value);
+            formData.append('max_sentences', document.getElementById('max-sentences').value);
+        } else if (toolName === 'qr-code-generator') {
+            formData.append('text', document.getElementById('qr-text').value);
+            formData.append('size', document.getElementById('qr-size').value);
+            formData.append('border', document.getElementById('qr-border').value);
+        } else if (toolName === 'password-generator') {
+            formData.append('length', document.getElementById('password-length').value);
+            formData.append('uppercase', document.getElementById('include-uppercase').checked);
+            formData.append('lowercase', document.getElementById('include-lowercase').checked);
+            formData.append('numbers', document.getElementById('include-numbers').checked);
+            formData.append('symbols', document.getElementById('include-symbols').checked);
+        }
+        
+        submitRequest(formData);
+    }
+    
+    function submitRequest(formData) {
+        // Show processing status
+        document.getElementById('processing-status').style.display = 'block';
+        document.getElementById('results-area').style.display = 'none';
+        
+        // Submit to API
+        fetch(`/api/process-tool/${toolName}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('processing-status').style.display = 'none';
+            displayResults(data);
+        })
+        .catch(error => {
+            document.getElementById('processing-status').style.display = 'none';
+            displayError('Processing failed: ' + error.message);
+        });
+    }
+    
+    function displayResults(data) {
+        const resultsArea = document.getElementById('results-area');
+        const resultContent = document.getElementById('result-content');
+        
+        if (data.success) {
+            let html = `<p>${data.message}</p>`;
+            
+            if (data.download_url) {
+                html += `<a href="${data.download_url}" class="btn btn-success me-2" download>
+                            <i class="ti ti-download me-2"></i>Download Result
+                         </a>`;
+            }
+            
+            if (data.files) {
+                html += '<h6>Download Files:</h6>';
+                for (let file of data.files) {
+                    html += `<a href="${file.download_url}" class="btn btn-outline-success btn-sm me-2 mb-2" download>
+                                <i class="ti ti-download me-1"></i>${file.filename}
+                             </a>`;
+                }
+            }
+            
+            if (data.password) {
+                html += `<div class="mt-3">
+                            <label class="form-label">Generated Password:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" value="${data.password}" readonly>
+                                <button class="btn btn-outline-secondary" onclick="copyToClipboard('${data.password}')">
+                                    <i class="ti ti-copy"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Strength: ${data.strength}</small>
+                         </div>`;
+            }
+            
+            if (data.summary) {
+                html += `<div class="mt-3">
+                            <h6>Summary:</h6>
+                            <div class="border p-3 rounded bg-light">${data.summary}</div>
+                            <small class="text-muted">Original: ${data.original_length} characters, Summary: ${data.summary_length} characters (${data.compression_ratio} compression)</small>
+                         </div>`;
+            }
+            
+            if (data.emi) {
+                html += `<div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h3>₹${data.emi.toLocaleString()}</h3>
+                                        <p>Monthly EMI</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><strong>Total Amount:</strong> ₹${data.total_amount.toLocaleString()}</li>
+                                    <li><strong>Total Interest:</strong> ₹${data.total_interest.toLocaleString()}</li>
+                                    <li><strong>Processing Time:</strong> ${data.processing_time}</li>
+                                </ul>
+                            </div>
+                         </div>`;
+            }
+            
+            resultContent.innerHTML = html;
+        } else {
+            resultContent.innerHTML = `<div class="alert alert-danger">
+                                          <i class="ti ti-alert-circle me-2"></i>
+                                          ${data.error}
+                                       </div>`;
+        }
+        
+        resultsArea.style.display = 'block';
+    }
+    
+    function displayError(message) {
+        const resultsArea = document.getElementById('results-area');
+        const resultContent = document.getElementById('result-content');
+        
+        resultContent.innerHTML = `<div class="alert alert-danger">
+                                      <i class="ti ti-alert-circle me-2"></i>
+                                      ${message}
+                                   </div>`;
+        resultsArea.style.display = 'block';
+    }
+    
+    window.copyToClipboard = function(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            // Show success message
+            const btn = event.target.closest('button');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="ti ti-check"></i>';
+            setTimeout(() => {
+                btn.innerHTML = original;
+            }, 1000);
+        });
+    };
+});
+</script>
+{% endblock %}

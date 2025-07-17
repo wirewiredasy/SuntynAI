@@ -324,58 +324,58 @@ def create_app():
             db.session.add(activity)
             db.session.commit()
         
-        # Map tool names to templates
-        tool_templates = {
-            'pdf-merger': 'tools/pdf_merger.html',
-            'image-compressor': 'tools/image_compressor.html',
-            'emi-calculator': 'tools/emi_calculator.html',
-            'qr-generator': 'tools/qr_generator.html',
-            'text-summarizer': 'tools/text_summarizer.html'
-        }
+        # Find which category this tool belongs to
+        tool_category = None
+        tool_info = None
+        for category, info in TOOL_CATEGORIES.items():
+            tool_display_name = tool_name.replace('-', ' ').title()
+            if tool_display_name in info['tools']:
+                tool_category = category
+                tool_info = info
+                break
         
-        template = tool_templates.get(tool_name, 'tools/default.html')
-        return render_template(template, tool_name=tool_name)
+        return render_template('tool_page.html', 
+                             tool_name=tool_name,
+                             tool_display_name=tool_name.replace('-', ' ').title(),
+                             tool_category=tool_category,
+                             tool_info=tool_info)
     
-    # API endpoints for tools
-    @app.route('/api/tools/<tool_name>', methods=['POST'])
-    def process_tool(tool_name):
+    @app.route('/api/process-tool/<tool_name>', methods=['POST'])
+    def process_tool_api(tool_name):
+        """API endpoint to process tools"""
         try:
-            # Import tool processors
-            from tools.pdf_tools import process_pdf_merger
-            from tools.image_tools import process_image_compressor
-            from tools.finance_tools import process_emi_calculator
-            from tools.utility_tools import process_qr_generator
-            from tools.ai_tools import process_text_summarizer
+            from tools.tool_processor import processor
             
-            # Map tool processors
-            processors = {
-                'pdf-merger': process_pdf_merger,
-                'image-compressor': process_image_compressor,
-                'emi-calculator': process_emi_calculator,
-                'qr-generator': process_qr_generator,
-                'text-summarizer': process_text_summarizer
-            }
+            # Record start time for performance tracking
+            start_time = datetime.now()
             
-            if tool_name in processors:
-                result = processors[tool_name](request)
-                
-                # Log tool usage
-                if current_user.is_authenticated:
-                    activity = UserActivity(
-                        user_id=current_user.id,
-                        tool_name=tool_name,
-                        action='used'
-                    )
-                    db.session.add(activity)
-                    db.session.commit()
-                
-                return jsonify(result)
-            else:
-                return jsonify({'error': 'Tool not found'}), 404
-        
+            # Process the tool
+            result = processor.process_tool(tool_name, request)
+            
+            # Calculate processing time
+            processing_time = (datetime.now() - start_time).total_seconds()
+            
+            # Log tool usage if user is authenticated
+            if current_user.is_authenticated and result.get('success'):
+                history = ToolHistory(
+                    user_id=current_user.id,
+                    tool_name=tool_name,
+                    processing_time=processing_time,
+                    file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
+                )
+                db.session.add(history)
+                db.session.commit()
+            
+            # Add processing time to result
+            result['processing_time'] = f"{processing_time:.2f}s"
+            
+            return jsonify(result)
+            
         except Exception as e:
-            logging.error(f"Error processing tool {tool_name}: {str(e)}")
-            return jsonify({'error': 'Processing failed'}), 500
+            logger.error(f"Tool processing error: {str(e)}")
+            return jsonify({'error': f'Tool processing failed: {str(e)}'}), 500
+        
+
     
     # File serving route
     @app.route('/uploads/<filename>')
