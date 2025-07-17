@@ -15,19 +15,31 @@ class WebSocketClient {
     }
 
     init() {
-        if (typeof io !== 'undefined') {
-            this.connect();
-        } else {
-            console.warn('Socket.IO not available, real-time features disabled');
-        }
+        // Temporarily disable WebSocket to stabilize the application
+        console.log('🔌 WebSocket client initialized (disabled for stability)');
+        this.connected = false;
+        this.updateConnectionStatus(false);
+        
+        // Uncomment below to re-enable WebSocket
+        // if (typeof io !== 'undefined') {
+        //     this.connect();
+        // } else {
+        //     console.warn('Socket.IO not available, real-time features disabled');
+        // }
     }
 
     connect() {
         try {
             this.socket = io({
-                transports: ['websocket', 'polling'],
+                transports: ['polling', 'websocket'],
                 upgrade: true,
-                rememberUpgrade: true
+                rememberUpgrade: false,
+                timeout: 20000,
+                reconnection: true,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                reconnectionAttempts: 5,
+                forceNew: true
             });
 
             this.setupEventHandlers();

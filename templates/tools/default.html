@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tool_name.replace('-', ' ').title() }} - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">{{ tool_name.replace('-', ' ').title() }}</h1>
+                <p class="lead text-muted">Professional AI-powered tool for enhanced productivity</p>
+            </div>
+            
+            <!-- Tool Interface -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-body p-4">
+                    <form id="tool-form" class="tool-form" data-tool="{{ tool_name }}">
+                        <div class="mb-4">
+                            <label for="tool-input" class="form-label fw-semibold">Input</label>
+                            <div class="drag-drop-zone">
+                                <div class="text-center">
+                                    <i class="ti ti-cloud-upload fs-1 text-primary mb-3"></i>
+                                    <p class="mb-3">Drag and drop files here or click to select</p>
+                                    <input type="file" id="tool-input" name="files" class="form-control" multiple>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="text-input" class="form-label fw-semibold">Text Input</label>
+                            <textarea id="text-input" name="text" class="form-control" rows="4" placeholder="Enter text here..."></textarea>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="process-btn">
+                                <i class="ti ti-wand me-2"></i>
+                                Process
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Progress Card -->
+            <div id="progress-card" class="card shadow-sm border-0 mb-4" style="display: none;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="ti ti-loader-2 me-2 text-primary"></i>
+                        <span class="fw-semibold">Processing...</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 6px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small id="progress-text" class="text-muted">Initializing...</small>
+                </div>
+            </div>
+            
+            <!-- Results Card -->
+            <div id="result-card" class="card shadow-sm border-0" style="display: none;">
+                <div class="card-body">
+                    <!-- Success Result -->
+                    <div id="success-result" style="display: none;">
+                        <div class="d-flex align-items-center text-success mb-3">
+                            <i class="ti ti-check-circle me-2"></i>
+                            <span class="fw-semibold">Processing Complete!</span>
+                        </div>
+                        <div id="result-content">
+                            <p class="mb-3">Your file has been processed successfully.</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success" onclick="app.downloadResult()">
+                                    <i class="ti ti-download me-2"></i>
+                                    Download Result
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="app.copyResult()">
+                                    <i class="ti ti-copy me-2"></i>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Error Result -->
+                    <div id="error-result" style="display: none;">
+                        <div class="d-flex align-items-center text-danger mb-3">
+                            <i class="ti ti-alert-circle me-2"></i>
+                            <span class="fw-semibold">Processing Failed</span>
+                        </div>
+                        <div id="error-content">
+                            <p id="error-message" class="text-muted mb-3"></p>
+                            <button class="btn btn-outline-primary" onclick="window.location.reload()">
+                                <i class="ti ti-refresh me-2"></i>
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tool Information -->
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="ti ti-info-circle me-2"></i>
+                        About This Tool
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="ti ti-check text-success me-2"></i>
+                                    Fast processing
+                                </li>
+                                <li class="mb-2">
+                                    <i class="ti ti-check text-success me-2"></i>
+                                    Secure & private
+                                </li>
+                                <li class="mb-2">
+                                    <i class="ti ti-check text-success me-2"></i>
+                                    Professional quality
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="ti ti-check text-success me-2"></i>
+                                    Real-time collaboration
+                                </li>
+                                <li class="mb-2">
+                                    <i class="ti ti-check text-success me-2"></i>
+                                    Offline support
+                                </li>
+                                <li class="mb-2">
+                                    <i class="ti ti-check text-success me-2"></i>
+                                    Mobile friendly
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tool-specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tool functionality
+    const toolForm = document.getElementById('tool-form');
+    const processBtn = document.getElementById('process-btn');
+    
+    if (toolForm) {
+        toolForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (window.app) {
+                window.app.handleToolFormSubmission(this);
+            }
+        });
+    }
+    
+    // File input handling
+    const fileInput = document.getElementById('tool-input');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const files = this.files;
+            if (files.length > 0) {
+                processBtn.disabled = false;
+                processBtn.innerHTML = `<i class="ti ti-wand me-2"></i>Process ${files.length} file${files.length > 1 ? 's' : ''}`;
+            } else {
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<i class="ti ti-wand me-2"></i>Process';
+            }
+        });
+    }
+    
+    // Text input handling
+    const textInput = document.getElementById('text-input');
+    if (textInput) {
+        textInput.addEventListener('input', function() {
+            const hasText = this.value.trim().length > 0;
+            const hasFiles = fileInput && fileInput.files.length > 0;
+            
+            if (hasText || hasFiles) {
+                processBtn.disabled = false;
+            } else {
+                processBtn.disabled = true;
+            }
+        });
+    }
+    
+    // Initialize with disabled state
+    if (processBtn) {
+        processBtn.disabled = true;
+    }
+});
+
+// Helper functions for result handling
+window.app = window.app || {};
+window.app.downloadResult = function() {
+    console.log('Download result requested');
+    // Implementation will be added by specific tools
+};
+
+window.app.copyResult = function() {
+    console.log('Copy result requested');
+    // Implementation will be added by specific tools
+};
+</script>
+{% endblock %}

@@ -224,22 +224,12 @@ class SuntynAI {
     }
 
     initializePWA() {
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.error('Service Worker registration failed:', error);
-                });
-        }
-
         // Handle PWA install prompt
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            window.deferredPrompt = e;
             this.showInstallPrompt();
         });
     }
@@ -247,23 +237,42 @@ class SuntynAI {
     initializeAnimations() {
         // Initialize GSAP animations if available
         if (typeof gsap !== 'undefined') {
-            // Animate cards on scroll
-            gsap.utils.toArray('.tool-card').forEach(card => {
-                gsap.fromTo(card, 
-                    { y: 50, opacity: 0 },
-                    { 
-                        y: 0, 
-                        opacity: 1, 
-                        duration: 0.6,
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 80%",
-                            end: "bottom 20%",
-                            toggleActions: "play none none reverse"
+            // Register ScrollTrigger plugin
+            if (typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // Animate cards on scroll
+                gsap.utils.toArray('.tool-card').forEach(card => {
+                    gsap.fromTo(card, 
+                        { y: 50, opacity: 0 },
+                        { 
+                            y: 0, 
+                            opacity: 1, 
+                            duration: 0.6,
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 80%",
+                                end: "bottom 20%",
+                                toggleActions: "play none none reverse"
+                            }
                         }
-                    }
-                );
-            });
+                    );
+                });
+            } else {
+                console.warn('ScrollTrigger plugin not loaded');
+                // Fallback animation without ScrollTrigger
+                gsap.utils.toArray('.tool-card').forEach(card => {
+                    gsap.fromTo(card, 
+                        { y: 50, opacity: 0 },
+                        { 
+                            y: 0, 
+                            opacity: 1, 
+                            duration: 0.6,
+                            delay: 0.1
+                        }
+                    );
+                });
+            }
         }
     }
 

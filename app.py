@@ -31,17 +31,24 @@ def create_app():
     
     # Initialize extensions
     db.init_app(app)
-    socketio.init_app(app, cors_allowed_origins="*")
+    socketio.init_app(app, 
+                     cors_allowed_origins="*",
+                     ping_timeout=60,
+                     ping_interval=25,
+                     max_http_buffer_size=16 * 1024 * 1024,  # 16MB
+                     async_mode='threading',
+                     logger=False,
+                     engineio_logger=False)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
     
     # Import models and socket events
     from models import User, Tool, UserActivity, ToolHistory
-    from socket_events import register_socket_events
+    # from socket_events import register_socket_events
     
-    # Register socket events
-    register_socket_events(socketio)
+    # Register socket events (disabled for stability)
+    # register_socket_events(socketio)
     
     @login_manager.user_loader
     def load_user(user_id):
