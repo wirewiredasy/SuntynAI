@@ -173,6 +173,93 @@ def create_app():
                              activities=user_activities,
                              history=tool_history)
     
+    @app.route('/pricing')
+    def pricing():
+        return render_template('pricing.html')
+    
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+    
+    @app.route('/contact')
+    def contact():
+        return render_template('contact.html')
+    
+    @app.route('/faq')
+    def faq():
+        return render_template('faq.html')
+    
+    @app.route('/privacy')
+    def privacy():
+        return render_template('privacy.html')
+    
+    @app.route('/terms')
+    def terms():
+        return render_template('terms.html')
+    
+    @app.route('/blog')
+    def blog():
+        return render_template('blog.html')
+    
+    @app.route('/all-tools')
+    def all_tools():
+        return render_template('all_tools.html', categories=TOOL_CATEGORIES)
+    
+    # Tool category routes
+    @app.route('/pdf-tools')
+    def pdf_tools():
+        return render_template('category.html', 
+                             category='PDF Tools',
+                             tools=TOOL_CATEGORIES['PDF Tools']['tools'])
+    
+    @app.route('/image-tools')
+    def image_tools():
+        return render_template('category.html', 
+                             category='Image Tools',
+                             tools=TOOL_CATEGORIES['Image Tools']['tools'])
+    
+    @app.route('/finance-tools')
+    def finance_tools():
+        return render_template('category.html', 
+                             category='Finance Tools',
+                             tools=TOOL_CATEGORIES['Finance Tools']['tools'])
+    
+    @app.route('/ai-tools')
+    def ai_tools():
+        return render_template('category.html', 
+                             category='AI Tools',
+                             tools=TOOL_CATEGORIES['AI Tools']['tools'])
+    
+    @app.route('/video-tools')
+    def video_tools():
+        return render_template('category.html', 
+                             category='Video/Audio Tools',
+                             tools=TOOL_CATEGORIES['Video/Audio Tools']['tools'])
+    
+    @app.route('/dev-tools')
+    def dev_tools():
+        return render_template('category.html', 
+                             category='Utility Tools',
+                             tools=TOOL_CATEGORIES['Utility Tools']['tools'])
+    
+    @app.route('/text-tools')
+    def text_tools():
+        return render_template('category.html', 
+                             category='Utility Tools',
+                             tools=TOOL_CATEGORIES['Utility Tools']['tools'])
+    
+    @app.route('/student-tools')
+    def student_tools():
+        return render_template('category.html', 
+                             category='Student Tools',
+                             tools=TOOL_CATEGORIES['Student Tools']['tools'])
+    
+    @app.route('/government-tools')
+    def government_tools():
+        return render_template('category.html', 
+                             category='Government Tools',
+                             tools=TOOL_CATEGORIES['Government Tools']['tools'])
+    
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':

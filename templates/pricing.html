@@ -1,0 +1,62 @@
+
+{% extends "base.html" %}
+
+{% block title %}Pricing - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Choose Your Plan</h1>
+        <p class="lead">Professional tools for every need</p>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title">Free</h5>
+                    <h2 class="text-primary">$0<small class="text-muted">/month</small></h2>
+                    <ul class="list-unstyled">
+                        <li>✅ 10 tools per day</li>
+                        <li>✅ Basic support</li>
+                        <li>✅ Standard quality</li>
+                    </ul>
+                    <a href="{{ url_for('signup') }}" class="btn btn-outline-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-primary shadow">
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title">Pro</h5>
+                    <h2 class="text-primary">$9<small class="text-muted">/month</small></h2>
+                    <ul class="list-unstyled">
+                        <li>✅ Unlimited tools</li>
+                        <li>✅ Priority support</li>
+                        <li>✅ High quality</li>
+                        <li>✅ API access</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Choose Pro</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title">Enterprise</h5>
+                    <h2 class="text-primary">Custom</h2>
+                    <ul class="list-unstyled">
+                        <li>✅ Everything in Pro</li>
+                        <li>✅ Custom integrations</li>
+                        <li>✅ Dedicated support</li>
+                        <li>✅ SLA guarantee</li>
+                    </ul>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

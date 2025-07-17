@@ -4,37 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Suntyn AI - Professional AI Tools Platform{% endblock %}</title>
-    
+
     <!-- Meta tags for SEO -->
     <meta name="description" content="{% block description %}Professional AI-powered tools platform with 85+ tools for PDF, Image, Finance, and more. Real-time collaboration and offline support.{% endblock %}">
     <meta name="keywords" content="AI tools, PDF tools, Image tools, Finance calculator, Online tools, Productivity">
     <meta name="author" content="Suntyn AI">
-    
+
     <!-- Open Graph -->
     <meta property="og:title" content="{% block og_title %}Suntyn AI - Professional AI Tools Platform{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Professional AI-powered tools platform with 85+ tools{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url }}">
-    
+
     <!-- PWA Meta -->
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Suntyn AI">
-    
+
     <!-- Manifest -->
     <link rel="manifest" href="{{ url_for('static', filename='../manifest.json') }}">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
-    
+
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/icons-sprite.svg" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-    
+
     <!-- Custom styles -->
     <style>
         :root {
@@ -47,28 +47,28 @@
             --dark-bg: #1f2937;
             --dark-surface: #374151;
         }
-        
+
         .glass-morphism {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .tool-card {
             transition: all 0.3s ease;
             border-radius: 16px;
             overflow: hidden;
         }
-        
+
         .tool-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        
+
         .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         }
-        
+
         .loading-spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-top: 3px solid var(--primary-color);
@@ -77,12 +77,12 @@
             height: 24px;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
+
         .drag-drop-zone {
             border: 2px dashed #cbd5e1;
             border-radius: 12px;
@@ -90,54 +90,54 @@
             text-align: center;
             transition: all 0.3s ease;
         }
-        
+
         .drag-drop-zone.dragover {
             border-color: var(--primary-color);
             background-color: rgba(59, 130, 246, 0.1);
         }
-        
+
         .progress-bar {
             height: 6px;
             background-color: #e5e7eb;
             border-radius: 3px;
             overflow: hidden;
         }
-        
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
             transition: width 0.3s ease;
         }
-        
+
         /* Dark mode styles */
         [data-theme="dark"] {
             --tw-bg-opacity: 1;
             background-color: rgb(31 41 55 / var(--tw-bg-opacity));
             color: rgb(243 244 246 / var(--tw-text-opacity));
         }
-        
+
         [data-theme="dark"] .tool-card {
             background-color: rgb(55 65 81 / var(--tw-bg-opacity));
             border-color: rgb(75 85 99 / var(--tw-border-opacity));
         }
-        
+
         [data-theme="dark"] .glass-morphism {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         /* Responsive design */
         @media (max-width: 768px) {
             .hero-section {
                 padding: 2rem 1rem;
             }
-            
+
             .tool-grid {
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
         }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -154,12 +154,12 @@
                     <span class="brand-tagline">Professional Tools</span>
                 </div>
             </a>
-            
+
             <!-- Mobile Toggle -->
             <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <!-- Navigation Items -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
@@ -168,7 +168,7 @@
                             <i class="ti ti-home me-1"></i>Home
                         </a>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link-custom" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="ti ti-tools me-1"></i>Tools
@@ -177,31 +177,31 @@
                             <li class="dropdown-header">
                                 <i class="ti ti-category me-1"></i>Tool Categories
                             </li>
-                            <li><a class="dropdown-item" href="#pdf-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#pdf-tools">
                                 <i class="ti ti-file-text me-2"></i>PDF Tools
                             </a></li>
-                            <li><a class="dropdown-item" href="#image-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#image-tools">
                                 <i class="ti ti-photo me-2"></i>Image Tools
                             </a></li>
-                            <li><a class="dropdown-item" href="#finance-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#finance-tools">
                                 <i class="ti ti-calculator me-2"></i>Finance Tools
                             </a></li>
-                            <li><a class="dropdown-item" href="#ai-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#ai-tools">
                                 <i class="ti ti-brain me-2"></i>AI Tools
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-primary" href="#all-tools">
+                            <li><a class="dropdown-item text-primary" href="{{ url_for('index') }}#all-tools">
                                 <i class="ti ti-apps me-2"></i>View All Tools
                             </a></li>
                         </ul>
                     </li>
-                    
+
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="#pricing">
+                        <a class="nav-link nav-link-custom" href="{{ url_for('pricing') }}">
                             <i class="ti ti-crown me-1"></i>Pricing
                         </a>
                     </li>
-                    
+
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link nav-link-custom" href="{{ url_for('dashboard') }}">
@@ -210,7 +210,7 @@
                     </li>
                     {% endif %}
                 </ul>
-                
+
                 <!-- Right Side Navigation -->
                 <ul class="navbar-nav align-items-center">
                     <!-- Search -->
@@ -220,14 +220,14 @@
                             <i class="ti ti-search search-icon"></i>
                         </div>
                     </li>
-                    
+
                     <!-- Theme Toggle -->
                     <li class="nav-item me-2">
                         <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle theme">
                             <i class="ti ti-sun theme-icon" id="theme-icon"></i>
                         </button>
                     </li>
-                    
+
                     {% if current_user.is_authenticated %}
                     <!-- User Menu -->
                     <li class="nav-item dropdown">
@@ -248,10 +248,10 @@
                             <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
                                 <i class="ti ti-dashboard me-2"></i>Dashboard
                             </a></li>
-                            <li><a class="dropdown-item" href="#profile">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">
                                 <i class="ti ti-user me-2"></i>Profile
                             </a></li>
-                            <li><a class="dropdown-item" href="#settings">
+                            <li><a class="dropdown-item" href="{{ url_for('settings') }}">
                                 <i class="ti ti-settings me-2"></i>Settings
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -277,7 +277,7 @@
             </div>
         </div>
     </nav>
-    
+
     <!-- Main Content -->
     <main class="pt-5 mt-4">
         {% with messages = get_flashed_messages() %}
@@ -292,10 +292,10 @@
                 </div>
             {% endif %}
         {% endwith %}
-        
+
         {% block content %}{% endblock %}
     </main>
-    
+
     <!-- Footer -->
     <footer class="bg-gradient-dark text-white mt-5 py-5">
         <div class="container">
@@ -315,7 +315,7 @@
                         <a href="#" class="text-warning hover-orange"><i class="ti ti-brand-discord"></i></a>
                     </div>
                 </div>
-                
+
                 <!-- Top Searches -->
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3 text-warning">Top Searches</h6>
@@ -330,7 +330,7 @@
                         <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Popular Tools -->
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3 text-warning">Popular Tools</h6>
@@ -345,7 +345,7 @@
                         <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Trending Tools -->
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3 text-warning">Trending Tools</h6>
@@ -360,22 +360,22 @@
                         <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Tools by Category -->
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3 text-warning">Tools by Category</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="#pdf-tools" class="text-light">PDF Tools</a></li>
-                        <li><a href="#image-tools" class="text-light">Image Tools</a></li>
-                        <li><a href="#video-tools" class="text-light">Video Tools</a></li>
-                        <li><a href="#ai-tools" class="text-light">AI Tools</a></li>
-                        <li><a href="#dev-tools" class="text-light">Dev Tools</a></li>
-                        <li><a href="#finance-tools" class="text-light">Finance Tools</a></li>
-                        <li><a href="#text-tools" class="text-light">Text Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#pdf-tools" class="text-light">PDF Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#image-tools" class="text-light">Image Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#video-tools" class="text-light">Video Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#ai-tools" class="text-light">AI Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#dev-tools" class="text-light">Dev Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#finance-tools" class="text-light">Finance Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#text-tools" class="text-light">Text Tools</a></li>
                         <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Best Content -->
                 <div class="col-lg-1 col-md-6 mb-4">
                     <h6 class="mb-3 text-warning">Best Content</h6>
@@ -391,7 +391,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <!-- Apps by Letter -->
             <div class="row mb-4">
                 <div class="col-12">
@@ -426,7 +426,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Social Links -->
             <div class="row mb-4">
                 <div class="col-12 text-center">
@@ -439,23 +439,23 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Footer Links -->
             <div class="row mb-4">
                 <div class="col-12 text-center">
                     <div class="d-flex justify-content-center flex-wrap gap-4 footer-bottom-links">
-                        <a href="#" class="text-light">About</a>
-                        <a href="#" class="text-light">Contact</a>
-                        <a href="#" class="text-light">FAQ</a>
-                        <a href="#" class="text-light">Privacy</a>
-                        <a href="#" class="text-light">Terms</a>
-                        <a href="#" class="text-light">Blog</a>
-                        <a href="#" class="text-light">All Tools</a>
-                        <a href="#" class="text-light">Cookies</a>
+                        <a href="{{ url_for('about') }}" class="text-light">About</a>
+                        <a href="{{ url_for('contact') }}" class="text-light">Contact</a>
+                        <a href="{{ url_for('faq') }}" class="text-light">FAQ</a>
+                        <a href="{{ url_for('privacy') }}" class="text-light">Privacy</a>
+                        <a href="{{ url_for('terms') }}" class="text-light">Terms</a>
+                        <a href="{{ url_for('blog') }}" class="text-light">Blog</a>
+                        <a href="{{ url_for('all_tools') }}" class="text-light">All Tools</a>
+                        <a href="{{ url_for('cookies') }}" class="text-light">Cookies</a>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Copyright -->
             <hr class="my-4 border-secondary">
             <div class="row align-items-center">
@@ -472,7 +472,7 @@
             </div>
         </div>
     </footer>
-    
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
@@ -483,9 +483,9 @@
     <script src="{{ url_for('static', filename='js/websocket.js') }}"></script>
     <script src="{{ url_for('static', filename='js/drag-drop.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    
+
     {% block extra_js %}{% endblock %}
-    
+
     <!-- PWA Install -->
     <script>
         // Service Worker Registration with better error handling

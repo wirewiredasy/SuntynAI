@@ -1,0 +1,36 @@
+
+{% extends "base.html" %}
+
+{% block title %}All Tools - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">All Tools</h1>
+        <p class="lead">Complete collection of 85+ professional tools</p>
+    </div>
+    
+    {% for category_name, category_data in categories.items() %}
+    <div class="mb-5" id="{{ category_name.lower().replace(' ', '-') }}">
+        <h2 class="mb-4">
+            <i class="ti ti-{{ category_data.icon }} me-2 text-{{ category_data.color }}"></i>
+            {{ category_name }}
+        </h2>
+        <div class="row">
+            {% for tool in category_data.tools %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card tool-card h-100">
+                    <div class="card-body text-center p-3">
+                        <h6 class="card-title">{{ tool }}</h6>
+                        <a href="{{ url_for('tool_page', tool_name=tool.lower().replace(' ', '-')) }}" class="btn btn-sm btn-primary">
+                            Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
