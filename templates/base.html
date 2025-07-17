@@ -227,66 +227,177 @@
     </main>
     
     <!-- Footer -->
-    <footer class="bg-dark text-white mt-5 py-5">
+    <footer class="bg-gradient-dark text-white mt-5 py-5">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
+            <!-- Main Footer Content -->
+            <div class="row mb-5">
+                <!-- Company Info -->
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="mb-3">
-                        <span class="text-primary">🚀</span>
-                        Suntyn AI
+                        <span class="text-warning">🚀</span>
+                        <span class="gradient-text-footer">Suntyn AI</span>
                     </h5>
-                    <p class="text-muted">Professional AI-powered tools platform with 85+ tools for productivity and efficiency.</p>
+                    <p class="text-light mb-3">Professional AI-powered tools platform with 85+ tools for productivity and efficiency.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-warning hover-orange"><i class="ti ti-brand-twitter"></i></a>
+                        <a href="#" class="text-warning hover-orange"><i class="ti ti-brand-linkedin"></i></a>
+                        <a href="#" class="text-warning hover-orange"><i class="ti ti-brand-github"></i></a>
+                        <a href="#" class="text-warning hover-orange"><i class="ti ti-brand-discord"></i></a>
+                    </div>
                 </div>
                 
-                <div class="col-md-2">
-                    <h6 class="mb-3">Tools</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-muted">PDF Tools</a></li>
-                        <li><a href="#" class="text-muted">Image Tools</a></li>
-                        <li><a href="#" class="text-muted">Finance Tools</a></li>
-                        <li><a href="#" class="text-muted">AI Tools</a></li>
+                <!-- Top Searches -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-warning">Top Searches</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light">PDF Merge</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light">Image Compress</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='qr-generator') }}" class="text-light">QR Generator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='text-summarizer') }}" class="text-light">Text Summary</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light">EMI Calculator</a></li>
+                        <li><a href="#" class="text-light">Resume Generator</a></li>
+                        <li><a href="#" class="text-light">QR Generator</a></li>
+                        <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-md-2">
-                    <h6 class="mb-3">Support</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-muted">Help Center</a></li>
-                        <li><a href="#" class="text-muted">Contact Us</a></li>
-                        <li><a href="#" class="text-muted">API Docs</a></li>
-                        <li><a href="#" class="text-muted">Status</a></li>
+                <!-- Popular Tools -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-warning">Popular Tools</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#" class="text-light">Video Trim</a></li>
+                        <li><a href="#" class="text-light">Image Resize</a></li>
+                        <li><a href="#" class="text-light">PDF Compress</a></li>
+                        <li><a href="#" class="text-light">Password Generator</a></li>
+                        <li><a href="#" class="text-light">Color Picker</a></li>
+                        <li><a href="#" class="text-light">Handwriting to Text</a></li>
+                        <li><a href="#" class="text-light">Subtitle Generator</a></li>
+                        <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-md-2">
-                    <h6 class="mb-3">Company</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-muted">About Us</a></li>
-                        <li><a href="#" class="text-muted">Privacy</a></li>
-                        <li><a href="#" class="text-muted">Terms</a></li>
-                        <li><a href="#" class="text-muted">Blog</a></li>
+                <!-- Trending Tools -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-warning">Trending Tools</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#" class="text-light">Business Name Generator</a></li>
+                        <li><a href="#" class="text-light">Meme Generator</a></li>
+                        <li><a href="#" class="text-light">Mindmap Creator</a></li>
+                        <li><a href="#" class="text-light">Handwriting to Text</a></li>
+                        <li><a href="#" class="text-light">Subtitle Generator</a></li>
+                        <li><a href="#" class="text-light">Voice Generator</a></li>
+                        <li><a href="#" class="text-light">Background Remover</a></li>
+                        <li><a href="#" class="text-warning">Show more</a></li>
                     </ul>
                 </div>
                 
-                <div class="col-md-2">
-                    <h6 class="mb-3">Follow Us</h6>
-                    <div class="d-flex gap-2">
-                        <a href="#" class="text-muted"><i class="ti ti-brand-twitter"></i></a>
-                        <a href="#" class="text-muted"><i class="ti ti-brand-linkedin"></i></a>
-                        <a href="#" class="text-muted"><i class="ti ti-brand-github"></i></a>
-                        <a href="#" class="text-muted"><i class="ti ti-brand-discord"></i></a>
+                <!-- Tools by Category -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3 text-warning">Tools by Category</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#pdf-tools" class="text-light">PDF Tools</a></li>
+                        <li><a href="#image-tools" class="text-light">Image Tools</a></li>
+                        <li><a href="#video-tools" class="text-light">Video Tools</a></li>
+                        <li><a href="#ai-tools" class="text-light">AI Tools</a></li>
+                        <li><a href="#dev-tools" class="text-light">Dev Tools</a></li>
+                        <li><a href="#finance-tools" class="text-light">Finance Tools</a></li>
+                        <li><a href="#text-tools" class="text-light">Text Tools</a></li>
+                        <li><a href="#" class="text-warning">Show more</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Best Content -->
+                <div class="col-lg-1 col-md-6 mb-4">
+                    <h6 class="mb-3 text-warning">Best Content</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#" class="text-light">Best PDF Tools</a></li>
+                        <li><a href="#" class="text-light">Best Image Tools</a></li>
+                        <li><a href="#" class="text-light">Best AI Tools</a></li>
+                        <li><a href="#" class="text-light">Best Video Tools</a></li>
+                        <li><a href="#" class="text-light">Best Student Tools</a></li>
+                        <li><a href="#" class="text-light">Best Business Tools</a></li>
+                        <li><a href="#" class="text-light">Best Dev Tools</a></li>
+                        <li><a href="#" class="text-warning">Show more</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Apps by Letter -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h6 class="mb-3 text-warning">Apps by Letter</h6>
+                    <div class="d-flex flex-wrap gap-3 apps-letters">
+                        <a href="#" class="text-light letter-link">A</a>
+                        <a href="#" class="text-light letter-link">B</a>
+                        <a href="#" class="text-light letter-link">C</a>
+                        <a href="#" class="text-light letter-link">D</a>
+                        <a href="#" class="text-light letter-link">E</a>
+                        <a href="#" class="text-light letter-link">F</a>
+                        <a href="#" class="text-light letter-link">G</a>
+                        <a href="#" class="text-light letter-link">H</a>
+                        <a href="#" class="text-light letter-link">I</a>
+                        <a href="#" class="text-light letter-link">J</a>
+                        <a href="#" class="text-light letter-link">K</a>
+                        <a href="#" class="text-light letter-link">L</a>
+                        <a href="#" class="text-light letter-link">M</a>
+                        <a href="#" class="text-light letter-link">N</a>
+                        <a href="#" class="text-light letter-link">O</a>
+                        <a href="#" class="text-light letter-link">P</a>
+                        <a href="#" class="text-light letter-link">Q</a>
+                        <a href="#" class="text-light letter-link">R</a>
+                        <a href="#" class="text-light letter-link">S</a>
+                        <a href="#" class="text-light letter-link">T</a>
+                        <a href="#" class="text-light letter-link">U</a>
+                        <a href="#" class="text-light letter-link">V</a>
+                        <a href="#" class="text-light letter-link">W</a>
+                        <a href="#" class="text-light letter-link">X</a>
+                        <a href="#" class="text-light letter-link">Y</a>
+                        <a href="#" class="text-light letter-link">Z</a>
                     </div>
                 </div>
             </div>
             
-            <hr class="my-4">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="text-muted mb-0">&copy; 2024 Suntyn AI. All rights reserved.</p>
+            <!-- Social Links -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <div class="d-flex justify-content-center gap-4 social-links">
+                        <a href="#" class="text-warning"><i class="ti ti-brand-facebook"></i></a>
+                        <a href="#" class="text-warning"><i class="ti ti-brand-twitter"></i></a>
+                        <a href="#" class="text-warning"><i class="ti ti-brand-instagram"></i></a>
+                        <a href="#" class="text-warning"><i class="ti ti-brand-youtube"></i></a>
+                        <a href="#" class="text-warning"><i class="ti ti-brand-linkedin"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="text-muted mb-0">Made with ❤️ using Flask & AI</p>
+            </div>
+            
+            <!-- Footer Links -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <div class="d-flex justify-content-center flex-wrap gap-4 footer-bottom-links">
+                        <a href="#" class="text-light">About</a>
+                        <a href="#" class="text-light">Contact</a>
+                        <a href="#" class="text-light">FAQ</a>
+                        <a href="#" class="text-light">Privacy</a>
+                        <a href="#" class="text-light">Terms</a>
+                        <a href="#" class="text-light">Blog</a>
+                        <a href="#" class="text-light">All Tools</a>
+                        <a href="#" class="text-light">Cookies</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <hr class="my-4 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-light mb-0">
+                        <span class="text-warning">©</span> 2024 Suntyn AI. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="text-light mb-0">
+                        Made with <span class="text-warning">❤️</span> using Flask & AI
+                    </p>
                 </div>
             </div>
         </div>
