@@ -267,50 +267,126 @@ function initializeToolForms() {
     });
 }
 
-// Handle tool form submission with professional AI-like interface
-async function handleToolSubmission(form) {
-    const toolName = form.dataset.tool;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const resultDiv = document.getElementById('tool-result') || createResultDiv();
-    
-    // Professional AI-like processing interface
-
-    if (!toolName) {
-        showError('Tool name not specified');
-        return;
-    }
-
-    // Show loading state
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
-
+// Tool form submission handler
+async function handleToolSubmission(toolName) {
     try {
-        const formData = new FormData(form);
+        const form = document.getElementById(`${toolName}-form`);
+        if (!form) {
+            console.warn(`Form not found for tool: ${toolName}`);
+            return;
+        }
 
+        const formData = new FormData(form);
         formData.append('tool_name', toolName);
-        
+
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn ? submitBtn.textContent : 'Process';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        }
+
+        // Show processing message
+        showNotification('Processing your request...', 'info');
+
+        // Submit to backend
         const response = await fetch('/process-tool', {
             method: 'POST',
             body: formData
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const result = await response.json();
 
-        if (result.success) {
-            showProfessionalSuccess(result);
-        } else {
-            showProfessionalError(result.error || 'Processing failed');
-        }
+        // Display results
+        displayToolResult(result, toolName);
 
     } catch (error) {
         console.error('Tool processing error:', error);
-        showProfessionalError('Network error occurred. Please try again.');
+        showNotification('Tool processing failed. Please try again.', 'error');
     } finally {
         // Reset button
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
+        const submitBtn = document.querySelector(`#${toolName}-form button[type="submit"]`);
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     }
+}
+
+// Display tool results
+function displayToolResult(result, toolName) {
+    let resultContainer = document.getElementById(`${toolName}-result`);
+
+    // If specific result container not found, create or find a generic one
+    if (!resultContainer) {
+        resultContainer = document.querySelector('.tool-result') || 
+                         document.querySelector('.result-container');
+
+        // If still not found, create one
+        if (!resultContainer) {
+            const toolForm = document.getElementById(`${toolName}-form`);
+            if (toolForm) {
+                resultContainer = document.createElement('div');
+                resultContainer.className = 'result-container mt-4';
+                resultContainer.id = `${toolName}-result`;
+                toolForm.parentNode.insertBefore(resultContainer, toolForm.nextSibling);
+            } else {
+                console.error('Could not find or create result container');
+                return;
+            }
+        }
+    }
+
+    if (result.success) {
+        let resultHTML = `
+            <div class="alert alert-success">
+                <h5><i class="fas fa-check-circle"></i> Success!</h5>
+                <p>${result.message}</p>
+        `;
+
+        // Add download link if available
+        if (result.download_url) {
+            resultHTML += `<a href="${result.download_url}" class="btn btn-primary mt-2" download><i class="fas fa-download"></i> Download Result</a>`;
+        }
+
+        // Add specific result data
+        if (result.password) {
+            resultHTML += `<div class="mt-3"><strong>Generated Password:</strong><br><code>${result.password}</code></div>`;
+        }
+
+        if (result.emi) {
+            resultHTML += `<div class="mt-3"><strong>EMI:</strong> ₹${result.emi}</div>`;
+        }
+
+        if (result.summary) {
+            resultHTML += `<div class="mt-3"><strong>Summary:</strong><br>${result.summary}</div>`;
+        }
+
+        // Generic result display
+        if (result.result && typeof result.result === 'object') {
+            resultHTML += `<div class="mt-3"><strong>Details:</strong><br><pre class="bg-light p-2">${JSON.stringify(result.result, null, 2)}</pre></div>`;
+        }
+
+        resultHTML += '</div>';
+        resultContainer.innerHTML = resultHTML;
+        showNotification(result.message, 'success');
+    } else {
+        resultContainer.innerHTML = `
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+                <p>${result.error || 'An unexpected error occurred'}</p>
+            </div>
+        `;
+        showNotification(result.error || 'Processing failed', 'error');
+    }
+
+    // Scroll to result
+    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // Professional AI-like success display
@@ -331,7 +407,7 @@ function showProfessionalSuccess(result) {
                         <p class="text-muted mb-0">${result.message || 'Your request has been processed successfully'}</p>
                     </div>
                 </div>
-                
+
                 ${result.processing_time ? `
                     <div class="d-flex align-items-center text-muted mb-3">
                         <i class="ti ti-clock me-2"></i>

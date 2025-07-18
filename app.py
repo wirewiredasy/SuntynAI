@@ -293,14 +293,28 @@ def create_app():
             if not tool_name:
                 return jsonify({'success': False, 'error': 'Tool name is required'}), 400
 
-            # Import universal tool processor
-            from tools.universal_processor import UniversalToolProcessor
-            processor = UniversalToolProcessor()
+            logging.info(f"Processing tool: {tool_name}")
+
+            # Try to import and use universal processor
+            try:
+                from tools.universal_processor import UniversalToolProcessor
+                processor = UniversalToolProcessor()
+                logging.info("Universal processor loaded successfully")
+            except ImportError as ie:
+                logging.warning(f"Universal processor import failed: {ie}")
+                # Fallback to basic processor
+                from tools.tool_processor import ToolProcessor
+                processor = ToolProcessor()
+                logging.info("Fallback to basic processor")
             
             # Process the tool
             start_time = datetime.now()
             result = processor.process_tool(tool_name, request.files, request.form)
             processing_time = (datetime.now() - start_time).total_seconds()
+
+            # Ensure result is a dict
+            if not isinstance(result, dict):
+                result = {'success': True, 'message': 'Tool processed successfully', 'result': str(result)}
 
             # Log activity and history if user is logged in
             if current_user.is_authenticated:
@@ -332,20 +346,16 @@ def create_app():
 
             # Add processing time to result
             result['processing_time'] = f"{processing_time:.2f}s"
+            
+            logging.info(f"Tool {tool_name} processed successfully: {result.get('success', False)}")
             return jsonify(result)
 
-        except ImportError as import_error:
-            logging.error(f"Tool processor import error: {str(import_error)}")
-            return jsonify({
-                'success': False,
-                'error': 'Tool processor not available. Please try again later.'
-            }), 503
-
         except Exception as e:
-            logging.error(f"Tool processing error: {str(e)}")
+            logging.error(f"Tool processing error for {tool_name}: {str(e)}")
             return jsonify({
                 'success': False,
-                'error': f'Tool processing failed: {str(e)}'
+                'error': f'Tool processing failed: {str(e)}',
+                'tool_name': tool_name
             }), 500
 
     # File serving route
