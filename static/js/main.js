@@ -1013,8 +1013,7 @@ SuntynAI.prototype.initializeCSSAnimations = function() {
 // Utility Methods
 SuntynAI.prototype.showNotification = function(message, type = 'info', duration = 5000) {
     const container = document.getElementById('notification-container');
-    ```text
-if (!container) return;
+    if (!container) return;
 
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show`;
