@@ -1,609 +1,537 @@
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Suntyn AI - 85+ Professional AI Tools Platform{% endblock %}</title>
+{% block title %}Suntyn AI - 85+ Professional AI Tools Platform{% endblock %}
+
+{% block content %}
+<!-- Next-Gen Interactive 3D Hero Section -->
+<div class="hero-3d-container position-relative overflow-hidden">
+    <!-- Dynamic Background -->
+    <div class="dynamic-bg">
+        <canvas id="hero-canvas" class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+        <div class="gradient-overlay"></div>
+    </div>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Tabler Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@2.40.0/icons-sprite.svg">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    
-    <!-- GSAP for animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    
-    <!-- Three.js for 3D effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Lenis smooth scroll -->
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1/bundled/lenis.min.js"></script>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg professional-navbar fixed-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
-                <div class="brand-logo me-3">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="40" height="40" rx="12" fill="url(#gradient)"/>
-                        <path d="M12 20L20 12L28 20L20 28L12 20Z" fill="white"/>
-                        <defs>
-                            <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
-                                <stop offset="0%" stop-color="#6366f1"/>
-                                <stop offset="100%" stop-color="#8b5cf6"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <div class="brand-text">
-                    <div class="brand-name">Suntyn AI</div>
-                    <div class="brand-tagline">85+ Tools</div>
-                </div>
-            </a>
-            
-            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ url_for('index') }}">
-                            <i class="ti ti-home me-1"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="ti ti-tools me-1"></i>Tools
-                        </a>
-                        <ul class="dropdown-menu custom-dropdown">
-                            <li><h6 class="dropdown-header">Popular Categories</h6></li>
-                            <li><a class="dropdown-item" href="{{ url_for('category', category_name='pdf-tools') }}">
-                                <i class="ti ti-file-text me-2"></i>PDF Tools
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('category', category_name='image-tools') }}">
-                                <i class="ti ti-photo me-2"></i>Image Tools
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('category', category_name='finance-tools') }}">
-                                <i class="ti ti-coin me-2"></i>Finance Tools
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('all_tools') }}">
-                                <i class="ti ti-grid-dots me-2"></i>All Tools
-                            </a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ url_for('about') }}">
-                            <i class="ti ti-info-circle me-1"></i>About
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ url_for('contact') }}">
-                            <i class="ti ti-mail me-1"></i>Contact
-                        </a>
-                    </li>
-                </ul>
-                
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Search -->
-                    <div class="search-container">
-                        <input type="text" class="form-control search-input" placeholder="Search tools...">
-                        <i class="ti ti-search search-icon"></i>
+    <div class="container position-relative" style="z-index: 10;">
+        <div class="row align-items-center min-vh-100 py-5">
+            <div class="col-lg-5">
+                <div class="hero-content-3d">
+                    <!-- Floating Badge -->
+                    <div class="floating-badge mb-4">
+                        <div class="badge-3d">
+                            <span class="badge-icon">✨</span>
+                            <span class="badge-text">85+ AI-Powered Tools</span>
+                            <div class="badge-pulse"></div>
+                        </div>
                     </div>
                     
-                    <!-- Theme Toggle -->
-                    <button class="theme-toggle-btn" id="themeToggle">
-                        <i class="ti ti-sun theme-icon"></i>
-                    </button>
+                    <!-- 3D Title -->
+                    <h1 class="hero-title-3d">
+                        <span class="title-word" data-text="Transform">Transform</span>
+                        <span class="title-word gradient-3d" data-text="Your">Your</span>
+                        <span class="title-word" data-text="Digital">Digital</span>
+                        <span class="title-word highlight-3d" data-text="Workflow">Workflow</span>
+                    </h1>
                     
-                    <!-- User Menu -->
-                    {% if current_user.is_authenticated %}
-                    <div class="dropdown">
-                        <a href="#" class="user-menu dropdown-toggle" data-bs-toggle="dropdown">
-                            <div class="user-avatar">
-                                {{ current_user.name[0].upper() if current_user.name else 'U' }}
+                    <!-- Interactive Subtitle -->
+                    <div class="subtitle-3d">
+                        <p class="typing-text">
+                            Harness the power of AI with our comprehensive suite of professional tools.
+                            <span class="highlight-bubble">PDF processing</span>, 
+                            <span class="highlight-bubble">image editing</span>, 
+                            <span class="highlight-bubble">financial calculations</span> - 
+                            all in one powerful platform.
+                        </p>
+                    </div>
+                    
+                    <!-- 3D Action Buttons -->
+                    <div class="action-buttons-3d">
+                        <a href="#tools-section" class="btn-3d btn-primary-3d">
+                            <span class="btn-content">
+                                <i class="btn-icon">🚀</i>
+                                <span class="btn-text">Start Creating</span>
+                            </span>
+                            <div class="btn-particles"></div>
+                        </a>
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('signup') }}" class="btn-3d btn-secondary-3d">
+                            <span class="btn-content">
+                                <i class="btn-icon">✨</i>
+                                <span class="btn-text">Join Free</span>
+                            </span>
+                            <div class="btn-glow"></div>
+                        </a>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Floating Stats -->
+                    <div class="floating-stats">
+                        <div class="stat-bubble" data-count="85">
+                            <div class="stat-number">85+</div>
+                            <div class="stat-label">Tools</div>
+                        </div>
+                        <div class="stat-bubble" data-count="8">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Categories</div>
+                        </div>
+                        <div class="stat-bubble" data-count="10000">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Users</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7">
+                <div class="hero-visual-3d">
+                    <!-- Main 3D Scene -->
+                    <div class="scene-3d" id="tool-scene">
+                        <!-- Central AI Core -->
+                        <div class="ai-core">
+                            <div class="core-sphere">
+                                <div class="core-inner">
+                                    <div class="ai-symbol">🧠</div>
+                                </div>
+                                <div class="core-rings">
+                                    <div class="ring ring-1"></div>
+                                    <div class="ring ring-2"></div>
+                                    <div class="ring ring-3"></div>
+                                </div>
                             </div>
-                            <span class="user-name">{{ current_user.name or 'User' }}</span>
-                        </a>
-                        <ul class="dropdown-menu user-dropdown">
-                            <li class="user-info">
-                                <strong>{{ current_user.name or 'User' }}</strong>
-                                <small class="text-muted d-block">{{ current_user.email }}</small>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
-                                <i class="ti ti-dashboard me-2"></i>Dashboard
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                                <i class="ti ti-logout me-2"></i>Logout
-                            </a></li>
-                        </ul>
+                        </div>
+                        
+                        <!-- Floating Tool Cubes -->
+                        <div class="tool-cubes">
+                            <div class="tool-cube cube-pdf" data-tool="PDF Tools">
+                                <div class="cube-face cube-front">📄</div>
+                                <div class="cube-face cube-back">📋</div>
+                                <div class="cube-face cube-right">📊</div>
+                                <div class="cube-face cube-left">📝</div>
+                                <div class="cube-face cube-top">🔗</div>
+                                <div class="cube-face cube-bottom">⚡</div>
+                            </div>
+                            
+                            <div class="tool-cube cube-image" data-tool="Image Editor">
+                                <div class="cube-face cube-front">🖼️</div>
+                                <div class="cube-face cube-back">🎨</div>
+                                <div class="cube-face cube-right">📸</div>
+                                <div class="cube-face cube-left">✨</div>
+                                <div class="cube-face cube-top">🌈</div>
+                                <div class="cube-face cube-bottom">🔧</div>
+                            </div>
+                            
+                            <div class="tool-cube cube-finance" data-tool="Financial Tools">
+                                <div class="cube-face cube-front">💰</div>
+                                <div class="cube-face cube-back">📈</div>
+                                <div class="cube-face cube-right">💳</div>
+                                <div class="cube-face cube-left">🏦</div>
+                                <div class="cube-face cube-top">📊</div>
+                                <div class="cube-face cube-bottom">💎</div>
+                            </div>
+                            
+                            <div class="tool-cube cube-ai" data-tool="AI Content">
+                                <div class="cube-face cube-front">🤖</div>
+                                <div class="cube-face cube-back">💭</div>
+                                <div class="cube-face cube-right">✍️</div>
+                                <div class="cube-face cube-left">🎯</div>
+                                <div class="cube-face cube-top">🔮</div>
+                                <div class="cube-face cube-bottom">⚡</div>
+                            </div>
+                            
+                            <div class="tool-cube cube-utility" data-tool="Utilities">
+                                <div class="cube-face cube-front">🔧</div>
+                                <div class="cube-face cube-back">🔨</div>
+                                <div class="cube-face cube-right">⚙️</div>
+                                <div class="cube-face cube-left">🛠️</div>
+                                <div class="cube-face cube-top">🔩</div>
+                                <div class="cube-face cube-bottom">⚡</div>
+                            </div>
+                            
+                            <div class="tool-cube cube-convert" data-tool="Converters">
+                                <div class="cube-face cube-front">🔄</div>
+                                <div class="cube-face cube-back">↔️</div>
+                                <div class="cube-face cube-right">🔀</div>
+                                <div class="cube-face cube-left">⇄</div>
+                                <div class="cube-face cube-top">🔃</div>
+                                <div class="cube-face cube-bottom">⚡</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Energy Connections -->
+                        <div class="energy-lines">
+                            <svg class="connection-svg" viewBox="0 0 600 600">
+                                <defs>
+                                    <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:0.8" />
+                                        <stop offset="100%" style="stop-color:#ffff00;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path class="energy-path path-1" d="M300,300 Q150,150 100,100" />
+                                <path class="energy-path path-2" d="M300,300 Q450,150 500,100" />
+                                <path class="energy-path path-3" d="M300,300 Q150,450 100,500" />
+                                <path class="energy-path path-4" d="M300,300 Q450,450 500,500" />
+                                <path class="energy-path path-5" d="M300,300 Q300,150 300,100" />
+                                <path class="energy-path path-6" d="M300,300 Q300,450 300,500" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Floating Data Particles -->
+                        <div class="data-particles">
+                            <div class="particle binary">01</div>
+                            <div class="particle binary">10</div>
+                            <div class="particle binary">11</div>
+                            <div class="particle symbol">∞</div>
+                            <div class="particle symbol">∑</div>
+                            <div class="particle symbol">π</div>
+                        </div>
+                        
+                        <!-- Tool Info Panel -->
+                        <div class="tool-info-panel" id="tool-info">
+                            <div class="panel-content">
+                                <h3 class="panel-title">Hover over tools to explore</h3>
+                                <p class="panel-description">Interactive 3D showcase of our AI-powered tools</p>
+                                <div class="panel-features">
+                                    <span class="feature-tag">Real-time</span>
+                                    <span class="feature-tag">Secure</span>
+                                    <span class="feature-tag">Fast</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    {% else %}
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary auth-btn">
-                        <i class="ti ti-login"></i>Login
-                    </a>
-                    <a href="{{ url_for('signup') }}" class="btn btn-primary auth-btn">
-                        <i class="ti ti-user-plus"></i>Sign Up
-                    </a>
-                    {% endif %}
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+    
+    <!-- Advanced Scroll Indicator -->
+    <div class="scroll-indicator-3d">
+        <div class="scroll-animation">
+            <div class="scroll-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="scroll-text">Scroll to explore tools</div>
+        </div>
+    </div>
+</div>
 
-    <!-- Advanced Interactive Hero Section -->
-    <section class="hero-interactive-demo">
-        <div class="container-fluid h-100">
-            <div class="row h-100">
-                <!-- Left Side - Content -->
-                <div class="col-lg-6 hero-content-wrapper">
-                    <div class="hero-content">
-                        <div class="hero-badge">
-                            <span class="badge-dot"></span>
-                            <span>85+ Professional AI Tools</span>
-                            <div class="badge-glow"></div>
-                        </div>
-                        
-                        <h1 class="hero-title">
-                            <span class="title-line gradient-text">Transform Your</span>
-                            <span class="title-line main-text">Digital Workflow</span>
-                            <span class="title-line sub-text">with AI-Powered Tools</span>
-                        </h1>
-                        
-                        <p class="hero-description">
-                            Experience the power of AI with our comprehensive suite of professional tools. 
-                            From PDF processing to image editing, financial calculations to content generation - 
-                            all in one seamless platform.
-                        </p>
-                        
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <div class="stat-number" data-target="85">0</div>
-                                <div class="stat-label">AI Tools</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" data-target="8">0</div>
-                                <div class="stat-label">Categories</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" data-target="10000">0</div>
-                                <div class="stat-label">Users</div>
-                            </div>
-                        </div>
-                        
-                        <div class="hero-actions">
-                            <a href="#demo-section" class="btn btn-primary btn-hero">
-                                <span>Try Demo</span>
-                                <i class="ti ti-arrow-right"></i>
+<!-- Search Section -->
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="search-section">
+                <div class="position-relative">
+                    <input type="text" id="tool-search" class="form-control form-control-lg" placeholder="Search tools...">
+                    <i class="ti ti-search position-absolute top-50 end-0 translate-middle-y me-3"></i>
+                </div>
+                <div class="search-filters mt-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-primary btn-sm filter-btn active" data-filter="all">All</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="pdf">PDF</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="image">Image</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="finance">Finance</button>
+                        <button class="btn btn-outline-primary btn-sm filter-btn" data-filter="ai">AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Access Section -->
+{% if current_user.is_authenticated and (recent_tools or most_used_tools) %}
+<div class="container mb-5">
+    <div class="row">
+        {% if recent_tools %}
+        <div class="col-md-6">
+            <h3 class="mb-3">
+                <i class="ti ti-clock text-primary"></i>
+                Recently Used
+            </h3>
+            <div class="row">
+                {% for tool in recent_tools %}
+                <div class="col-md-6 mb-3">
+                    <div class="card tool-card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ tool.replace('-', ' ').title() }}</h6>
+                            <a href="{{ url_for('tool_page', tool_name=tool) }}" class="btn btn-sm btn-primary">
+                                Use Tool
                             </a>
-                            {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('signup') }}" class="btn btn-outline-primary btn-hero">
-                                <span>Start Free</span>
-                                <i class="ti ti-external-link"></i>
-                            </a>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
-                
-                <!-- Right Side - Interactive Demo -->
-                <div class="col-lg-6 demo-wrapper">
-                    <div class="demo-container">
-                        <div class="demo-tabs">
-                            <button class="demo-tab active" data-demo="pdf">PDF Tools</button>
-                            <button class="demo-tab" data-demo="image">Image Editor</button>
-                            <button class="demo-tab" data-demo="qr">QR Generator</button>
-                            <button class="demo-tab" data-demo="ai">AI Content</button>
-                        </div>
-                        
-                        <!-- PDF Demo -->
-                        <div class="demo-panel active" id="demo-pdf">
-                            <div class="demo-screen">
-                                <div class="demo-header">
-                                    <div class="demo-title">PDF Merger Tool</div>
-                                    <div class="demo-subtitle">Merge multiple PDFs instantly</div>
-                                </div>
-                                <div class="demo-content">
-                                    <div class="file-list">
-                                        <div class="file-item">
-                                            <i class="ti ti-file-text"></i>
-                                            <span>document1.pdf</span>
-                                            <div class="file-progress">
-                                                <div class="progress-bar" style="width: 100%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="file-item">
-                                            <i class="ti ti-file-text"></i>
-                                            <span>document2.pdf</span>
-                                            <div class="file-progress">
-                                                <div class="progress-bar" style="width: 100%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="file-item">
-                                            <i class="ti ti-file-text"></i>
-                                            <span>document3.pdf</span>
-                                            <div class="file-progress">
-                                                <div class="progress-bar" style="width: 75%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="demo-action">
-                                        <button class="btn-demo-action">
-                                            <i class="ti ti-download"></i>
-                                            Download Merged PDF
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Image Demo -->
-                        <div class="demo-panel" id="demo-image">
-                            <div class="demo-screen">
-                                <div class="demo-header">
-                                    <div class="demo-title">Image Compressor</div>
-                                    <div class="demo-subtitle">Reduce image size by 70%</div>
-                                </div>
-                                <div class="demo-content">
-                                    <div class="image-comparison">
-                                        <div class="image-before">
-                                            <div class="image-placeholder">
-                                                <i class="ti ti-photo"></i>
-                                                <div class="image-info">
-                                                    <div class="image-size">2.4 MB</div>
-                                                    <div class="image-dims">1920x1080</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="compression-arrow">
-                                            <i class="ti ti-arrow-right"></i>
-                                        </div>
-                                        <div class="image-after">
-                                            <div class="image-placeholder compressed">
-                                                <i class="ti ti-photo"></i>
-                                                <div class="image-info">
-                                                    <div class="image-size">720 KB</div>
-                                                    <div class="image-dims">1920x1080</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="compression-stats">
-                                        <div class="stat">
-                                            <span class="label">Compression:</span>
-                                            <span class="value">70%</span>
-                                        </div>
-                                        <div class="stat">
-                                            <span class="label">Quality:</span>
-                                            <span class="value">95%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- QR Demo -->
-                        <div class="demo-panel" id="demo-qr">
-                            <div class="demo-screen">
-                                <div class="demo-header">
-                                    <div class="demo-title">QR Code Generator</div>
-                                    <div class="demo-subtitle">Create custom QR codes</div>
-                                </div>
-                                <div class="demo-content">
-                                    <div class="qr-input">
-                                        <input type="text" placeholder="Enter URL or text..." value="https://suntyn-ai.com">
-                                    </div>
-                                    <div class="qr-output">
-                                        <div class="qr-code">
-                                            <div class="qr-pattern">
-                                                <div class="qr-squares">
-                                                    <div class="qr-square"></div>
-                                                    <div class="qr-square"></div>
-                                                    <div class="qr-square"></div>
-                                                    <div class="qr-square active"></div>
-                                                    <div class="qr-square"></div>
-                                                    <div class="qr-square active"></div>
-                                                    <div class="qr-square"></div>
-                                                    <div class="qr-square active"></div>
-                                                    <div class="qr-square active"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="qr-options">
-                                            <button class="btn-qr-option">PNG</button>
-                                            <button class="btn-qr-option">SVG</button>
-                                            <button class="btn-qr-option">PDF</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- AI Demo -->
-                        <div class="demo-panel" id="demo-ai">
-                            <div class="demo-screen">
-                                <div class="demo-header">
-                                    <div class="demo-title">AI Content Generator</div>
-                                    <div class="demo-subtitle">Generate content with AI</div>
-                                </div>
-                                <div class="demo-content">
-                                    <div class="ai-input">
-                                        <textarea placeholder="Describe what you want to generate...">Write a professional email about project completion</textarea>
-                                    </div>
-                                    <div class="ai-output">
-                                        <div class="typing-animation">
-                                            <div class="generated-text">
-                                                <span class="typing-cursor">|</span>
-                                            </div>
-                                        </div>
-                                        <div class="ai-stats">
-                                            <div class="stat">
-                                                <span class="label">Words:</span>
-                                                <span class="value" id="word-count">0</span>
-                                            </div>
-                                            <div class="stat">
-                                                <span class="label">Time:</span>
-                                                <span class="value">2.3s</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Demo Device Frame -->
-                        <div class="device-frame">
-                            <div class="device-notch"></div>
-                            <div class="device-buttons">
-                                <div class="device-button"></div>
-                                <div class="device-button"></div>
-                            </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if most_used_tools %}
+        <div class="col-md-6">
+            <h3 class="mb-3">
+                <i class="ti ti-trending-up text-success"></i>
+                Most Used
+            </h3>
+            <div class="row">
+                {% for tool in most_used_tools %}
+                <div class="col-md-6 mb-3">
+                    <div class="card tool-card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ tool.replace('-', ' ').title() }}</h6>
+                            <a href="{{ url_for('tool_page', tool_name=tool) }}" class="btn btn-sm btn-success">
+                                Use Tool
+                            </a>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Tools Section -->
+<div class="container" id="tools-section">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold hero-title">Professional Tool Categories</h2>
+        <p class="lead text-muted hero-subtitle">Choose from 85+ carefully crafted tools across 8 main categories</p>
+    </div>
+    
+    {% for category_name, category_info in categories.items() %}
+    <div class="category-section mb-5" data-category="{{ category_name.lower().replace(' ', '-') }}">
+        <div class="category-header d-flex align-items-center mb-4">
+            <div class="category-icon me-3">
+                <div class="rounded-circle bg-{{ category_info.color }}-100 text-{{ category_info.color }}-600 p-3">
+                    <i class="ti ti-{{ category_info.icon }} fs-4"></i>
+                </div>
+            </div>
+            <div>
+                <h3 class="mb-1">{{ category_name }}</h3>
+                <p class="text-muted mb-0">{{ category_info.tools|length }} tools available</p>
             </div>
         </div>
         
-        <!-- Background Elements -->
-        <div class="hero-bg-elements">
-            <div class="floating-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-                <div class="shape shape-4"></div>
-            </div>
-            <div class="grid-pattern"></div>
-        </div>
-    </section>
-
-    <!-- Tools Section -->
-    <section class="tools-section" id="demo-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Explore All Tool Categories</h2>
-                <p class="section-subtitle">85+ professional tools across 8 main categories</p>
-            </div>
-            
-            {% for category_name, category_info in categories.items() %}
-            <div class="category-section mb-5">
-                <div class="category-header d-flex align-items-center mb-4">
-                    <div class="category-icon me-3">
-                        <i class="ti ti-{{ category_info.icon }}"></i>
-                    </div>
-                    <div>
-                        <h3 class="category-title">{{ category_name }}</h3>
-                        <p class="category-count">{{ category_info.tools|length }} tools available</p>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    {% for tool in category_info.tools %}
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <div class="tool-card">
-                            <div class="tool-icon">
-                                <i class="ti ti-{{ category_info.icon }}"></i>
+        <div class="row tool-grid">
+            {% for tool in category_info.tools %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card tool-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="tool-icon mb-3">
+                            <div class="rounded-circle bg-{{ category_info.color }}-100 text-{{ category_info.color }}-600 p-3 d-inline-flex">
+                                <i class="ti ti-{{ category_info.icon }} fs-4"></i>
                             </div>
-                            <h5 class="tool-title">{{ tool }}</h5>
-                            <p class="tool-description">
-                                {% if 'PDF' in tool %}
-                                Process and manipulate PDF documents
-                                {% elif 'Image' in tool %}
-                                Edit and enhance images
-                                {% elif 'Calculator' in tool %}
-                                Perform financial calculations
-                                {% elif 'Generator' in tool %}
-                                Generate content with AI
-                                {% else %}
-                                Professional tool for productivity
-                                {% endif %}
-                            </p>
-                            <a href="{{ url_for('tool_page', tool_name=tool.lower().replace(' ', '-')) }}" class="btn btn-tool">
-                                Use Tool
-                                <i class="ti ti-arrow-right"></i>
-                            </a>
                         </div>
+                        <h5 class="card-title">{{ tool }}</h5>
+                        <p class="card-text text-muted small mb-3">
+                            {% if 'PDF' in tool %}
+                            Process and manipulate PDF documents
+                            {% elif 'Image' in tool %}
+                            Edit and enhance images
+                            {% elif 'Calculator' in tool %}
+                            Perform financial calculations
+                            {% elif 'Generator' in tool %}
+                            Generate content with AI
+                            {% else %}
+                            Professional tool for productivity
+                            {% endif %}
+                        </p>
+                        <a href="{{ url_for('tool_page', tool_name=tool.lower().replace(' ', '-')) }}" 
+                           class="btn btn-{{ category_info.color }} btn-sm">
+                            <i class="ti ti-arrow-right"></i> Use Tool
+                        </a>
                     </div>
-                    {% endfor %}
                 </div>
             </div>
             {% endfor %}
         </div>
-    </section>
+    </div>
+    {% endfor %}
+</div>
 
-    <!-- Features Section -->
-    <section class="features-section bg-light py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Why Choose Suntyn AI?</h2>
-                <p class="section-subtitle">Advanced features for professional productivity</p>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="ti ti-zap"></i>
-                        </div>
-                        <h4>Real-time Processing</h4>
-                        <p>Get instant results with real-time processing and live collaboration features.</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 mb-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="ti ti-shield-check"></i>
-                        </div>
-                        <h4>Secure & Private</h4>
-                        <p>Your data is processed securely with local-first approach and end-to-end encryption.</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 mb-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="ti ti-device-mobile"></i>
-                        </div>
-                        <h4>Mobile Responsive</h4>
-                        <p>Works perfectly on all devices with PWA support for offline usage.</p>
-                    </div>
-                </div>
-            </div>
+<!-- Features Section -->
+<div class="bg-light py-5 mt-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Why Choose Suntyn AI?</h2>
+            <p class="lead text-muted">Advanced features for professional productivity</p>
         </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section gradient-bg text-white py-5">
-        <div class="container text-center">
-            <h2 class="cta-title">Ready to Get Started?</h2>
-            <p class="cta-subtitle">Join thousands of professionals using Suntyn AI for their daily productivity needs.</p>
-            <div class="cta-actions">
-                {% if not current_user.is_authenticated %}
-                <a href="{{ url_for('signup') }}" class="btn btn-light btn-lg me-3">
-                    <i class="ti ti-user-plus"></i> Sign Up Free
-                </a>
-                {% endif %}
-                <a href="#demo-section" class="btn btn-outline-light btn-lg">
-                    <i class="ti ti-tools"></i> Explore Tools
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gradient-dark text-white py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="brand-logo me-3">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="40" height="40" rx="12" fill="url(#gradient)"/>
-                                <path d="M12 20L20 12L28 20L20 28L12 20Z" fill="white"/>
-                                <defs>
-                                    <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
-                                        <stop offset="0%" stop-color="#6366f1"/>
-                                        <stop offset="100%" stop-color="#8b5cf6"/>
-                                    </linearGradient>
-                                </defs>
-                            </svg>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-primary-100 text-primary p-3 d-inline-flex">
+                            <i class="ti ti-zap fs-2"></i>
                         </div>
-                        <h5 class="gradient-text-footer mb-0">Suntyn AI</h5>
                     </div>
-                    <p class="mb-3">Transform your digital workflow with 85+ professional AI-powered tools.</p>
-                    <div class="social-links">
-                        <a href="#" class="me-3"><i class="ti ti-brand-twitter"></i></a>
-                        <a href="#" class="me-3"><i class="ti ti-brand-linkedin"></i></a>
-                        <a href="#" class="me-3"><i class="ti ti-brand-github"></i></a>
-                        <a href="#"><i class="ti ti-mail"></i></a>
-                    </div>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="text-warning mb-3">Product</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('all_tools') }}">All Tools</a></li>
-                        <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
-                        <li><a href="{{ url_for('about') }}">About</a></li>
-                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="text-warning mb-3">Categories</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('category', category_name='pdf-tools') }}">PDF Tools</a></li>
-                        <li><a href="{{ url_for('category', category_name='image-tools') }}">Image Tools</a></li>
-                        <li><a href="{{ url_for('category', category_name='finance-tools') }}">Finance Tools</a></li>
-                        <li><a href="{{ url_for('category', category_name='ai-tools') }}">AI Tools</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="text-warning mb-3">Support</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('faq') }}">FAQ</a></li>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API</a></li>
-                        <li><a href="#">Status</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="text-warning mb-3">Legal</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">GDPR</a></li>
-                    </ul>
+                    <h4>Real-time Processing</h4>
+                    <p class="text-muted">Get instant results with real-time processing and live collaboration features.</p>
                 </div>
             </div>
             
-            <hr class="border-secondary my-4">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="mb-0">&copy; 2024 Suntyn AI. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="footer-bottom-links">
-                        <a href="#" class="me-3">Privacy</a>
-                        <a href="#" class="me-3">Terms</a>
-                        <a href="#">Cookies</a>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-success-100 text-success p-3 d-inline-flex">
+                            <i class="ti ti-shield-check fs-2"></i>
+                        </div>
                     </div>
+                    <h4>Secure & Private</h4>
+                    <p class="text-muted">Your data is processed securely with local-first approach and end-to-end encryption.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-info-100 text-info p-3 d-inline-flex">
+                            <i class="ti ti-device-mobile fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Mobile Responsive</h4>
+                    <p class="text-muted">Works perfectly on all devices with PWA support for offline usage.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-warning-100 text-warning p-3 d-inline-flex">
+                            <i class="ti ti-users fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Team Collaboration</h4>
+                    <p class="text-muted">Collaborate with team members in real-time with shared workspaces.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-danger-100 text-danger p-3 d-inline-flex">
+                            <i class="ti ti-robot fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>AI-Powered</h4>
+                    <p class="text-muted">Leverage advanced AI for content generation, analysis, and automation.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <div class="rounded-circle bg-purple-100 text-purple p-3 d-inline-flex">
+                            <i class="ti ti-download fs-2"></i>
+                        </div>
+                    </div>
+                    <h4>Offline Support</h4>
+                    <p class="text-muted">Continue working even without internet with our PWA offline capabilities.</p>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- CTA Section -->
+<div class="gradient-bg text-white py-5 mt-5">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+        <p class="lead mb-4">Join thousands of professionals using Suntyn AI for their daily productivity needs.</p>
+        {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('signup') }}" class="btn btn-light btn-lg me-3">
+            <i class="ti ti-user-plus"></i> Sign Up Free
+        </a>
+        {% endif %}
+        <a href="#tools-section" class="btn btn-outline-light btn-lg">
+            <i class="ti ti-tools"></i> Explore Tools
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('tool-search');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const toolCards = document.querySelectorAll('.tool-card');
     
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/smooth-scroll.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scroll-to-top.js') }}"></script>
-    
-    <!-- Hero Interactive Demo Script -->
-    <script>
-        // Initialize interactive hero demo
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeHeroDemo();
-            animateStats();
-            setupDemoTabs();
+    // Search tools
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        toolCards.forEach(card => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const description = card.querySelector('.card-text').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.parentElement.style.display = 'block';
+            } else {
+                card.parentElement.style.display = 'none';
+            }
         });
-    </script>
-</body>
-</html>
+    });
+    
+    // Filter by category
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active filter button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide categories
+            const categories = document.querySelectorAll('.category-section');
+            categories.forEach(category => {
+                if (filter === 'all' || category.dataset.category.includes(filter)) {
+                    category.style.display = 'block';
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Animate hero stats
+    const stats = document.querySelectorAll('.stat-item .h3');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const finalValue = parseInt(target.textContent.replace('+', '').replace('/', ''));
+                
+                if (!isNaN(finalValue)) {
+                    let currentValue = 0;
+                    const increment = finalValue / 30;
+                    
+                    const counter = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= finalValue) {
+                            currentValue = finalValue;
+                            clearInterval(counter);
+                        }
+                        target.textContent = Math.floor(currentValue) + (target.textContent.includes('+') ? '+' : '');
+                    }, 50);
+                }
+            }
+        });
+    });
+    
+    stats.forEach(stat => observer.observe(stat));
+    
+    // Floating animation for hero icons
+    gsap.to('.floating-icon', {
+        y: -10,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "power2.inOut",
+        stagger: 0.2
+    });
+});
+</script>
+{% endblock %}
