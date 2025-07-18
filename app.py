@@ -379,6 +379,30 @@ def create_app():
     @app.route('/cookie-policy')
     def cookie_policy():
         return render_template('legal/cookie_policy.html')
+    
+    @app.route('/privacy')
+    def privacy():
+        return render_template('privacy.html')
+
+    @app.route('/terms')
+    def terms():
+        return render_template('terms.html')
+
+    @app.route('/cookies')
+    def cookies():
+        return render_template('cookies.html')
+
+    @app.route('/security')
+    def security():
+        return render_template('legal/security.html')
+
+    @app.route('/compliance')
+    def compliance():
+        return render_template('legal/compliance.html')
+
+    @app.route('/dmca')
+    def dmca():
+        return render_template('legal/dmca.html')
 
     @app.route('/blog')
     def blog():
@@ -407,18 +431,6 @@ def create_app():
     @app.route('/support')
     def support():
         return render_template('support/index.html')
-
-    @app.route('/security')
-    def security():
-        return render_template('legal/security.html')
-
-    @app.route('/compliance')
-    def compliance():
-        return render_template('legal/compliance.html')
-
-    @app.route('/dmca')
-    def dmca():
-        return render_template('legal/dmca.html')
 
     @app.route('/api-docs')
     def api_docs():

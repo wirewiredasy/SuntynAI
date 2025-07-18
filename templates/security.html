@@ -1,0 +1,89 @@
+
+{% extends "base.html" %}
+
+{% block title %}Security - Suntyn AI{% endblock %}
+{% block description %}Our commitment to keeping your data safe and secure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold gradient-text">
+                    <i class="ti ti-shield-check me-3"></i>Security
+                </h1>
+                <p class="lead text-muted">Your security is our top priority</p>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center">
+                                <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="ti ti-lock text-white" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4>Data Encryption</h4>
+                                <p class="text-muted">All data is encrypted in transit and at rest using industry-standard encryption.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center">
+                                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="ti ti-server text-white" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4>Secure Infrastructure</h4>
+                                <p class="text-muted">Hosted on secure, monitored servers with regular security updates and patches.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center">
+                                <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="ti ti-eye-off text-white" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4>Privacy First</h4>
+                                <p class="text-muted">Files are automatically deleted after processing. We never store your personal files.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-5">
+
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Security Measures</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>SSL/TLS Encryption</li>
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>Regular Security Audits</li>
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>Automatic File Deletion</li>
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>Secure Authentication</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>CSRF Protection</li>
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>Input Validation</li>
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>Rate Limiting</li>
+                                    <li class="mb-2"><i class="ti ti-check text-success me-2"></i>24/7 Monitoring</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Report Security Issues</h2>
+                        <p>If you discover a security vulnerability, please report it responsibly:</p>
+                        <div class="card bg-light p-3">
+                            <p class="mb-1"><strong>Email:</strong> security@suntyn.ai</p>
+                            <p class="mb-0"><strong>Response Time:</strong> Within 24 hours</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
