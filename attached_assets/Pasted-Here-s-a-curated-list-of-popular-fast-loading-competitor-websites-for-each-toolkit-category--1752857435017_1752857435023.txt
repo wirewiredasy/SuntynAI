@@ -1,0 +1,114 @@
+Here's a curated list of popular, fast-loading competitor websites for each toolkit category:
+
+
+---
+
+📄 PDF Toolkit
+
+PDF Candy – 90+ free PDF tools: edit, convert, merge, split, compress, sign, OCR  
+
+Smallpdf – Suite of 30+ tools: compress, convert, edit, sign  
+
+Adobe Acrobat Online – Browser-based PDF editing and annotations  
+
+
+
+---
+
+🖼️ Image Toolkit
+
+Pixlr – AI-powered image editor, generator, background removal  
+
+TinyWow (Image Tools) – Free image resize, AI generator, BG remover  
+
+ImageTools Hub – Single-page image editor, privacy-focused  
+
+
+
+---
+
+🎥🎧 Video & Audio Toolkit
+
+Clideo – Online video editor: cut, merge, compress, subtitle, resize  
+
+Veed.io – AI video maker: edit audio, add subtitles, transcripts  
+
+Descript – Text-based AI-powered audio/video editing platform  
+
+
+
+---
+
+🏛️ Govt Document AI Tools
+
+Google Document AI – Cloud-based document extraction/classification  
+
+GSA’s AI Document Processing (US Government) – Intelligent document capture/classification  
+
+
+
+---
+
+🎓 Student Toolkit
+
+GoConqr – Mind maps, quizzes, flashcards, planners  
+
+Microsoft Office Lens + MyStudyLife + Todoist – Students’ toolkit of capture, planning, task management  
+
+
+
+---
+
+💰 Finance Toolkit
+
+Mint (Intuit) – Budget tracker, categorizes spending, insights dashboard  
+
+Money Dashboard – UK-based personal finance monitoring & alerts  
+
+Investor.gov – Free calculators for retirement, compound interest, goals  
+
+
+
+---
+
+🛠️ Utility (All‑in‑one tools)
+
+AllInOneTools.com – Icons, QR codes, YT downloader, invoice creator, DNS lookup, and more  
+
+Efficient.app Utilities – Suite of productivity and automation software suggestions  
+
+
+
+---
+
+🤖 AI Tools Aggregator
+
+Futurepedia.io – Curated, up-to-date catalog of top AI tools  
+
+FutureTools.io – Organized directory by function (chat, finance, art, etc.)  
+
+AIToolHunt (aggregator) – Index of 40+ AI aggregators/tools  
+
+
+
+---
+
+✅ Quick Summary Table
+
+Category	Competitors (Top Sites)
+
+PDF Toolkit	PDF Candy · Smallpdf · Adobe Acrobat Online
+Image Toolkit	Pixlr · TinyWow · ImageTools Hub
+Video/Audio	Clideo · Veed.io · Descript
+Govt Document AI	Google Document AI · GSA Document AI
+Student Toolkit	GoConqr · Office Lens, MyStudyLife, Todoist
+Finance Toolkit	Mint · Money Dashboard · Investor.gov
+Utility All‑in‑one	AllInOneTools · Efficient.app
+AI Aggregator	Futurepedia · FutureTools · AIToolHunt
+
+
+
+---
+
+Let me know if you'd like deeper comparisons, feature breakdowns, or real-time site performance insights!
+

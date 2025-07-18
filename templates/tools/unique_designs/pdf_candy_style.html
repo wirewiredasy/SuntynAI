@@ -1,0 +1,811 @@
+<!-- PDF Candy Inspired Interface -->
+{% extends "base.html" %}
+
+{% block title %}{{ tool_display_name }} - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="pdf-candy-container">
+    <!-- Header -->
+    <div class="candy-header bg-white shadow-sm">
+        <div class="container">
+            <div class="row align-items-center py-3">
+                <div class="col-md-8">
+                    <h1 class="h3 mb-1 text-dark fw-bold">{{ tool_display_name }}</h1>
+                    <p class="text-muted mb-0 small">Professional PDF processing made simple</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="header-badges">
+                        <span class="badge bg-success me-2">
+                            <i class="ti ti-shield-check me-1"></i>Secure
+                        </span>
+                        <span class="badge bg-primary">
+                            <i class="ti ti-cloud-off me-1"></i>No Sign-up
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Interface -->
+    <div class="candy-main">
+        <div class="container">
+            <!-- Step 1: Upload -->
+            <div class="step-section" id="upload-step">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="upload-card">
+                            <div class="upload-header text-center mb-4">
+                                <div class="upload-icon mb-3">
+                                    <i class="ti ti-file-plus display-1 text-primary"></i>
+                                </div>
+                                <h3 class="mb-2">Choose PDF files</h3>
+                                <p class="text-muted">or drop them here</p>
+                            </div>
+                            
+                            <div class="upload-zone" 
+                                 ondrop="handleFileDrop(event)" 
+                                 ondragover="handleFileDragOver(event)"
+                                 onclick="document.getElementById('pdf-input').click()">
+                                <input type="file" id="pdf-input" multiple accept=".pdf" style="display: none;">
+                                
+                                <div class="upload-content">
+                                    <div class="upload-button-area">
+                                        <button class="btn btn-primary btn-lg rounded-pill px-5 mb-3">
+                                            <i class="ti ti-upload me-2"></i>Select PDF files
+                                        </button>
+                                        
+                                        <div class="upload-sources">
+                                            <p class="small text-muted mb-3">or choose from:</p>
+                                            <div class="source-buttons">
+                                                <button class="btn btn-outline-info btn-sm me-2 mb-2">
+                                                    <i class="ti ti-brand-google-drive me-1"></i>Google Drive
+                                                </button>
+                                                <button class="btn btn-outline-success btn-sm me-2 mb-2">
+                                                    <i class="ti ti-cloud me-1"></i>Dropbox
+                                                </button>
+                                                <button class="btn btn-outline-warning btn-sm mb-2">
+                                                    <i class="ti ti-world me-1"></i>From URL
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="upload-info mt-4">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <i class="ti ti-file-text text-primary h4 mb-2"></i>
+                                        <p class="small text-muted">Supports PDF files</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="ti ti-cloud-upload text-success h4 mb-2"></i>
+                                        <p class="small text-muted">Up to 100MB each</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="ti ti-shield-lock text-warning h4 mb-2"></i>
+                                        <p class="small text-muted">Files auto-deleted</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Configure -->
+            <div class="step-section" id="configure-step" style="display: none;">
+                <div class="row">
+                    <!-- File List -->
+                    <div class="col-lg-8">
+                        <div class="files-section">
+                            <div class="section-header">
+                                <h4 class="mb-3">
+                                    <i class="ti ti-files me-2"></i>Selected Files
+                                    <span class="badge bg-primary ms-2" id="file-count">0</span>
+                                </h4>
+                            </div>
+                            
+                            <div id="file-list" class="file-list">
+                                <!-- Files will be populated here -->
+                            </div>
+                            
+                            <div class="add-more-section mt-3">
+                                <button class="btn btn-outline-primary" onclick="document.getElementById('pdf-input').click()">
+                                    <i class="ti ti-plus me-2"></i>Add more files
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Options Panel -->
+                    <div class="col-lg-4">
+                        <div class="options-panel">
+                            <div class="panel-header">
+                                <h5 class="mb-3">
+                                    <i class="ti ti-settings me-2"></i>Options
+                                </h5>
+                            </div>
+                            
+                            <div class="options-content">
+                                {% if tool_name == 'pdf-merger' %}
+                                    <div class="option-group mb-4">
+                                        <label class="option-label">Page layout</label>
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="layout" id="portrait" checked>
+                                            <label class="btn btn-outline-primary" for="portrait">
+                                                <i class="ti ti-rectangle-vertical me-1"></i>Portrait
+                                            </label>
+                                            <input type="radio" class="btn-check" name="layout" id="landscape">
+                                            <label class="btn btn-outline-primary" for="landscape">
+                                                <i class="ti ti-rectangle me-1"></i>Landscape
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="option-group mb-4">
+                                        <label class="option-label">Page size</label>
+                                        <select class="form-select">
+                                            <option value="a4" selected>A4 (210 × 297 mm)</option>
+                                            <option value="letter">Letter (8.5 × 11 in)</option>
+                                            <option value="legal">Legal (8.5 × 14 in)</option>
+                                            <option value="a3">A3 (297 × 420 mm)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="option-group mb-4">
+                                        <label class="option-label">Margin</label>
+                                        <div class="margin-options">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="margin" id="no-margin" value="none">
+                                                <label class="form-check-label" for="no-margin">No margin</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="margin" id="small-margin" value="small" checked>
+                                                <label class="form-check-label" for="small-margin">Small margin</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="margin" id="big-margin" value="big">
+                                                <label class="form-check-label" for="big-margin">Big margin</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% elif tool_name == 'pdf-splitter' %}
+                                    <div class="option-group mb-4">
+                                        <label class="option-label">Split method</label>
+                                        <select class="form-select" id="split-method">
+                                            <option value="pages">Split by pages</option>
+                                            <option value="size">Split by file size</option>
+                                            <option value="bookmarks">Split by bookmarks</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="option-group mb-4" id="pages-option">
+                                        <label class="option-label">Pages per file</label>
+                                        <input type="number" class="form-control" value="1" min="1">
+                                    </div>
+                                {% elif tool_name == 'pdf-converter' %}
+                                    <div class="option-group mb-4">
+                                        <label class="option-label">Convert to</label>
+                                        <select class="form-select" id="output-format">
+                                            <option value="word">Word (.docx)</option>
+                                            <option value="excel">Excel (.xlsx)</option>
+                                            <option value="powerpoint">PowerPoint (.pptx)</option>
+                                            <option value="jpg">JPG images</option>
+                                            <option value="png">PNG images</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="option-group mb-4" id="image-quality" style="display: none;">
+                                        <label class="option-label">Image quality</label>
+                                        <select class="form-select">
+                                            <option value="high">High quality</option>
+                                            <option value="medium" selected>Medium quality</option>
+                                            <option value="low">Low quality</option>
+                                        </select>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Process Button -->
+                            <div class="process-section mt-4">
+                                <button class="btn btn-success btn-lg w-100" onclick="processFiles()">
+                                    <i class="ti ti-wand me-2"></i>
+                                    {% if tool_name == 'pdf-merger' %}Merge PDFs
+                                    {% elif tool_name == 'pdf-splitter' %}Split PDF
+                                    {% elif tool_name == 'pdf-converter' %}Convert PDF
+                                    {% else %}Process{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Security Notice -->
+                        <div class="security-notice mt-4">
+                            <div class="notice-card">
+                                <h6 class="text-success mb-2">
+                                    <i class="ti ti-shield-check me-1"></i>Your files are secure
+                                </h6>
+                                <ul class="small text-muted mb-0">
+                                    <li>Files are processed locally when possible</li>
+                                    <li>Automatically deleted after 2 hours</li>
+                                    <li>SSL encrypted transmission</li>
+                                    <li>No personal data stored</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Results -->
+            <div class="step-section" id="results-step" style="display: none;">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="results-card">
+                            <div class="results-header text-center">
+                                <div class="success-animation mb-4">
+                                    <i class="ti ti-circle-check display-1 text-success"></i>
+                                </div>
+                                <h3 class="text-success mb-2">Processing Complete!</h3>
+                                <p class="text-muted">Your files have been processed successfully</p>
+                            </div>
+                            
+                            <div class="results-content">
+                                <div id="result-files" class="result-files mb-4">
+                                    <!-- Result files will be populated here -->
+                                </div>
+                                
+                                <div class="result-actions text-center">
+                                    <button class="btn btn-primary btn-lg me-3" id="download-all-btn">
+                                        <i class="ti ti-download me-2"></i>Download All
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="startNewProcess()">
+                                        <i class="ti ti-refresh me-2"></i>Process More Files
+                                    </button>
+                                </div>
+                                
+                                <!-- Cloud Save Options -->
+                                <div class="cloud-save-section mt-4">
+                                    <p class="text-center text-muted mb-3">Save to cloud storage:</p>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button class="btn btn-outline-info btn-sm">
+                                            <i class="ti ti-brand-google-drive me-1"></i>Google Drive
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm">
+                                            <i class="ti ti-cloud me-1"></i>Dropbox
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm">
+                                            <i class="ti ti-brand-onedrive me-1"></i>OneDrive
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.pdf-candy-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.candy-header {
+    background: rgba(255,255,255,0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.header-badges .badge {
+    padding: 6px 12px;
+    font-weight: 500;
+}
+
+.candy-main {
+    padding: 40px 0;
+}
+
+.step-section {
+    margin-bottom: 40px;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.upload-zone {
+    border: 3px dashed #e0e0e0;
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.upload-zone:hover {
+    border-color: #667eea;
+    background: rgba(102,126,234,0.05);
+    transform: translateY(-2px);
+}
+
+.upload-zone.dragover {
+    border-color: #28a745;
+    background: rgba(40,167,69,0.1);
+    transform: scale(1.02);
+}
+
+.btn-lg {
+    padding: 12px 32px;
+    font-weight: 600;
+}
+
+.files-section, .options-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.file-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 20px rgba(102,126,234,0.1);
+    transform: translateY(-1px);
+}
+
+.file-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    margin-right: 20px;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.file-details {
+    color: #666;
+    font-size: 14px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.option-group {
+    margin-bottom: 24px;
+}
+
+.option-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.margin-options .form-check {
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.margin-options .form-check:hover {
+    border-color: #667eea;
+    background: rgba(102,126,234,0.05);
+}
+
+.margin-options .form-check-input:checked + .form-check-label {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.notice-card {
+    background: rgba(40,167,69,0.1);
+    border: 1px solid rgba(40,167,69,0.2);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.notice-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.notice-card li {
+    padding: 4px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.notice-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.results-card {
+    background: white;
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.success-animation {
+    animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.result-file-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+}
+
+.result-file-item:hover {
+    border-color: #28a745;
+    background: rgba(40,167,69,0.05);
+}
+
+.processing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.processing-content {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.processing-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .upload-card {
+        padding: 30px 20px;
+    }
+    
+    .upload-zone {
+        padding: 40px 20px;
+    }
+    
+    .files-section, .options-panel {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .file-item {
+        padding: 15px;
+    }
+    
+    .file-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin-right: 15px;
+    }
+    
+    .result-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+</style>
+
+<script>
+// PDF Candy style JavaScript
+let selectedFiles = [];
+
+function handleFileDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.querySelector('.upload-zone').classList.add('dragover');
+}
+
+function handleFileDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.querySelector('.upload-zone').classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+}
+
+function handleFiles(files) {
+    selectedFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+    
+    if (selectedFiles.length === 0) {
+        alert('Please select PDF files only');
+        return;
+    }
+    
+    showConfigureStep();
+    populateFileList();
+}
+
+function showConfigureStep() {
+    document.getElementById('upload-step').style.display = 'none';
+    document.getElementById('configure-step').style.display = 'block';
+    
+    // Smooth scroll to configure step
+    document.getElementById('configure-step').scrollIntoView({ 
+        behavior: 'smooth' 
+    });
+}
+
+function populateFileList() {
+    const fileList = document.getElementById('file-list');
+    const fileCount = document.getElementById('file-count');
+    
+    fileList.innerHTML = '';
+    fileCount.textContent = selectedFiles.length;
+    
+    selectedFiles.forEach((file, index) => {
+        const fileItem = createFileItem(file, index);
+        fileList.appendChild(fileItem);
+    });
+}
+
+function createFileItem(file, index) {
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    fileItem.innerHTML = `
+        <div class="file-icon">
+            <i class="ti ti-file-type-pdf"></i>
+        </div>
+        <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-details">
+                ${(file.size / (1024 * 1024)).toFixed(2)} MB • 
+                PDF Document
+            </div>
+        </div>
+        <div class="file-actions">
+            <button class="btn btn-sm btn-outline-primary" onclick="previewFile(${index})" title="Preview">
+                <i class="ti ti-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})" title="Remove">
+                <i class="ti ti-trash"></i>
+            </button>
+        </div>
+    `;
+    return fileItem;
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    
+    if (selectedFiles.length === 0) {
+        document.getElementById('upload-step').style.display = 'block';
+        document.getElementById('configure-step').style.display = 'none';
+    } else {
+        populateFileList();
+    }
+}
+
+function previewFile(index) {
+    // Implement file preview functionality
+    alert('File preview functionality coming soon!');
+}
+
+function processFiles() {
+    showProcessingOverlay();
+    
+    // Simulate processing time
+    setTimeout(() => {
+        hideProcessingOverlay();
+        showResults();
+    }, 3000);
+}
+
+function showProcessingOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'processing-overlay';
+    overlay.id = 'processing-overlay';
+    overlay.innerHTML = `
+        <div class="processing-content">
+            <div class="processing-spinner"></div>
+            <h4 class="mb-3">Processing your files...</h4>
+            <p class="text-muted mb-0">This may take a few moments</p>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function hideProcessingOverlay() {
+    const overlay = document.getElementById('processing-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+function showResults() {
+    document.getElementById('configure-step').style.display = 'none';
+    document.getElementById('results-step').style.display = 'block';
+    
+    const resultFiles = document.getElementById('result-files');
+    resultFiles.innerHTML = '';
+    
+    // Create result file items
+    const toolName = '{{ tool_name }}';
+    let resultFileName = 'processed_document.pdf';
+    
+    if (toolName === 'pdf-merger') {
+        resultFileName = 'merged_document.pdf';
+    } else if (toolName === 'pdf-splitter') {
+        // Multiple files for splitter
+        for (let i = 1; i <= 3; i++) {
+            const resultItem = createResultFileItem(`document_part_${i}.pdf`, '1.2 MB');
+            resultFiles.appendChild(resultItem);
+        }
+        return;
+    } else if (toolName === 'pdf-converter') {
+        const format = document.getElementById('output-format').value;
+        const extensions = {
+            'word': '.docx',
+            'excel': '.xlsx',
+            'powerpoint': '.pptx',
+            'jpg': '.jpg',
+            'png': '.png'
+        };
+        resultFileName = `converted_document${extensions[format] || '.pdf'}`;
+    }
+    
+    if (toolName !== 'pdf-splitter') {
+        const resultItem = createResultFileItem(resultFileName, '2.1 MB');
+        resultFiles.appendChild(resultItem);
+    }
+    
+    // Scroll to results
+    document.getElementById('results-step').scrollIntoView({ 
+        behavior: 'smooth' 
+    });
+}
+
+function createResultFileItem(fileName, fileSize) {
+    const resultItem = document.createElement('div');
+    resultItem.className = 'result-file-item';
+    resultItem.innerHTML = `
+        <div class="file-icon">
+            <i class="ti ti-file-download"></i>
+        </div>
+        <div class="file-info">
+            <div class="file-name">${fileName}</div>
+            <div class="file-details">${fileSize} • Ready for download</div>
+        </div>
+        <div class="file-actions">
+            <button class="btn btn-success" onclick="downloadFile('${fileName}')">
+                <i class="ti ti-download me-1"></i>Download
+            </button>
+        </div>
+    `;
+    return resultItem;
+}
+
+function downloadFile(fileName) {
+    // Simulate file download
+    alert(`Downloading ${fileName}...`);
+}
+
+function startNewProcess() {
+    selectedFiles = [];
+    document.getElementById('results-step').style.display = 'none';
+    document.getElementById('configure-step').style.display = 'none';
+    document.getElementById('upload-step').style.display = 'block';
+    
+    // Reset file input
+    document.getElementById('pdf-input').value = '';
+    
+    // Scroll to top
+    document.getElementById('upload-step').scrollIntoView({ 
+        behavior: 'smooth' 
+    });
+}
+
+// File input change handler
+document.getElementById('pdf-input').addEventListener('change', function(e) {
+    handleFiles(e.target.files);
+});
+
+// Remove dragover class when drag leaves
+document.querySelector('.upload-zone').addEventListener('dragleave', function(e) {
+    e.currentTarget.classList.remove('dragover');
+});
+
+// Output format change handler for converter
+const outputFormat = document.getElementById('output-format');
+if (outputFormat) {
+    outputFormat.addEventListener('change', function(e) {
+        const imageQuality = document.getElementById('image-quality');
+        if (imageQuality) {
+            if (e.target.value === 'jpg' || e.target.value === 'png') {
+                imageQuality.style.display = 'block';
+            } else {
+                imageQuality.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Prevent default drag behaviors
+document.addEventListener('dragover', function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener('drop', function(e) {
+    e.preventDefault();
+});
+</script>
+{% endblock %}

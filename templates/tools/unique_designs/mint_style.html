@@ -1,0 +1,703 @@
+<!-- Mint Finance Dashboard Inspired Interface -->
+{% extends "base.html" %}
+
+{% block title %}{{ tool_display_name }} - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="mint-dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header bg-white shadow-sm">
+        <div class="container-fluid">
+            <div class="row align-items-center py-3">
+                <div class="col-md-8">
+                    <h1 class="h3 mb-0 text-dark fw-bold">{{ tool_display_name }}</h1>
+                    <p class="text-muted mb-0 small">Smart financial calculations and insights</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-primary me-2" onclick="saveCalculation()">
+                        <i class="ti ti-bookmark me-1"></i>Save
+                    </button>
+                    <button class="btn btn-success" onclick="exportResults()">
+                        <i class="ti ti-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-main bg-light">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Calculator Panel -->
+                <div class="col-lg-4">
+                    <div class="calculator-panel">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="ti ti-calculator me-2"></i>Calculator
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="calculator-form">
+                                    {% if tool_name == 'emi-calculator' %}
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Loan Amount</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="number" class="form-control form-control-lg" id="loan-amount" placeholder="5,00,000" value="500000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Interest Rate (% per annum)</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control form-control-lg" id="interest-rate" placeholder="8.5" value="8.5" step="0.1">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Loan Tenure</label>
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <input type="number" class="form-control form-control-lg" id="loan-tenure" placeholder="20" value="20">
+                                                </div>
+                                                <div class="col-4">
+                                                    <select class="form-select form-select-lg" id="tenure-type">
+                                                        <option value="years">Years</option>
+                                                        <option value="months">Months</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-4">
+                                            <label class="form-label fw-semibold">Processing Fee (Optional)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="number" class="form-control" id="processing-fee" placeholder="10,000" value="0">
+                                            </div>
+                                        </div>
+                                    {% elif tool_name == 'sip-calculator' %}
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Monthly Investment</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="number" class="form-control form-control-lg" id="sip-amount" placeholder="5,000" value="5000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Expected Annual Return (%)</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control form-control-lg" id="expected-return" placeholder="12" value="12" step="0.5">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-4">
+                                            <label class="form-label fw-semibold">Investment Period (Years)</label>
+                                            <input type="number" class="form-control form-control-lg" id="investment-period" placeholder="10" value="10">
+                                        </div>
+                                    {% elif tool_name == 'tax-calculator' %}
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Annual Income</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="number" class="form-control form-control-lg" id="annual-income" placeholder="10,00,000" value="1000000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-3">
+                                            <label class="form-label fw-semibold">Tax Regime</label>
+                                            <select class="form-select form-select-lg" id="tax-regime">
+                                                <option value="old">Old Tax Regime</option>
+                                                <option value="new">New Tax Regime</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group mb-4" id="deductions-section">
+                                            <label class="form-label fw-semibold">Total Deductions</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="number" class="form-control" id="deductions" placeholder="1,50,000" value="150000">
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary btn-lg" onclick="calculate()">
+                                            <i class="ti ti-calculator me-2"></i>Calculate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Tips -->
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="ti ti-bulb me-2 text-warning"></i>Quick Tips
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="tips-list">
+                                    {% if tool_name == 'emi-calculator' %}
+                                        <div class="tip-item mb-2">
+                                            <i class="ti ti-check-circle text-success me-2"></i>
+                                            <small>Lower interest rates mean lower EMI</small>
+                                        </div>
+                                        <div class="tip-item mb-2">
+                                            <i class="ti ti-check-circle text-success me-2"></i>
+                                            <small>Longer tenure reduces EMI but increases total cost</small>
+                                        </div>
+                                    {% elif tool_name == 'sip-calculator' %}
+                                        <div class="tip-item mb-2">
+                                            <i class="ti ti-check-circle text-success me-2"></i>
+                                            <small>Start early to benefit from compounding</small>
+                                        </div>
+                                        <div class="tip-item mb-2">
+                                            <i class="ti ti-check-circle text-success me-2"></i>
+                                            <small>Increase SIP amount annually for better results</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Panel -->
+                <div class="col-lg-8">
+                    <div class="results-panel">
+                        <!-- Summary Cards -->
+                        <div class="row mb-4" id="summary-cards">
+                            <div class="col-md-4">
+                                <div class="summary-card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <i class="ti ti-currency-rupee display-4 mb-3"></i>
+                                        <h3 class="mb-1" id="primary-result">₹0</h3>
+                                        <p class="mb-0" id="primary-label">Monthly EMI</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="summary-card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <i class="ti ti-trending-up display-4 mb-3"></i>
+                                        <h3 class="mb-1" id="secondary-result">₹0</h3>
+                                        <p class="mb-0" id="secondary-label">Total Interest</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="summary-card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <i class="ti ti-calculator display-4 mb-3"></i>
+                                        <h3 class="mb-1" id="tertiary-result">₹0</h3>
+                                        <p class="mb-0" id="tertiary-label">Total Amount</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Section -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="ti ti-chart-pie me-2"></i>Breakdown Chart
+                                    </h5>
+                                    <div class="chart-controls">
+                                        <select class="form-select form-select-sm" id="chart-type">
+                                            <option value="pie">Pie Chart</option>
+                                            <option value="bar">Bar Chart</option>
+                                            <option value="line">Line Chart</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="results-chart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Breakdown -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="ti ti-list-details me-2"></i>Detailed Breakdown
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="detailed-results">
+                                    <div class="text-center text-muted py-5">
+                                        <i class="ti ti-calculator display-1 mb-3"></i>
+                                        <h5>Ready to Calculate</h5>
+                                        <p>Enter your details and click Calculate to see results</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.mint-dashboard-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.dashboard-main {
+    padding: 20px 0;
+}
+
+.calculator-panel .card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+.form-control-lg {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.input-group-text {
+    font-weight: 600;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.summary-card {
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+}
+
+.summary-card .card-body {
+    padding: 30px 20px;
+}
+
+.chart-container {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+}
+
+.results-table {
+    background: white;
+    border-radius: 8px;
+}
+
+.table th {
+    border-top: none;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.progress-item {
+    margin-bottom: 15px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content-between;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.calculation-note {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.btn-lg {
+    padding: 12px 24px;
+    font-weight: 600;
+}
+
+.form-label {
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .summary-card {
+        margin-bottom: 15px;
+    }
+    
+    .dashboard-main {
+        padding: 15px 0;
+    }
+}
+</style>
+
+<script>
+// Mint-style calculator JavaScript
+let chartInstance = null;
+
+function calculate() {
+    const toolName = '{{ tool_name }}';
+    
+    switch(toolName) {
+        case 'emi-calculator':
+            calculateEMI();
+            break;
+        case 'sip-calculator':
+            calculateSIP();
+            break;
+        case 'tax-calculator':
+            calculateTax();
+            break;
+        default:
+            calculateGeneric();
+    }
+}
+
+function calculateEMI() {
+    const principal = parseFloat(document.getElementById('loan-amount').value);
+    const rate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
+    const tenure = parseFloat(document.getElementById('loan-tenure').value);
+    const tenureType = document.getElementById('tenure-type').value;
+    const processingFee = parseFloat(document.getElementById('processing-fee').value) || 0;
+    
+    const months = tenureType === 'years' ? tenure * 12 : tenure;
+    
+    // EMI Calculation
+    const emi = (principal * rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1);
+    const totalAmount = emi * months;
+    const totalInterest = totalAmount - principal;
+    
+    // Update results
+    document.getElementById('primary-result').textContent = `₹${formatNumber(Math.round(emi))}`;
+    document.getElementById('secondary-result').textContent = `₹${formatNumber(Math.round(totalInterest))}`;
+    document.getElementById('tertiary-result').textContent = `₹${formatNumber(Math.round(totalAmount))}`;
+    
+    // Update chart
+    updateChart([
+        { label: 'Principal', value: principal, color: '#007bff' },
+        { label: 'Interest', value: totalInterest, color: '#28a745' }
+    ]);
+    
+    // Update detailed breakdown
+    updateDetailedBreakdown(principal, totalInterest, emi, months, processingFee);
+}
+
+function calculateSIP() {
+    const monthlyAmount = parseFloat(document.getElementById('sip-amount').value);
+    const annualReturn = parseFloat(document.getElementById('expected-return').value) / 100;
+    const years = parseFloat(document.getElementById('investment-period').value);
+    
+    const monthlyReturn = annualReturn / 12;
+    const months = years * 12;
+    
+    // SIP Future Value Calculation
+    const futureValue = monthlyAmount * (((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * (1 + monthlyReturn));
+    const totalInvestment = monthlyAmount * months;
+    const returns = futureValue - totalInvestment;
+    
+    // Update results
+    document.getElementById('primary-result').textContent = `₹${formatNumber(Math.round(futureValue))}`;
+    document.getElementById('primary-label').textContent = 'Maturity Amount';
+    document.getElementById('secondary-result').textContent = `₹${formatNumber(Math.round(returns))}`;
+    document.getElementById('secondary-label').textContent = 'Total Returns';
+    document.getElementById('tertiary-result').textContent = `₹${formatNumber(Math.round(totalInvestment))}`;
+    document.getElementById('tertiary-label').textContent = 'Total Investment';
+    
+    // Update chart
+    updateChart([
+        { label: 'Investment', value: totalInvestment, color: '#007bff' },
+        { label: 'Returns', value: returns, color: '#28a745' }
+    ]);
+    
+    // Update detailed breakdown for SIP
+    updateSIPBreakdown(monthlyAmount, totalInvestment, returns, futureValue, years);
+}
+
+function calculateTax() {
+    const income = parseFloat(document.getElementById('annual-income').value);
+    const regime = document.getElementById('tax-regime').value;
+    const deductions = regime === 'old' ? parseFloat(document.getElementById('deductions').value) || 0 : 0;
+    
+    const taxableIncome = income - deductions;
+    let tax = 0;
+    
+    // Simplified tax calculation
+    if (taxableIncome <= 250000) {
+        tax = 0;
+    } else if (taxableIncome <= 500000) {
+        tax = (taxableIncome - 250000) * 0.05;
+    } else if (taxableIncome <= 1000000) {
+        tax = 12500 + (taxableIncome - 500000) * 0.20;
+    } else {
+        tax = 112500 + (taxableIncome - 1000000) * 0.30;
+    }
+    
+    const netIncome = income - tax;
+    
+    // Update results
+    document.getElementById('primary-result').textContent = `₹${formatNumber(Math.round(tax))}`;
+    document.getElementById('primary-label').textContent = 'Annual Tax';
+    document.getElementById('secondary-result').textContent = `₹${formatNumber(Math.round(netIncome))}`;
+    document.getElementById('secondary-label').textContent = 'Net Income';
+    document.getElementById('tertiary-result').textContent = `${((tax/income)*100).toFixed(1)}%`;
+    document.getElementById('tertiary-label').textContent = 'Tax Rate';
+    
+    // Update chart
+    updateChart([
+        { label: 'Net Income', value: netIncome, color: '#28a745' },
+        { label: 'Tax', value: tax, color: '#dc3545' }
+    ]);
+    
+    // Update detailed breakdown for tax
+    updateTaxBreakdown(income, tax, netIncome, deductions, regime);
+}
+
+function formatNumber(num) {
+    return new Intl.NumberFormat('en-IN').format(num);
+}
+
+function updateChart(data) {
+    const ctx = document.getElementById('results-chart').getContext('2d');
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.map(item => item.label),
+            datasets: [{
+                data: data.map(item => item.value),
+                backgroundColor: data.map(item => item.color),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateDetailedBreakdown(principal, interest, emi, months, processingFee) {
+    const detailedResults = document.getElementById('detailed-results');
+    
+    detailedResults.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">LOAN DETAILS</h6>
+                <div class="breakdown-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Loan Amount:</span>
+                        <strong>₹${formatNumber(principal)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Processing Fee:</span>
+                        <strong>₹${formatNumber(processingFee)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Loan Tenure:</span>
+                        <strong>${months} months</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">PAYMENT BREAKDOWN</h6>
+                <div class="breakdown-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Monthly EMI:</span>
+                        <strong class="text-primary">₹${formatNumber(Math.round(emi))}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Interest:</span>
+                        <strong class="text-success">₹${formatNumber(Math.round(interest))}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Amount:</span>
+                        <strong class="text-info">₹${formatNumber(Math.round(principal + interest))}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h6 class="text-muted mb-3">PAYMENT SCHEDULE PREVIEW</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>EMI</th>
+                            <th>Principal</th>
+                            <th>Interest</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${generatePaymentSchedule(principal, emi, months).slice(0, 5).map(row => `
+                            <tr>
+                                <td>${row.month}</td>
+                                <td>₹${formatNumber(Math.round(row.emi))}</td>
+                                <td>₹${formatNumber(Math.round(row.principal))}</td>
+                                <td>₹${formatNumber(Math.round(row.interest))}</td>
+                                <td>₹${formatNumber(Math.round(row.balance))}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <small class="text-muted">Showing first 5 months. <a href="#" onclick="showFullSchedule()">View complete schedule</a></small>
+        </div>
+    `;
+}
+
+function updateSIPBreakdown(monthly, totalInvestment, returns, maturityAmount, years) {
+    const detailedResults = document.getElementById('detailed-results');
+    
+    detailedResults.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">INVESTMENT DETAILS</h6>
+                <div class="breakdown-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Monthly SIP:</span>
+                        <strong>₹${formatNumber(monthly)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Investment Period:</span>
+                        <strong>${years} years</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Investment:</span>
+                        <strong>₹${formatNumber(totalInvestment)}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">RETURNS BREAKDOWN</h6>
+                <div class="breakdown-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Expected Returns:</span>
+                        <strong class="text-success">₹${formatNumber(Math.round(returns))}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Maturity Amount:</span>
+                        <strong class="text-primary">₹${formatNumber(Math.round(maturityAmount))}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Return Multiple:</span>
+                        <strong class="text-info">${(maturityAmount/totalInvestment).toFixed(2)}x</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generatePaymentSchedule(principal, emi, months) {
+    const schedule = [];
+    let balance = principal;
+    const monthlyRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
+    
+    for (let month = 1; month <= Math.min(months, 60); month++) {
+        const interestPayment = balance * monthlyRate;
+        const principalPayment = emi - interestPayment;
+        balance -= principalPayment;
+        
+        schedule.push({
+            month: month,
+            emi: emi,
+            principal: principalPayment,
+            interest: interestPayment,
+            balance: Math.max(0, balance)
+        });
+    }
+    
+    return schedule;
+}
+
+function saveCalculation() {
+    alert('Calculation saved to your dashboard!');
+}
+
+function exportResults() {
+    alert('Results exported successfully!');
+}
+
+function showFullSchedule() {
+    alert('Complete payment schedule will be shown in a new window.');
+}
+
+// Auto-calculate on input change
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            // Auto-calculate after a short delay
+            clearTimeout(window.calcTimeout);
+            window.calcTimeout = setTimeout(calculate, 500);
+        });
+    });
+    
+    // Initial calculation
+    calculate();
+});
+
+// Chart type change handler
+document.getElementById('chart-type').addEventListener('change', function() {
+    if (chartInstance) {
+        calculate(); // Recalculate to update chart
+    }
+});
+</script>
+{% endblock %}

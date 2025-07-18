@@ -1,13 +1,97 @@
 
-<!-- Route to specific tool templates -->
-{% if tool_name == 'qr-code-generator' %}
-    {% include 'tools/qr_code_generator.html' %}
-{% elif tool_name == 'password-generator' %}
-    {% include 'tools/password_generator.html' %}
-{% elif tool_name == 'emi-calculator' %}
-    {% include 'tools/emi_calculator.html' %}
-{% elif tool_name == 'pdf-merger' %}
-    {% include 'tools/pdf_merger.html' %}
+<!-- Route to unique design templates based on tool category -->
+{% set tool_designs = {
+    'pdf-merger': 'pdf_candy_style',
+    'pdf-splitter': 'pdf_candy_style', 
+    'pdf-compressor': 'smallpdf_style',
+    'pdf-converter': 'pdf_candy_style',
+    'pdf-password-remover': 'smallpdf_style',
+    'pdf-watermark': 'pdf_candy_style',
+    'pdf-rotate': 'smallpdf_style',
+    'pdf-crop': 'pdf_candy_style',
+    'pdf-extract-pages': 'smallpdf_style',
+    'pdf-add-page-numbers': 'pdf_candy_style',
+    'pdf-ocr': 'smallpdf_style',
+    'pdf-editor': 'pdf_candy_style',
+    'pdf-sign': 'smallpdf_style',
+    'pdf-unlock': 'pdf_candy_style',
+    'pdf-protect': 'smallpdf_style',
+    'image-compressor': 'pixlr_style',
+    'image-resizer': 'pixlr_style',
+    'image-converter': 'pixlr_style',
+    'image-editor': 'pixlr_style',
+    'background-remover': 'pixlr_style',
+    'image-cropper': 'pixlr_style',
+    'image-filter': 'pixlr_style',
+    'image-enhancer': 'pixlr_style',
+    'watermark-remover': 'pixlr_style',
+    'image-upscaler': 'pixlr_style',
+    'photo-collage': 'pixlr_style',
+    'image-optimizer': 'pixlr_style',
+    'color-palette-generator': 'pixlr_style',
+    'image-metadata-viewer': 'pixlr_style',
+    'photo-frame-editor': 'pixlr_style',
+    'video-compressor': 'clideo_style',
+    'video-converter': 'clideo_style',
+    'video-trimmer': 'clideo_style',
+    'video-merger': 'clideo_style',
+    'audio-converter': 'clideo_style',
+    'audio-compressor': 'clideo_style',
+    'audio-merger': 'clideo_style',
+    'video-resizer': 'clideo_style',
+    'video-rotator': 'clideo_style',
+    'subtitle-generator': 'clideo_style',
+    'video-watermark': 'clideo_style',
+    'audio-trimmer': 'clideo_style',
+    'video-speed-changer': 'clideo_style',
+    'audio-normalizer': 'clideo_style',
+    'video-to-gif': 'clideo_style',
+    'emi-calculator': 'mint_style',
+    'sip-calculator': 'mint_style',
+    'loan-calculator': 'mint_style',
+    'gst-calculator': 'mint_style',
+    'tax-calculator': 'mint_style',
+    'investment-calculator': 'mint_style',
+    'retirement-planner': 'mint_style',
+    'expense-tracker': 'mint_style',
+    'currency-converter': 'mint_style',
+    'compound-interest-calculator': 'mint_style',
+    'fd-calculator': 'mint_style',
+    'rd-calculator': 'mint_style',
+    'ppf-calculator': 'mint_style',
+    'home-loan-calculator': 'mint_style',
+    'car-loan-calculator': 'mint_style',
+    'qr-code-generator': 'utility_style',
+    'barcode-generator': 'utility_style',
+    'password-generator': 'utility_style',
+    'uuid-generator': 'utility_style',
+    'url-shortener': 'utility_style',
+    'hash-generator': 'utility_style',
+    'base64-encoder': 'utility_style',
+    'color-picker': 'utility_style',
+    'text-counter': 'utility_style',
+    'timestamp-converter': 'utility_style',
+    'json-formatter': 'utility_style',
+    'regex-tester': 'utility_style',
+    'md5-generator': 'utility_style',
+    'random-number-generator': 'utility_style',
+    'unit-converter': 'utility_style'
+} %}
+
+{% set design_style = tool_designs.get(tool_name, 'default_style') %}
+
+{% if design_style == 'pdf_candy_style' %}
+    {% include 'tools/unique_designs/pdf_candy_style.html' %}
+{% elif design_style == 'smallpdf_style' %}
+    {% include 'tools/unique_designs/smallpdf_style.html' %}
+{% elif design_style == 'pixlr_style' %}
+    {% include 'tools/unique_designs/pixlr_style.html' %}
+{% elif design_style == 'clideo_style' %}
+    {% include 'tools/unique_designs/clideo_style.html' %}
+{% elif design_style == 'mint_style' %}
+    {% include 'tools/unique_designs/mint_style.html' %}
+{% elif design_style == 'utility_style' %}
+    {% include 'tools/unique_designs/utility_style.html' %}
 {% else %}
     <!-- Default generic tool interface -->
     {% extends "base.html" %}
