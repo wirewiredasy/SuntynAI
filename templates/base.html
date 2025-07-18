@@ -377,12 +377,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gradient-dark text-white mt-5 py-5">
+    <footer class="bg-gradient-dark text-white mt-5 py-4">
         <div class="container">
             <!-- Main Footer Content -->
-            <div class="row mb-5">
+            <div class="row mb-4">
                 <!-- Company Info -->
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="d-flex align-items-center mb-3">
                         <div class="footer-logo me-2">
                             <svg width="32" height="32" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -398,168 +398,76 @@
                                 </g>
                             </svg>
                         </div>
-                        <h5 class="mb-0 gradient-text-footer">Suntyn AI</h5>
+                        <h5 class="mb-0" style="color: var(--primary-color);">Suntyn AI</h5>
                     </div>
                     <p class="text-light mb-3">Professional AI-powered tools platform with 85+ tools for productivity and efficiency.</p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="hover-purple" style="color: var(--primary-color);"><i class="ti ti-brand-twitter"></i></a>
-                        <a href="#" class="hover-purple" style="color: var(--primary-color);"><i class="ti ti-brand-linkedin"></i></a>
-                        <a href="#" class="hover-purple" style="color: var(--primary-color);"><i class="ti ti-brand-github"></i></a>
-                        <a href="#" class="hover-purple" style="color: var(--primary-color);"><i class="ti ti-brand-discord"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-twitter"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-linkedin"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-github"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-discord"></i></a>
                     </div>
                 </div>
 
-                <!-- Top Searches -->
+                <!-- Quick Links -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Top Searches</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);">Quick Links</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light">PDF Merge</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light">Image Compress</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='qr-generator') }}" class="text-light">QR Generator</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='text-summarizer') }}" class="text-light">Text Summary</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light">EMI Calculator</a></li>
-                        <li><a href="#" class="text-light">Resume Generator</a></li>
-                        <li><a href="#" class="text-light">QR Generator</a></li>
-                        <li><a href="#" class="text-warning">Show more</a></li>
+                        <li><a href="{{ url_for('index') }}#pdf-tools" class="text-light">PDF Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#image-tools" class="text-light">Image Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#ai-tools" class="text-light">AI Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#finance-tools" class="text-light">Finance Tools</a></li>
+                        <li><a href="{{ url_for('all_tools') }}" class="text-warning">All Tools</a></li>
                     </ul>
                 </div>
 
                 <!-- Popular Tools -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Popular Tools</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);">Popular</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="#" class="text-light">Video Trim</a></li>
-                        <li><a href="#" class="text-light">Image Resize</a></li>
-                        <li><a href="#" class="text-light">PDF Compress</a></li>
-                        <li><a href="#" class="text-light">Password Generator</a></li>
-                        <li><a href="#" class="text-light">Color Picker</a></li>
-                        <li><a href="#" class="text-light">Handwriting to Text</a></li>
-                        <li><a href="#" class="text-light">Subtitle Generator</a></li>
-                        <li><a href="#" class="text-warning">Show more</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light">PDF Merge</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light">Image Compress</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='qr-generator') }}" class="text-light">QR Generator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light">EMI Calculator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='text-summarizer') }}" class="text-light">Text Summary</a></li>
                     </ul>
                 </div>
 
-                <!-- Trending Tools -->
+                <!-- Company -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Trending Tools</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);">Company</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="#" class="text-light">Business Name Generator</a></li>
-                        <li><a href="#" class="text-light">Meme Generator</a></li>
-                        <li><a href="#" class="text-light">Mindmap Creator</a></li>
-                        <li><a href="#" class="text-light">Handwriting to Text</a></li>
-                        <li><a href="#" class="text-light">Subtitle Generator</a></li>
-                        <li><a href="#" class="text-light">Voice Generator</a></li>
-                        <li><a href="#" class="text-light">Background Remover</a></li>
-                        <li><a href="#" class="text-warning">Show more</a></li>
+                        <li><a href="{{ url_for('about') }}" class="text-light">About</a></li>
+                        <li><a href="{{ url_for('contact') }}" class="text-light">Contact</a></li>
+                        <li><a href="{{ url_for('blog') }}" class="text-light">Blog</a></li>
+                        <li><a href="{{ url_for('pricing') }}" class="text-light">Pricing</a></li>
+                        <li><a href="{{ url_for('faq') }}" class="text-light">FAQ</a></li>
                     </ul>
                 </div>
 
-                <!-- Tools by Category -->
+                <!-- Legal -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Tools by Category</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);">Legal</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('index') }}#pdf-tools" class="text-light">PDF Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#image-tools" class="text-light">Image Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#video-tools" class="text-light">Video Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#ai-tools" class="text-light">AI Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#dev-tools" class="text-light">Dev Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#finance-tools" class="text-light">Finance Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#text-tools" class="text-light">Text Tools</a></li>
-                        <li><a href="#" class="text-warning">Show more</a></li>
+                        <li><a href="{{ url_for('privacy') }}" class="text-light">Privacy</a></li>
+                        <li><a href="{{ url_for('terms') }}" class="text-light">Terms</a></li>
+                        <li><a href="{{ url_for('cookies') }}" class="text-light">Cookies</a></li>
+                        <li><a href="{{ url_for('security') }}" class="text-light">Security</a></li>
                     </ul>
-                </div>
-
-                <!-- Best Content -->
-                <div class="col-lg-1 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Best Content</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="#" class="text-light">Best PDF Tools</a></li>
-                        <li><a href="#" class="text-light">Best Image Tools</a></li>
-                        <li><a href="#" class="text-light">Best AI Tools</a></li>
-                        <li><a href="#" class="text-light">Best Video Tools</a></li>
-                        <li><a href="#" class="text-light">Best Student Tools</a></li>
-                        <li><a href="#" class="text-light">Best Business Tools</a></li>
-                        <li><a href="#" class="text-light">Best Dev Tools</a></li>
-                        <li><a href="#" class="text-warning">Show more</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Apps by Letter -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Apps by Letter</h6>
-                    <div class="d-flex flex-wrap gap-3 apps-letters">
-                        <a href="#" class="text-light letter-link">A</a>
-                        <a href="#" class="text-light letter-link">B</a>
-                        <a href="#" class="text-light letter-link">C</a>
-                        <a href="#" class="text-light letter-link">D</a>
-                        <a href="#" class="text-light letter-link">E</a>
-                        <a href="#" class="text-light letter-link">F</a>
-                        <a href="#" class="text-light letter-link">G</a>
-                        <a href="#" class="text-light letter-link">H</a>
-                        <a href="#" class="text-light letter-link">I</a>
-                        <a href="#" class="text-light letter-link">J</a>
-                        <a href="#" class="text-light letter-link">K</a>
-                        <a href="#" class="text-light letter-link">L</a>
-                        <a href="#" class="text-light letter-link">M</a>
-                        <a href="#" class="text-light letter-link">N</a>
-                        <a href="#" class="text-light letter-link">O</a>
-                        <a href="#" class="text-light letter-link">P</a>
-                        <a href="#" class="text-light letter-link">Q</a>
-                        <a href="#" class="text-light letter-link">R</a>
-                        <a href="#" class="text-light letter-link">S</a>
-                        <a href="#" class="text-light letter-link">T</a>
-                        <a href="#" class="text-light letter-link">U</a>
-                        <a href="#" class="text-light letter-link">V</a>
-                        <a href="#" class="text-light letter-link">W</a>
-                        <a href="#" class="text-light letter-link">X</a>
-                        <a href="#" class="text-light letter-link">Y</a>
-                        <a href="#" class="text-light letter-link">Z</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Social Links -->
-            <div class="row mb-4">
-                <div class="col-12 text-center">
-                    <div class="d-flex justify-content-center gap-4 social-links">
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-facebook"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-twitter"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-instagram"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-youtube"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-linkedin"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer Links -->
-            <div class="row mb-4">
-                <div class="col-12 text-center">
-                    <div class="d-flex justify-content-center flex-wrap gap-4 footer-bottom-links">
-                        <a href="{{ url_for('about') }}" class="text-light">About</a>
-                        <a href="{{ url_for('contact') }}" class="text-light">Contact</a>
-                        <a href="{{ url_for('faq') }}" class="text-light">FAQ</a>
-                        <a href="{{ url_for('privacy') }}" class="text-light">Privacy</a>
-                        <a href="{{ url_for('terms') }}" class="text-light">Terms</a>
-                        <a href="{{ url_for('blog') }}" class="text-light">Blog</a>
-                        <a href="{{ url_for('all_tools') }}" class="text-light">All Tools</a>
-                        <a href="{{ url_for('cookies') }}" class="text-light">Cookies</a>
-                    </div>
                 </div>
             </div>
 
             <!-- Copyright -->
-            <hr class="my-4 border-secondary">
+            <hr class="my-3 border-secondary">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
                     <p class="text-light mb-0">
-                        <span style="color: var(--primary-color);">©</span> 2024 Suntyn AI. All rights reserved.
+                        © 2025 Suntyn AI. All rights reserved.
                     </p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     <p class="text-light mb-0">
-                        Made with <span style="color: var(--primary-color);">❤️</span> using Flask & AI
+                        Made with ❤️ using Flask & AI
                     </p>
                 </div>
             </div>
@@ -577,8 +485,23 @@
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 
     <!-- Essential Third-party Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" defer></script>
+    <script>
+        // Load GSAP only if needed
+        if (document.querySelector('[data-animation]')) {
+            const gsapScript = document.createElement('script');
+            gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
+            gsapScript.async = true;
+            document.head.appendChild(gsapScript);
+        }
+        
+        // Load Chart.js only if needed
+        if (document.querySelector('[data-chart]')) {
+            const chartScript = document.createElement('script');
+            chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js';
+            chartScript.async = true;
+            document.head.appendChild(chartScript);
+        }
+    </script>
     
     <!-- Deferred Non-Critical Scripts -->
     <script>
@@ -718,148 +641,21 @@
 
     {% block extra_js %}{% endblock %}
 
-    <!-- Enhanced Analytics and Performance Monitoring -->
-    <script>
-    // Google Analytics 4
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'GA_MEASUREMENT_ID', {
-        page_title: '{{ self.title() }}',
-        page_location: window.location.href,
-        anonymize_ip: true,
-        allow_google_signals: false,
-        cookie_flags: 'SameSite=None;Secure'
-    });
-    </script>
-
     <!-- Performance monitoring -->
+    <script>
     (function() {
-        let startTime = performance.now();
-        let firstInputDelay = null;
-        let largestContentfulPaint = null;
-
-        // Core Web Vitals tracking
-        function trackWebVitals() {
-            // First Input Delay (FID)
-            function trackFID() {
-                new PerformanceObserver((entryList) => {
-                    for (const entry of entryList.getEntries()) {
-                        firstInputDelay = entry.processingStart - entry.startTime;
-                        gtag('event', 'timing_complete', {
-                            name: 'first_input_delay',
-                            value: Math.round(firstInputDelay)
-                        });
-                        break;
-                    }
-                }).observe({type: 'first-input', buffered: true});
-            }
-
-            // Largest Contentful Paint (LCP)
-            function trackLCP() {
-                new PerformanceObserver((entryList) => {
-                    const entries = entryList.getEntries();
-                    const lastEntry = entries[entries.length - 1];
-                    largestContentfulPaint = lastEntry.startTime;
-                    gtag('event', 'timing_complete', {
-                        name: 'largest_contentful_paint',
-                        value: Math.round(largestContentfulPaint)
-                    });
-                }).observe({type: 'largest-contentful-paint', buffered: true});
-            }
-
-            // Cumulative Layout Shift (CLS)
-            function trackCLS() {
-                let clsValue = 0;
-                new PerformanceObserver((entryList) => {
-                    for (const entry of entryList.getEntries()) {
-                        if (!entry.hadRecentInput) {
-                            clsValue += entry.value;
-                        }
-                    }
-                    gtag('event', 'timing_complete', {
-                        name: 'cumulative_layout_shift',
-                        value: Math.round(clsValue * 1000)
-                    });
-                }).observe({type: 'layout-shift', buffered: true});
-            }
-
-            if ('PerformanceObserver' in window) {
-                trackFID();
-                trackLCP();
-                trackCLS();
-            }
-        }
+        const startTime = performance.now();
 
         window.addEventListener('load', function() {
             const loadTime = performance.now() - startTime;
-            console.log(`🚀 Page fully loaded in ${Math.round(loadTime)}ms`);
-
-            // Track page load time
-            gtag('event', 'timing_complete', {
-                name: 'page_load_time',
-                value: Math.round(loadTime)
-            });
-
-            // Track performance metrics
-            if ('performance' in window && 'getEntriesByType' in performance) {
-                const navigation = performance.getEntriesByType('navigation')[0];
-                if (navigation) {
-                    gtag('event', 'timing_complete', {
-                        name: 'dns_lookup_time',
-                        value: Math.round(navigation.domainLookupEnd - navigation.domainLookupStart)
-                    });
-
-                    gtag('event', 'timing_complete', {
-                        name: 'server_response_time',
-                        value: Math.round(navigation.responseStart - navigation.requestStart)
-                    });
-
-                    gtag('event', 'timing_complete', {
-                        name: 'dom_content_loaded',
-                        value: Math.round(navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart)
-                    });
-                }
-            }
-
-            // Performance warnings
-            if (loadTime > 3000) {
-                console.warn('⚠️ Page load time is slow:', Math.round(loadTime), 'ms');
-                gtag('event', 'performance_issue', {
-                    issue_type: 'slow_page_load',
-                    value: Math.round(loadTime)
-                });
-            }
-
-            // Track Core Web Vitals
-            trackWebVitals();
+            console.log(`🚀 Page loaded in ${Math.round(loadTime)}ms`);
         });
 
-        // Error tracking
+        // Simplified error tracking
         window.addEventListener('error', function(e) {
-            gtag('event', 'exception', {
-                description: e.message,
-                fatal: false,
-                file: e.filename,
-                line: e.lineno
-            });
-        });
-
-        // Unhandled promise rejection tracking
-        window.addEventListener('unhandledrejection', function(e) {
-            gtag('event', 'exception', {
-                description: 'Unhandled Promise Rejection: ' + e.reason,
-                fatal: false
-            });
-        });
-
-        // Page visibility tracking
-        document.addEventListener('visibilitychange', function() {
-            gtag('event', 'page_view', {
-                page_title: document.title,
-                page_location: window.location.href,
-                visibility_state: document.visibilityState
-            });
+            if (e.filename && e.filename.includes(window.location.hostname)) {
+                console.error('App error:', e.message);
+            }
         });
     })();
     </script>
