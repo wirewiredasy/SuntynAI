@@ -1,4 +1,3 @@
-
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
@@ -29,13 +28,13 @@ def create_app():
     app.config.from_object(Config)
     app.secret_key = os.environ.get("SESSION_SECRET")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-    
+
     # Professional database configuration with Supabase priority
     try:
-        from database_config import get_database_url
+        from database_config import get_database_url, db_config
         database_url = get_database_url()
         app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-        
+
         # Configure engine options based on database type
         if "supabase" in database_url or "postgresql" in database_url:
             app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -64,7 +63,7 @@ def create_app():
             "pool_recycle": 300,
             "pool_pre_ping": True,
         }
-    
+
     # Initialize extensions
     db.init_app(app)
     socketio.init_app(app, 
@@ -78,14 +77,14 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
-    
+
     # Import models
     from models import User, Tool, UserActivity, ToolHistory
-    
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-    
+
     # Tool categories configuration
     TOOL_CATEGORIES = {
         'PDF Tools': {
@@ -163,19 +162,19 @@ def create_app():
             ]
         }
     }
-    
+
     # Routes
     @app.route('/')
     def index():
         recent_tools = []
         most_used_tools = []
-        
+
         if current_user.is_authenticated:
             try:
                 recent_activities = UserActivity.query.filter_by(user_id=current_user.id)\
                     .order_by(UserActivity.created_at.desc()).limit(6).all()
                 recent_tools = [activity.tool_name for activity in recent_activities]
-                
+
                 from sqlalchemy import func
                 most_used = db.session.query(
                     UserActivity.tool_name, 
@@ -187,111 +186,111 @@ def create_app():
                 most_used_tools = [tool[0] for tool in most_used]
             except Exception as e:
                 logging.warning(f"Error fetching user activities: {str(e)}")
-        
+
         return render_template('index.html', 
                              categories=TOOL_CATEGORIES,
                              recent_tools=recent_tools,
                              most_used_tools=most_used_tools)
-    
+
     @app.route('/dashboard')
     @login_required
     def dashboard():
         try:
             user_activities = UserActivity.query.filter_by(user_id=current_user.id)\
                 .order_by(UserActivity.created_at.desc()).limit(20).all()
-            
+
             tool_history = ToolHistory.query.filter_by(user_id=current_user.id)\
                 .order_by(ToolHistory.created_at.desc()).limit(10).all()
         except Exception as e:
             logging.warning(f"Error fetching dashboard data: {str(e)}")
             user_activities = []
             tool_history = []
-        
+
         return render_template('dashboard.html',
                              activities=user_activities,
                              history=tool_history)
-    
+
     @app.route('/pricing')
     def pricing():
         return render_template('pricing.html')
-    
+
     @app.route('/about')
     def about():
         return render_template('about.html')
-    
+
     @app.route('/contact')
     def contact():
         return render_template('contact.html')
-    
+
     @app.route('/faq')
     def faq():
         return render_template('faq.html')
-    
+
     @app.route('/privacy')
     def privacy():
         return render_template('privacy.html')
-    
+
     @app.route('/terms')
     def terms():
         return render_template('terms.html')
-    
+
     @app.route('/blog')
     def blog():
         return render_template('blog.html')
-    
+
     @app.route('/all-tools')
     def all_tools():
         return render_template('all_tools.html', categories=TOOL_CATEGORIES)
-    
+
     # Tool category routes
     @app.route('/pdf-tools')
     def pdf_tools():
         return render_template('category.html', 
                              category='PDF Tools',
                              tools=TOOL_CATEGORIES['PDF Tools']['tools'])
-    
+
     @app.route('/image-tools')
     def image_tools():
         return render_template('category.html', 
                              category='Image Tools',
                              tools=TOOL_CATEGORIES['Image Tools']['tools'])
-    
+
     @app.route('/finance-tools')
     def finance_tools():
         return render_template('category.html', 
                              category='Finance Tools',
                              tools=TOOL_CATEGORIES['Finance Tools']['tools'])
-    
+
     @app.route('/ai-tools')
     def ai_tools():
         return render_template('category.html', 
                              category='AI Tools',
                              tools=TOOL_CATEGORIES['AI Tools']['tools'])
-    
+
     @app.route('/video-tools')
     def video_tools():
         return render_template('category.html', 
                              category='Video/Audio Tools',
                              tools=TOOL_CATEGORIES['Video/Audio Tools']['tools'])
-    
+
     @app.route('/dev-tools')
     def dev_tools():
         return render_template('category.html', 
                              category='Utility Tools',
                              tools=TOOL_CATEGORIES['Utility Tools']['tools'])
-    
+
     @app.route('/text-tools')
     def text_tools():
         return render_template('category.html', 
                              category='Utility Tools',
                              tools=TOOL_CATEGORIES['Utility Tools']['tools'])
-    
+
     @app.route('/student-tools')
     def student_tools():
         return render_template('category.html', 
                              category='Student Tools',
                              tools=TOOL_CATEGORIES['Student Tools']['tools'])
-    
+
     @app.route('/government-tools')
     def government_tools():
         return render_template('category.html', 
@@ -303,7 +302,7 @@ def create_app():
         return render_template('category.html', 
                              category='Utility Tools',
                              tools=TOOL_CATEGORIES['Utility Tools']['tools'])
-    
+
     @app.route('/health')
     def health_check():
         """Health check endpoint for monitoring"""
@@ -311,7 +310,7 @@ def create_app():
             # Check database health
             from database_config import db_config
             db_health = db_config.health_check()
-            
+
             return jsonify({
                 "status": "healthy",
                 "database": db_health,
@@ -325,58 +324,58 @@ def create_app():
                 "status": "unhealthy",
                 "error": str(e)
             }), 500
-    
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
             username = request.form.get('username')
             password = request.form.get('password')
-            
+
             user = User.query.filter_by(username=username).first()
-            
+
             if user and check_password_hash(user.password_hash, password):
                 login_user(user)
                 return redirect(url_for('index'))
             else:
                 flash('Invalid username or password')
-        
+
         return render_template('auth/login.html')
-    
+
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
         if request.method == 'POST':
             username = request.form.get('username')
             email = request.form.get('email')
             password = request.form.get('password')
-            
+
             if User.query.filter_by(username=username).first():
                 flash('Username already exists')
                 return render_template('auth/signup.html')
-            
+
             if User.query.filter_by(email=email).first():
                 flash('Email already exists')
                 return render_template('auth/signup.html')
-            
+
             user = User(
                 username=username,
                 email=email,
                 password_hash=generate_password_hash(password)
             )
-            
+
             db.session.add(user)
             db.session.commit()
-            
+
             login_user(user)
             return redirect(url_for('index'))
-        
+
         return render_template('auth/signup.html')
-    
+
     @app.route('/logout')
     @login_required
     def logout():
         logout_user()
         return redirect(url_for('index'))
-    
+
     # Tool routes
     @app.route('/tools/<tool_name>')
     def tool_page(tool_name):
@@ -392,7 +391,7 @@ def create_app():
                 db.session.commit()
             except Exception as e:
                 logging.warning(f"Error logging tool access: {str(e)}")
-        
+
         # Find which category this tool belongs to
         tool_category = None
         tool_info = None
@@ -402,13 +401,13 @@ def create_app():
                 tool_category = category
                 tool_info = info
                 break
-        
+
         return render_template('tool_page.html', 
                              tool_name=tool_name,
                              tool_display_name=tool_name.replace('-', ' ').title(),
                              tool_category=tool_category,
                              tool_info=tool_info)
-    
+
     @app.route('/api/process-tool/<tool_name>', methods=['POST'])
     def process_tool_api(tool_name):
         """API endpoint to process tools"""
@@ -416,16 +415,16 @@ def create_app():
             # Import the processor
             from tools.tool_processor import ToolProcessor
             processor = ToolProcessor()
-            
+
             # Record start time
             start_time = datetime.now()
-            
+
             # Process the tool
             result = processor.process_tool(tool_name, request)
-            
+
             # Calculate processing time
             processing_time = (datetime.now() - start_time).total_seconds()
-            
+
             # Log tool usage if user is authenticated and successful
             if current_user.is_authenticated and result.get('success'):
                 try:
@@ -439,42 +438,42 @@ def create_app():
                     db.session.commit()
                 except Exception as db_error:
                     logging.warning(f"Failed to log tool history: {str(db_error)}")
-            
+
             # Add processing time to result
             result['processing_time'] = f"{processing_time:.2f}s"
-            
+
             return jsonify(result)
-            
+
         except ImportError as import_error:
             logging.error(f"Tool processor import error: {str(import_error)}")
             return jsonify({
                 'success': False,
                 'error': 'Tool processor not available. Please try again later.'
             }), 503
-            
+
         except Exception as e:
             logging.error(f"Tool processing error: {str(e)}")
             return jsonify({
                 'success': False,
                 'error': f'Tool processing failed: {str(e)}'
             }), 500
-        
 
-    
+
+
     # File serving route
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
         from flask import send_from_directory
         upload_dir = os.path.join(app.root_path, 'uploads')
         return send_from_directory(upload_dir, filename)
-    
+
     # Create tables
     with app.app_context():
         try:
             db.create_all()
         except Exception as e:
             logging.error(f"Database initialization error: {str(e)}")
-    
+
     return app
 
 # Create app instance
@@ -482,3 +481,10 @@ app = create_app()
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+try:
+    from database_config import get_database_url, db_config
+    DATABASE_CONNECTED = True
+except Exception as e:
+    print(f"Database connection issue: {e}")
+    DATABASE_CONNECTED = False
+    db_config = None

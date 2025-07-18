@@ -136,28 +136,134 @@ class DatabaseConfig:
             return "sqlite:///suntyn_ai.db"
 
     def _initialize_database(self):
-        """Initialize database connection with proper error handling"""
+        """Initialize database connection with proper error handling and fallback"""
+        database_url = None
         try:
             database_url = self._get_database_url()
 
-            # Create engine with production-ready settings
-            if "postgresql" in database_url:
-                connect_args = {
-                    "sslmode": "require",  # Require SSL for PostgreSQL
+            # For Supabase, try different connection approaches
+            if "supabase" in database_url and "postgresql" in database_url:
+                success = self._try_supabase_connection(database_url)
+                if not success:
+                    logger.warning("Supabase connection failed, falling back to SQLite")
+                    self._initialize_sqlite_fallback()
+                    return
+            else:
+                # Regular PostgreSQL or SQLite
+                self._initialize_regular_connection(database_url)
+
+        except Exception as e:
+            logger.error(f"Database initialization failed: {str(e)}")
+            logger.warning("Falling back to SQLite database")
+            self._initialize_sqlite_fallback()
+
+    def _try_supabase_connection(self, database_url):
+        """Try to connect to Supabase with multiple strategies"""
+        strategies = [
+            # Strategy 1: Standard connection with SSL
+            {
+                "connect_args": {
+                    "sslmode": "require",
                     "connect_timeout": 30,
                     "application_name": "Suntyn_AI_Platform"
                 }
-            else:
-                connect_args = {}
+            },
+            # Strategy 2: Prefer SSL but allow fallback
+            {
+                "connect_args": {
+                    "sslmode": "prefer",
+                    "connect_timeout": 20,
+                    "application_name": "Suntyn_AI_Platform"
+                }
+            },
+            # Strategy 3: Disable SSL for testing
+            {
+                "connect_args": {
+                    "sslmode": "disable",
+                    "connect_timeout": 15,
+                    "application_name": "Suntyn_AI_Platform"
+                }
+            }
+        ]
 
+        for i, strategy in enumerate(strategies, 1):
+            try:
+                logger.info(f"Trying Supabase connection strategy {i}")
+                
+                self.engine = create_engine(
+                    database_url,
+                    pool_size=3,
+                    max_overflow=5,
+                    pool_pre_ping=True,
+                    pool_recycle=3600,
+                    echo=False,
+                    connect_args=strategy["connect_args"]
+                )
+
+                # Test connection
+                with self.engine.connect() as connection:
+                    connection.execute(text("SELECT 1"))
+                    logger.info(f"Supabase connection successful with strategy {i}")
+
+                # Create session factory
+                self.SessionLocal = sessionmaker(
+                    autocommit=False,
+                    autoflush=False,
+                    bind=self.engine
+                )
+                
+                return True
+
+            except Exception as e:
+                logger.warning(f"Strategy {i} failed: {str(e)}")
+                if hasattr(self, 'engine'):
+                    self.engine.dispose()
+                continue
+
+        return False
+
+    def _initialize_regular_connection(self, database_url):
+        """Initialize regular PostgreSQL or SQLite connection"""
+        if "postgresql" in database_url:
+            connect_args = {
+                "sslmode": "require",
+                "connect_timeout": 30,
+                "application_name": "Suntyn_AI_Platform"
+            }
+        else:
+            connect_args = {}
+
+        self.engine = create_engine(
+            database_url,
+            pool_size=5,
+            max_overflow=10,
+            pool_pre_ping=True,
+            pool_recycle=1800,
+            echo=False,
+            connect_args=connect_args
+        )
+
+        # Create session factory
+        self.SessionLocal = sessionmaker(
+            autocommit=False,
+            autoflush=False,
+            bind=self.engine
+        )
+
+        # Test connection
+        self._test_connection()
+        logger.info("Database connection established successfully")
+
+    def _initialize_sqlite_fallback(self):
+        """Initialize SQLite as fallback database"""
+        try:
+            sqlite_url = "sqlite:///suntyn_ai_fallback.db"
+            logger.info("Initializing SQLite fallback database")
+            
             self.engine = create_engine(
-                database_url,
-                pool_size=5,               # Connection pool size
-                max_overflow=10,           # Maximum overflow connections
-                pool_pre_ping=True,        # Verify connections before use
-                pool_recycle=1800,         # Recycle connections every 30 minutes
-                echo=False,                # Set to True for SQL debugging
-                connect_args=connect_args
+                sqlite_url,
+                pool_pre_ping=True,
+                echo=False
             )
 
             # Create session factory
@@ -168,11 +274,13 @@ class DatabaseConfig:
             )
 
             # Test connection
-            self._test_connection()
-            logger.info("Database connection established successfully")
+            with self.engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
+
+            logger.info("SQLite fallback database initialized successfully")
 
         except Exception as e:
-            logger.error(f"Database initialization failed: {str(e)}")
+            logger.error(f"Even SQLite fallback failed: {str(e)}")
             raise
 
     def _test_connection(self):
