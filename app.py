@@ -64,8 +64,7 @@ def create_app():
             "pool_pre_ping": True,
         }
 
-    # Initialize extensions
-    db.init_app(app)
+    # Initialize extensions (db will be initialized with models)
     socketio.init_app(app, 
                      cors_allowed_origins="*",
                      ping_timeout=60,
@@ -78,8 +77,10 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
 
-    # Import models
-    from models import User, Tool, UserActivity, ToolHistory
+    # Import models after database initialization
+    from models import db as models_db, User, Tool, UserActivity, ToolHistory
+    # Use the same db instance
+    models_db.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -176,7 +177,7 @@ def create_app():
                 recent_tools = [activity.tool_name for activity in recent_activities]
 
                 from sqlalchemy import func
-                most_used = db.session.query(
+                most_used = models_db.session.query(
                     UserActivity.tool_name, 
                     func.count(UserActivity.id).label('count')
                 ).filter_by(user_id=current_user.id)\
@@ -362,8 +363,8 @@ def create_app():
                 password_hash=generate_password_hash(password)
             )
 
-            db.session.add(user)
-            db.session.commit()
+            models_db.session.add(user)
+            models_db.session.commit()
 
             login_user(user)
             return redirect(url_for('index'))
@@ -387,8 +388,8 @@ def create_app():
                     tool_name=tool_name,
                     action='accessed'
                 )
-                db.session.add(activity)
-                db.session.commit()
+                models_db.session.add(activity)
+                models_db.session.commit()
             except Exception as e:
                 logging.warning(f"Error logging tool access: {str(e)}")
 
@@ -434,8 +435,8 @@ def create_app():
                         processing_time=processing_time,
                         file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
                     )
-                    db.session.add(history)
-                    db.session.commit()
+                    models_db.session.add(history)
+                    models_db.session.commit()
                 except Exception as db_error:
                     logging.warning(f"Failed to log tool history: {str(db_error)}")
 
@@ -470,7 +471,8 @@ def create_app():
     # Create tables
     with app.app_context():
         try:
-            db.create_all()
+            models_db.create_all()
+            logging.info("Database tables created successfully")
         except Exception as e:
             logging.error(f"Database initialization error: {str(e)}")
 
