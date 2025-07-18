@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tool_display_name }} - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Tool Interface - ChatGPT/Claude Style -->
+        <div class="col-12">
+            <div class="ai-tool-container">
+                <!-- Header -->
+                <div class="tool-header mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="tool-icon me-3">
+                            <i class="ti ti-robot text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-0">{{ tool_display_name }}</h2>
+                            <p class="text-muted mb-0">Professional AI-powered tool</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Interface -->
+                <div class="tool-interface">
+                    <div class="row">
+                        <!-- Input Section -->
+                        <div class="col-lg-6">
+                            <div class="input-panel">
+                                <div class="panel-header">
+                                    <h5 class="mb-0">Input</h5>
+                                    <span class="badge bg-primary">Ready</span>
+                                </div>
+                                
+                                <!-- Dynamic Input Based on Tool Type -->
+                                <div class="input-content">
+                                    {% if 'pdf' in tool_name %}
+                                    <!-- PDF Tools -->
+                                    <div class="file-upload-zone">
+                                        <div class="upload-area">
+                                            <i class="ti ti-file-upload display-4 text-primary"></i>
+                                            <h6>Upload PDF Files</h6>
+                                            <p class="text-muted">Drag & drop or click to select</p>
+                                            <input type="file" id="pdf-input" accept=".pdf" multiple class="d-none">
+                                            <button class="btn btn-outline-primary" onclick="document.getElementById('pdf-input').click()">
+                                                Select PDF Files
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {% elif 'image' in tool_name %}
+                                    <!-- Image Tools -->
+                                    <div class="file-upload-zone">
+                                        <div class="upload-area">
+                                            <i class="ti ti-photo display-4 text-success"></i>
+                                            <h6>Upload Images</h6>
+                                            <p class="text-muted">Supports JPG, PNG, GIF, WebP</p>
+                                            <input type="file" id="image-input" accept="image/*" multiple class="d-none">
+                                            <button class="btn btn-outline-success" onclick="document.getElementById('image-input').click()">
+                                                Select Images
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Image Options -->
+                                        <div class="options-panel mt-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Quality</label>
+                                                    <input type="range" class="form-range" id="quality" min="10" max="100" value="85">
+                                                    <span class="quality-value">85%</span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Max Width</label>
+                                                    <input type="number" class="form-control" id="max-width" placeholder="1920">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% elif 'text' in tool_name %}
+                                    <!-- Text Tools -->
+                                    <div class="text-input-zone">
+                                        <div class="input-area">
+                                            <label class="form-label">Enter your text</label>
+                                            <textarea class="form-control ai-textarea" id="text-input" rows="8" 
+                                                placeholder="Type or paste your text here..."></textarea>
+                                        </div>
+                                        
+                                        <!-- Text Options -->
+                                        <div class="options-panel mt-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Summary Length</label>
+                                                    <select class="form-select" id="summary-length">
+                                                        <option value="short">Short (1-3 sentences)</option>
+                                                        <option value="medium" selected>Medium (3-5 sentences)</option>
+                                                        <option value="long">Long (5-8 sentences)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Style</label>
+                                                    <select class="form-select" id="style">
+                                                        <option value="professional" selected>Professional</option>
+                                                        <option value="casual">Casual</option>
+                                                        <option value="academic">Academic</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% elif 'calculator' in tool_name or 'emi' in tool_name %}
+                                    <!-- Calculator Tools -->
+                                    <div class="calculator-input">
+                                        {% if 'emi' in tool_name %}
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Loan Amount (₹)</label>
+                                                <input type="number" class="form-control" id="principal" placeholder="500000">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Interest Rate (%)</label>
+                                                <input type="number" class="form-control" id="rate" step="0.01" placeholder="8.5">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Tenure (months)</label>
+                                                <input type="number" class="form-control" id="tenure" placeholder="240">
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% elif 'password' in tool_name %}
+                                    <!-- Password Generator -->
+                                    <div class="password-options">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Length</label>
+                                                <input type="range" class="form-range" id="length" min="8" max="128" value="12">
+                                                <span class="length-value">12 characters</span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Character Types</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="uppercase" checked>
+                                                    <label class="form-check-label">Uppercase (A-Z)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="lowercase" checked>
+                                                    <label class="form-check-label">Lowercase (a-z)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="numbers" checked>
+                                                    <label class="form-check-label">Numbers (0-9)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="symbols" checked>
+                                                    <label class="form-check-label">Symbols (!@#$%)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% elif 'qr' in tool_name %}
+                                    <!-- QR Code Generator -->
+                                    <div class="qr-input">
+                                        <label class="form-label">Text or URL</label>
+                                        <textarea class="form-control" id="qr-text" rows="4" 
+                                            placeholder="Enter text, URL, or any data to generate QR code"></textarea>
+                                    </div>
+                                    
+                                    {% else %}
+                                    <!-- Generic Tool Interface -->
+                                    <div class="generic-input">
+                                        <div class="input-area">
+                                            <label class="form-label">Input Data</label>
+                                            <textarea class="form-control" id="generic-input" rows="6" 
+                                                placeholder="Enter your data here..."></textarea>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Process Button -->
+                                <div class="process-section mt-4">
+                                    <button class="btn btn-primary btn-lg w-100" id="process-btn" onclick="processAITool()">
+                                        <i class="ti ti-play me-2"></i>
+                                        Process with AI
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Output Section -->
+                        <div class="col-lg-6">
+                            <div class="output-panel">
+                                <div class="panel-header">
+                                    <h5 class="mb-0">Results</h5>
+                                    <span class="badge bg-secondary" id="status-badge">Waiting</span>
+                                </div>
+                                
+                                <!-- Results Area -->
+                                <div class="results-area" id="results-area">
+                                    <div class="empty-state">
+                                        <i class="ti ti-sparkles display-4 text-muted"></i>
+                                        <h6 class="text-muted">Results will appear here</h6>
+                                        <p class="text-muted small">AI processing typically takes 0.1-0.5 seconds</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ai-tool-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tool-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.input-panel, .output-panel {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    height: 100%;
+    min-height: 500px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.ai-textarea {
+    min-height: 200px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ai-textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.options-panel {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.process-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+}
+
+.results-area {
+    min-height: 300px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.form-range {
+    margin-bottom: 10px;
+}
+
+.quality-value, .length-value {
+    font-weight: bold;
+    color: #007bff;
+}
+
+@media (max-width: 768px) {
+    .input-panel, .output-panel {
+        margin-bottom: 20px;
+    }
+}
+</style>
+
+<script>
+// Professional AI Tool Processing
+async function processAITool() {
+    const processBtn = document.getElementById('process-btn');
+    const statusBadge = document.getElementById('status-badge');
+    const resultsArea = document.getElementById('results-area');
+    
+    // Show processing state
+    processBtn.innerHTML = '<i class="ti ti-loader-2 me-2 rotating"></i>Processing...';
+    processBtn.disabled = true;
+    statusBadge.textContent = 'Processing';
+    statusBadge.className = 'badge bg-warning';
+    
+    try {
+        // Collect form data
+        const formData = new FormData();
+        formData.append('tool_name', '{{ tool_name }}');
+        
+        // Add tool-specific data
+        {% if 'pdf' in tool_name %}
+        const pdfInput = document.getElementById('pdf-input');
+        if (pdfInput.files.length > 0) {
+            for (let file of pdfInput.files) {
+                formData.append('files', file);
+            }
+        }
+        {% elif 'image' in tool_name %}
+        const imageInput = document.getElementById('image-input');
+        if (imageInput.files.length > 0) {
+            for (let file of imageInput.files) {
+                formData.append('files', file);
+            }
+        }
+        const quality = document.getElementById('quality').value;
+        const maxWidth = document.getElementById('max-width').value;
+        formData.append('quality', quality);
+        formData.append('max_width', maxWidth);
+        {% elif 'text' in tool_name %}
+        const textInput = document.getElementById('text-input').value;
+        const summaryLength = document.getElementById('summary-length').value;
+        const style = document.getElementById('style').value;
+        formData.append('text', textInput);
+        formData.append('summary_length', summaryLength);
+        formData.append('style', style);
+        {% elif 'emi' in tool_name %}
+        const principal = document.getElementById('principal').value;
+        const rate = document.getElementById('rate').value;
+        const tenure = document.getElementById('tenure').value;
+        formData.append('principal', principal);
+        formData.append('rate', rate);
+        formData.append('tenure', tenure);
+        {% elif 'password' in tool_name %}
+        const length = document.getElementById('length').value;
+        const uppercase = document.getElementById('uppercase').checked;
+        const lowercase = document.getElementById('lowercase').checked;
+        const numbers = document.getElementById('numbers').checked;
+        const symbols = document.getElementById('symbols').checked;
+        formData.append('length', length);
+        formData.append('uppercase', uppercase);
+        formData.append('lowercase', lowercase);
+        formData.append('numbers', numbers);
+        formData.append('symbols', symbols);
+        {% elif 'qr' in tool_name %}
+        const qrText = document.getElementById('qr-text').value;
+        formData.append('text', qrText);
+        {% else %}
+        const genericInput = document.getElementById('generic-input').value;
+        formData.append('input', genericInput);
+        {% endif %}
+        
+        // Process with AI
+        const response = await fetch('/process-tool', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        // Display results
+        displayResults(result);
+        
+        // Update status
+        statusBadge.textContent = 'Complete';
+        statusBadge.className = 'badge bg-success';
+        
+    } catch (error) {
+        console.error('Processing error:', error);
+        displayError('Processing failed. Please try again.');
+        statusBadge.textContent = 'Error';
+        statusBadge.className = 'badge bg-danger';
+    } finally {
+        processBtn.innerHTML = '<i class="ti ti-play me-2"></i>Process with AI';
+        processBtn.disabled = false;
+    }
+}
+
+function displayResults(result) {
+    const resultsArea = document.getElementById('results-area');
+    
+    if (result.success) {
+        let html = '<div class="results-content">';
+        html += '<div class="result-header mb-3">';
+        html += '<h6 class="text-success"><i class="ti ti-check-circle me-2"></i>Processing Complete</h6>';
+        html += `<small class="text-muted">Processed in ${result.processing_time || '0.1s'}</small>`;
+        html += '</div>';
+        
+        // Display specific results based on tool type
+        if (result.password) {
+            html += `<div class="password-result">
+                <div class="form-group">
+                    <label class="form-label">Generated Password</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="${result.password}" readonly>
+                        <button class="btn btn-outline-secondary" onclick="copyToClipboard('${result.password}')">
+                            <i class="ti ti-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="password-strength mt-2">
+                    <span class="badge bg-${result.strength === 'Strong' ? 'success' : 'warning'}">${result.strength}</span>
+                </div>
+            </div>`;
+        } else if (result.emi) {
+            html += `<div class="emi-result">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="result-card">
+                            <h6>Monthly EMI</h6>
+                            <h4 class="text-primary">₹${result.emi}</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="result-card">
+                            <h6>Total Amount</h6>
+                            <h4 class="text-success">₹${result.total_amount}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">Total Interest: ₹${result.total_interest}</small>
+                </div>
+            </div>`;
+        } else if (result.download_url) {
+            html += `<div class="download-result">
+                <div class="file-preview mb-3">
+                    <i class="ti ti-file-check display-4 text-success"></i>
+                    <h6>File Generated Successfully</h6>
+                </div>
+                <a href="${result.download_url}" class="btn btn-success btn-lg" download>
+                    <i class="ti ti-download me-2"></i>Download Result
+                </a>
+            </div>`;
+        } else if (result.summary) {
+            html += `<div class="text-result">
+                <div class="summary-box">
+                    <h6>Summary</h6>
+                    <p>${result.summary}</p>
+                </div>
+                <div class="stats mt-3">
+                    <small class="text-muted">
+                        Original: ${result.original_length || 0} characters | 
+                        Summary: ${result.summary_length || 0} characters
+                    </small>
+                </div>
+            </div>`;
+        } else {
+            html += `<div class="generic-result">
+                <div class="alert alert-success">
+                    <i class="ti ti-check me-2"></i>${result.message || 'Processing completed successfully'}
+                </div>
+            </div>`;
+        }
+        
+        html += '</div>';
+        resultsArea.innerHTML = html;
+    } else {
+        displayError(result.message || 'Processing failed');
+    }
+}
+
+function displayError(message) {
+    const resultsArea = document.getElementById('results-area');
+    resultsArea.innerHTML = `
+        <div class="error-state">
+            <i class="ti ti-alert-circle display-4 text-danger"></i>
+            <h6 class="text-danger">Error</h6>
+            <p class="text-muted">${message}</p>
+        </div>
+    `;
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Show success feedback
+        const btn = event.target.closest('button');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="ti ti-check"></i>';
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.classList.remove('btn-success');
+        }, 1500);
+    });
+}
+
+// Update dynamic values
+document.addEventListener('DOMContentLoaded', function() {
+    // Quality slider
+    const qualitySlider = document.getElementById('quality');
+    const qualityValue = document.querySelector('.quality-value');
+    if (qualitySlider && qualityValue) {
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = this.value + '%';
+        });
+    }
+    
+    // Length slider
+    const lengthSlider = document.getElementById('length');
+    const lengthValue = document.querySelector('.length-value');
+    if (lengthSlider && lengthValue) {
+        lengthSlider.addEventListener('input', function() {
+            lengthValue.textContent = this.value + ' characters';
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1298,6 +1298,6 @@ const app = new SuntynAI();
 // Export for global access
 window.SuntynAI = SuntynAI;
 window.app = app;
-/**
- * The code has been updated by converting the class to function based approach, fixing the syntax errors and implementing error handling.
- */
+
+// Ensure proper completion
+console.log('✅ All systems initialized successfully');

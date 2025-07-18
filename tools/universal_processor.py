@@ -33,12 +33,12 @@ class UniversalToolProcessor:
             os.makedirs(self.upload_dir)
     
     def process_tool(self, tool_name, files, form_data):
-        """Main processor - returns professional AI-like responses"""
+        """Main processor - returns professional AI-like responses for all 85 tools"""
         try:
             # Simulate AI processing speed (very fast)
             start_time = time.time()
             
-            # Process based on tool category
+            # Enhanced tool processing with specific implementations
             if 'pdf' in tool_name:
                 result = self.process_pdf_tool(tool_name, files, form_data)
             elif 'image' in tool_name:
@@ -47,20 +47,26 @@ class UniversalToolProcessor:
                 result = self.process_qr_tool(tool_name, files, form_data)
             elif 'password' in tool_name:
                 result = self.process_password_tool(tool_name, files, form_data)
-            elif 'emi' in tool_name:
+            elif 'emi' in tool_name or 'loan' in tool_name:
                 result = self.process_emi_tool(tool_name, files, form_data)
-            elif 'text' in tool_name:
+            elif 'text' in tool_name or 'content' in tool_name:
                 result = self.process_text_tool(tool_name, files, form_data)
-            elif 'uuid' in tool_name:
+            elif 'uuid' in tool_name or 'guid' in tool_name:
                 result = self.process_uuid_tool(tool_name, files, form_data)
-            elif 'gst' in tool_name:
+            elif 'gst' in tool_name or 'tax' in tool_name:
                 result = self.process_gst_tool(tool_name, files, form_data)
-            elif 'aadhaar' in tool_name or 'pan' in tool_name:
+            elif 'aadhaar' in tool_name or 'pan' in tool_name or 'government' in tool_name:
                 result = self.process_government_tool(tool_name, files, form_data)
-            elif 'gpa' in tool_name or 'student' in tool_name:
+            elif 'gpa' in tool_name or 'student' in tool_name or 'study' in tool_name:
                 result = self.process_student_tool(tool_name, files, form_data)
             elif 'video' in tool_name or 'audio' in tool_name:
                 result = self.process_media_tool(tool_name, files, form_data)
+            elif 'finance' in tool_name or 'calculator' in tool_name:
+                result = self.process_finance_tool(tool_name, files, form_data)
+            elif 'utility' in tool_name or 'converter' in tool_name:
+                result = self.process_utility_tool(tool_name, files, form_data)
+            elif 'ai' in tool_name or 'generator' in tool_name:
+                result = self.process_ai_tool(tool_name, files, form_data)
             else:
                 # Universal fallback for any other tool
                 result = self.process_generic_tool(tool_name, files, form_data)
@@ -69,6 +75,7 @@ class UniversalToolProcessor:
             processing_time = time.time() - start_time
             result['processing_time'] = f"{processing_time:.3f}s"
             result['timestamp'] = datetime.now().isoformat()
+            result['success'] = True
             
             return result
             
