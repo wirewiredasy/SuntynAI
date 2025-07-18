@@ -30,6 +30,28 @@ def create_app():
     app.secret_key = os.environ.get("SESSION_SECRET")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     
+    # Professional database configuration
+    try:
+        from database_config import get_database_url
+        database_url = get_database_url()
+        app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+            "pool_size": 10,
+            "max_overflow": 20,
+            "pool_pre_ping": True,
+            "pool_recycle": 3600,
+            "echo": False
+        }
+        logging.info("Professional database configuration loaded")
+    except Exception as e:
+        logging.error(f"Database configuration error: {str(e)}")
+        # Fallback to basic configuration
+        app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+            "pool_recycle": 300,
+            "pool_pre_ping": True,
+        }
+    
     # Initialize extensions
     db.init_app(app)
     socketio.init_app(app, 
@@ -268,6 +290,28 @@ def create_app():
         return render_template('category.html', 
                              category='Utility Tools',
                              tools=TOOL_CATEGORIES['Utility Tools']['tools'])
+    
+    @app.route('/health')
+    def health_check():
+        """Health check endpoint for monitoring"""
+        try:
+            # Check database health
+            from database_config import db_config
+            db_health = db_config.health_check()
+            
+            return jsonify({
+                "status": "healthy",
+                "database": db_health,
+                "version": "1.0.0",
+                "tools_count": 85,
+                "environment": os.getenv("FLASK_ENV", "development")
+            })
+        except Exception as e:
+            logging.error(f"Health check failed: {str(e)}")
+            return jsonify({
+                "status": "unhealthy",
+                "error": str(e)
+            }), 500
     
     @app.route('/login', methods=['GET', 'POST'])
     def login():
