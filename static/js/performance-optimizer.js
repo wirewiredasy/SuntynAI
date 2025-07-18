@@ -235,53 +235,35 @@ class PerformanceOptimizer {
         if ('performance' in window && 'getEntriesByType' in performance) {
             try {
                 const navigation = performance.getEntriesByType('navigation')[0];
-                const paint = performance.getEntriesByType('paint');
+                
+                if (!navigation) return;
 
-                if (!navigation) {
-                    console.warn('Navigation timing not available');
-                    return;
-                }
-
-                // Safely calculate metrics with fallbacks
+                // Calculate metrics with proper validation
+                const totalLoadTime = navigation.loadEventEnd > 0 ? 
+                    Math.round(navigation.loadEventEnd - navigation.navigationStart) : 0;
+                
                 const metrics = {
-                    'DNS Lookup': Math.round(Math.max(0, navigation.domainLookupEnd - navigation.domainLookupStart)) || 0,
-                    'TCP Connection': Math.round(Math.max(0, navigation.connectEnd - navigation.connectStart)) || 0,
-                    'Server Response': Math.round(Math.max(0, navigation.responseEnd - navigation.responseStart)) || 0,
-                    'DOM Processing': Math.round(Math.max(0, navigation.domContentLoadedEventEnd - navigation.responseEnd)) || 0,
-                    'Resource Loading': Math.round(Math.max(0, navigation.loadEventEnd - navigation.domContentLoadedEventEnd)) || 0,
-                    'Total Load Time': Math.round(Math.max(0, navigation.loadEventEnd - navigation.fetchStart)) || 0
+                    'DNS': Math.round(Math.max(0, navigation.domainLookupEnd - navigation.domainLookupStart)),
+                    'Connection': Math.round(Math.max(0, navigation.connectEnd - navigation.connectStart)),
+                    'Response': Math.round(Math.max(0, navigation.responseEnd - navigation.responseStart)),
+                    'DOM': Math.round(Math.max(0, navigation.domContentLoadedEventEnd - navigation.responseEnd)),
+                    'Total Load': totalLoadTime
                 };
 
-                if (paint && paint.length > 0) {
-                    paint.forEach(entry => {
-                        if (entry && entry.name && typeof entry.startTime === 'number') {
-                            metrics[entry.name] = Math.round(entry.startTime);
-                        }
-                    });
-                }
+                // Only log if total load time is valid
+                if (totalLoadTime > 0) {
+                    console.log('📊 Load Time:', totalLoadTime + 'ms');
+                    
+                    // Show performance indicator
+                    this.showPerformanceIndicator(totalLoadTime);
 
-                console.table(metrics);
-
-                // Show performance indicator
-                this.showPerformanceIndicator(metrics['Total Load Time']);
-
-                // Report slow performance
-                if (metrics['Total Load Time'] > 3000) {
-                    console.warn('🐌 Slow page load detected:', metrics['Total Load Time'], 'ms');
-                    this.reportSlowPerformance(metrics);
-                }
-
-                // Suggest optimizations
-                if (metrics['Total Load Time'] > 5000) {
-                    console.log('💡 Performance suggestions:', [
-                        'Enable browser caching',
-                        'Optimize images',
-                        'Minify CSS/JS',
-                        'Use a CDN'
-                    ]);
+                    // Report slow performance (reduced threshold)
+                    if (totalLoadTime > 5000) {
+                        console.warn('🐌 Slow load:', totalLoadTime + 'ms');
+                    }
                 }
             } catch (error) {
-                console.warn('Performance measurement failed:', error);
+                // Silently fail - no console spam
             }
         }
     }

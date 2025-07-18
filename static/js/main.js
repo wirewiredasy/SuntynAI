@@ -1,8 +1,17 @@
 // Main JavaScript for Suntyn AI - Optimized for Performance
 console.log('🚀 Initializing Suntyn AI...');
 
-// Performance monitoring
-const startTime = performance.now();
+// Optimized performance tracking
+    const loadStartTime = performance.now();
+
+    window.addEventListener('load', () => {
+        const loadTime = Math.round(performance.now() - loadStartTime);
+        if (loadTime < 2000) {
+            console.log(`🚀 Fast load: ${loadTime}ms`);
+        } else {
+            console.log(`⏱️ Load time: ${loadTime}ms`);
+        }
+    });
 
 // Critical path optimization - only load essential components immediately
 document.addEventListener('DOMContentLoaded', function() {
@@ -13,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeToolForms();
 
     // Log initial load time
-    const domLoadTime = performance.now() - startTime;
+    const domLoadTime = performance.now() - loadStartTime;
     console.log(`DOM ready in: ${domLoadTime.toFixed(2)}ms`);
 
     // Use intersection observer for lazy initialization
@@ -272,7 +281,7 @@ async function handleToolSubmission(form) {
     const toolName = form.dataset.tool;
     const submitBtn = form.querySelector('button[type="submit"]');
     const resultDiv = document.getElementById('tool-result') || createResultDiv();
-    
+
     // Professional AI-like processing interface
 
     if (!toolName) {
@@ -289,7 +298,7 @@ async function handleToolSubmission(form) {
         const formData = new FormData(form);
 
         formData.append('tool_name', toolName);
-        
+
         const response = await fetch('/process-tool', {
             method: 'POST',
             body: formData
@@ -331,7 +340,7 @@ function showProfessionalSuccess(result) {
                         <p class="text-muted mb-0">${result.message || 'Your request has been processed successfully'}</p>
                     </div>
                 </div>
-                
+
                 ${result.processing_time ? `
                     <div class="d-flex align-items-center text-muted mb-3">
                         <i class="ti ti-clock me-2"></i>
@@ -581,18 +590,18 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Service Worker registration (optional)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then((registration) => {
-                console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
+// Service Worker Registration (optimized)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(() => {
+                    console.log('✅ PWA enabled');
+                })
+                .catch(() => {
+                    // Silently fail for better UX
+                });
+        });
+    }
 
 function SuntynAI() {
     this.isInitialized = false;
@@ -1004,7 +1013,8 @@ SuntynAI.prototype.initializeCSSAnimations = function() {
 // Utility Methods
 SuntynAI.prototype.showNotification = function(message, type = 'info', duration = 5000) {
     const container = document.getElementById('notification-container');
-    if (!container) return;
+    ```text
+if (!container) return;
 
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show`;
