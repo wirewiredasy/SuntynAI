@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 def test_supabase_connection():
     """Test direct Supabase connection"""
     try:
-        # Use the new Supabase URL
-        database_url = "postgresql://postgres:Suntyn2315db@db.vxappuvvmdnjddnpjroa.supabase.co:5432/postgres"
+        # Use the new Supabase pooler URL
+        database_url = "postgresql://postgres.vxappuvvmdnjddnpjroa:Suntyn2315db@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"
         
         logger.info("Testing Supabase connection...")
         logger.info(f"Database URL: {database_url[:50]}...")

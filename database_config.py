@@ -19,11 +19,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def get_database_url():
-    """Get database URL with proper error handling and IPv4 preference"""
+    """Get database URL with proper error handling"""
     try:
-        # Priority 1: New Supabase database as primary
-        database_url = "postgresql://postgres:Suntyn2315db@db.vxappuvvmdnjddnpjroa.supabase.co:5432/postgres?options=-c%20default_transaction_isolation=read_committed"
-        logger.info("Using new Supabase PostgreSQL database with optimized settings")
+        # Use new Supabase pooler URL for better connection handling
+        database_url = "postgresql://postgres.vxappuvvmdnjddnpjroa:Suntyn2315db@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"
+        logger.info("Using Supabase pooler connection for optimal performance")
         return database_url
 
     except Exception as e:
@@ -41,8 +41,8 @@ class DatabaseConfig:
         self._initialize_database()
 
     def _get_database_url(self):
-        """Get optimized Supabase database URL"""
-        return get_database_url()
+        """Get new Supabase pooler database URL"""
+        return "postgresql://postgres.vxappuvvmdnjddnpjroa:Suntyn2315db@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"
 
     def _initialize_database(self):
         """Initialize Supabase database connection with optimized settings"""
@@ -70,18 +70,11 @@ class DatabaseConfig:
         try:
             logger.info("Connecting to Supabase with optimized settings")
             
-            # Force IPv4 and optimize connection settings
+            # Optimized settings for Supabase pooler
             connect_args = {
                 "sslmode": "require",
-                "connect_timeout": 45,
-                "application_name": "Suntyn_AI_Platform",
-                "keepalives_idle": 600,
-                "keepalives_interval": 30,
-                "keepalives_count": 3,
-                "tcp_keepalives_idle": 600,
-                "tcp_keepalives_interval": 30,
-                "tcp_keepalives_count": 3,
-                "target_session_attrs": "read-write"
+                "connect_timeout": 30,
+                "application_name": "Suntyn_AI_Platform"
             }
 
             self.engine = create_engine(
