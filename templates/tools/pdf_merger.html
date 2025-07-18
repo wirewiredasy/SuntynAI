@@ -3,164 +3,201 @@
 {% block title %}PDF Merger - Suntyn AI{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-10 mx-auto">
-            <div class="text-center mb-5">
-                <div class="tool-icon mb-3">
-                    <i class="ti ti-file-plus text-danger fs-1"></i>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="ti ti-file-plus me-2"></i>
+                        PDF Merger
+                    </h3>
                 </div>
-                <h1 class="h3 mb-3">PDF Merger</h1>
-                <p class="text-muted">Combine multiple PDF files into a single document</p>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <form id="pdf-merger-form">
-                                <!-- File Upload Area -->
-                                <div class="drag-drop-zone mb-4" id="drop-zone">
-                                    <div class="text-center">
-                                        <i class="ti ti-cloud-upload text-primary fs-1 mb-3"></i>
-                                        <h5>Drag & Drop PDF Files Here</h5>
-                                        <p class="text-muted">or click to select multiple files</p>
-                                        <input type="file" id="file-input" accept=".pdf" multiple class="d-none">
-                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-                                            <i class="ti ti-file-plus"></i> Select PDF Files
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- File List -->
-                                <div id="file-list" class="mb-4" style="display: none;">
-                                    <h6>Selected Files:</h6>
-                                    <div id="sortable-files" class="list-group">
-                                        <!-- Dynamic file list will be added here -->
-                                    </div>
-                                    <small class="text-muted mt-2 d-block">
-                                        <i class="ti ti-arrows-sort"></i> Drag files to reorder them
-                                    </small>
-                                </div>
-                                
-                                <!-- Merge Options -->
-                                <div id="merge-options" class="mb-4" style="display: none;">
-                                    <h6>Merge Options:</h6>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Output Filename</label>
-                                            <input type="text" class="form-control" id="output-filename" value="merged_document.pdf">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Page Range (Optional)</label>
-                                            <input type="text" class="form-control" id="page-range" placeholder="e.g., 1-3,5,7-9">
-                                            <small class="text-muted">Leave empty to merge all pages</small>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="add-bookmarks">
-                                                <label class="form-check-label" for="add-bookmarks">
-                                                    Add bookmarks for each file
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="optimize-size">
-                                                <label class="form-check-label" for="optimize-size">
-                                                    Optimize file size
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Submit Button -->
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-success btn-lg" id="merge-btn" disabled>
-                                        <i class="ti ti-file-plus"></i> Merge PDFs
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <!-- File Info -->
-                    <div class="card shadow-sm" id="info-card" style="display: none;">
-                        <div class="card-body">
-                            <h6 class="mb-3">
-                                <i class="ti ti-info-circle"></i> Merge Information
-                            </h6>
-                            <div class="mb-2">
-                                <small class="text-muted">Total Files:</small>
-                                <span class="fw-medium ms-2" id="total-files">0</span>
-                            </div>
-                            <div class="mb-2">
-                                <small class="text-muted">Total Size:</small>
-                                <span class="fw-medium ms-2" id="total-size">0 MB</span>
-                            </div>
-                            <div class="mb-2">
-                                <small class="text-muted">Estimated Pages:</small>
-                                <span class="fw-medium ms-2" id="estimated-pages">Unknown</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Progress -->
-                    <div class="card shadow-sm mt-4" id="progress-card" style="display: none;">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="loading-spinner me-3"></div>
-                                <div class="flex-grow-1">
-                                    <div class="progress mb-2">
-                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                                    </div>
-                                    <small class="text-muted" id="progress-text">Merging PDFs...</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Result -->
-                    <div class="card shadow-sm mt-4" id="result-card" style="display: none;">
-                        <div class="card-body text-center">
-                            <div class="result-success" id="success-result" style="display: none;">
-                                <i class="ti ti-check-circle text-success fs-1 mb-3"></i>
-                                <h6 class="text-success">PDFs Merged Successfully!</h6>
-                                <p class="text-muted mb-3" id="success-message"></p>
-                                
-                                <div class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-primary" id="download-btn">
-                                        <i class="ti ti-download"></i> Download
-                                    </a>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
-                                        <i class="ti ti-refresh"></i> Merge More
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="result-error" id="error-result" style="display: none;">
-                                <i class="ti ti-alert-circle text-danger fs-1 mb-3"></i>
-                                <h6 class="text-danger">Merge Failed</h6>
-                                <p class="text-muted mb-3" id="error-message"></p>
-                                <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
-                                    <i class="ti ti-refresh"></i> Try Again
+                <div class="card-body">
+                    <form id="pdf-form" enctype="multipart/form-data">
+                        <div class="upload-area mb-4">
+                            <div class="border border-dashed border-primary rounded p-5 text-center">
+                                <i class="ti ti-cloud-upload display-4 text-primary mb-3"></i>
+                                <h5>Drop PDF files here or click to select</h5>
+                                <p class="text-muted">Select multiple PDF files to merge them into one document</p>
+                                <input type="file" id="pdf-files" name="files" multiple accept=".pdf" class="d-none">
+                                <button type="button" class="btn btn-primary" onclick="document.getElementById('pdf-files').click()">
+                                    <i class="ti ti-file-plus me-2"></i>Select PDF Files
                                 </button>
                             </div>
                         </div>
+                        
+                        <div id="file-list" class="mb-4" style="display: none;">
+                            <h6>Selected Files:</h6>
+                            <div id="files-preview"></div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" id="merge-btn" class="btn btn-danger btn-lg" style="display: none;">
+                                <i class="ti ti-file-export me-2"></i>
+                                Merge PDFs
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="result" class="text-center mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5>PDFs Merged Successfully!</h5>
+                            <p id="result-message"></p>
+                            <a href="#" id="download-link" class="btn btn-success" download>
+                                <i class="ti ti-download me-2"></i>Download Merged PDF
+                            </a>
+                        </div>
                     </div>
+                    
+                    <div id="error" class="alert alert-danger" style="display: none;"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-<script src="{{ url_for('static', filename='js/tools/pdf-merger.js') }}"></script>
+<script>
+document.getElementById('pdf-files').addEventListener('change', function(e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+        displayFiles(files);
+        document.getElementById('file-list').style.display = 'block';
+        document.getElementById('merge-btn').style.display = files.length >= 2 ? 'inline-block' : 'none';
+    }
+});
+
+function displayFiles(files) {
+    const preview = document.getElementById('files-preview');
+    preview.innerHTML = '';
+    
+    Array.from(files).forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'card mb-2';
+        fileItem.innerHTML = `
+            <div class="card-body py-2">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <i class="ti ti-file-text text-danger me-2"></i>
+                        <span class="fw-bold">${file.name}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                            <i class="ti ti-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        preview.appendChild(fileItem);
+    });
+}
+
+function removeFile(index) {
+    const fileInput = document.getElementById('pdf-files');
+    const files = Array.from(fileInput.files);
+    files.splice(index, 1);
+    
+    // Create new FileList
+    const dt = new DataTransfer();
+    files.forEach(file => dt.items.add(file));
+    fileInput.files = dt.files;
+    
+    if (files.length > 0) {
+        displayFiles(files);
+        document.getElementById('merge-btn').style.display = files.length >= 2 ? 'inline-block' : 'none';
+    } else {
+        document.getElementById('file-list').style.display = 'none';
+        document.getElementById('merge-btn').style.display = 'none';
+    }
+}
+
+document.getElementById('pdf-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const files = document.getElementById('pdf-files').files;
+    if (files.length < 2) {
+        showError('Please select at least 2 PDF files to merge');
+        return;
+    }
+    
+    const formData = new FormData(this);
+    
+    // Show loading
+    const submitBtn = document.getElementById('merge-btn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Merging...';
+    submitBtn.disabled = true;
+    
+    fetch('/api/process-tool/pdf-merger', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult(data);
+        } else {
+            showError(data.error || 'Failed to merge PDFs');
+        }
+    })
+    .catch(error => {
+        showError('Network error: ' + error.message);
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+function showResult(data) {
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('error').style.display = 'none';
+    document.getElementById('result-message').textContent = data.message;
+    document.getElementById('download-link').href = data.download_url;
+}
+
+function showError(message) {
+    document.getElementById('error').style.display = 'block';
+    document.getElementById('error').textContent = message;
+    document.getElementById('result').style.display = 'none';
+}
+
+// Drag and drop functionality
+const uploadArea = document.querySelector('.upload-area');
+
+uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    document.getElementById('pdf-files').files = files;
+    
+    if (files.length > 0) {
+        displayFiles(files);
+        document.getElementById('file-list').style.display = 'block';
+        document.getElementById('merge-btn').style.display = files.length >= 2 ? 'inline-block' : 'none';
+    }
+});
+</script>
+
+<style>
+.upload-area.dragover {
+    border-color: #007bff !important;
+    background-color: #f8f9fa;
+}
+</style>
 {% endblock %}

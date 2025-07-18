@@ -964,3 +964,304 @@ class ToolProcessor:
     
     def content_rewriter(self, request_data):
         return {'success': False, 'error': 'Content rewriter requires premium version'}
+                return {'success': False, 'error': 'No JSON provided'}
+            
+            parsed = json.loads(json_text)
+            formatted = json.dumps(parsed, indent=2, sort_keys=True)
+            
+            return {
+                'success': True,
+                'formatted': formatted,
+                'original': json_text
+            }
+        except json.JSONDecodeError as e:
+            return {'success': False, 'error': f'Invalid JSON: {str(e)}'}
+        except Exception as e:
+            return {'success': False, 'error': f'JSON formatting failed: {str(e)}'}
+    
+    def base64_encoder(self, request_data):
+        """Base64 encode/decode"""
+        try:
+            text = request_data.form.get('text', '')
+            operation = request_data.form.get('operation', 'encode')
+            
+            if not text:
+                return {'success': False, 'error': 'No text provided'}
+            
+            if operation == 'encode':
+                result = base64.b64encode(text.encode('utf-8')).decode('utf-8')
+            else:
+                result = base64.b64decode(text.encode('utf-8')).decode('utf-8')
+            
+            return {
+                'success': True,
+                'result': result,
+                'operation': operation,
+                'original': text
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Base64 operation failed: {str(e)}'}
+    
+    def text_case_converter(self, request_data):
+        """Convert text case"""
+        try:
+            text = request_data.form.get('text', '')
+            case_type = request_data.form.get('case', 'upper')
+            
+            if not text:
+                return {'success': False, 'error': 'No text provided'}
+            
+            if case_type == 'upper':
+                result = text.upper()
+            elif case_type == 'lower':
+                result = text.lower()
+            elif case_type == 'title':
+                result = text.title()
+            elif case_type == 'capitalize':
+                result = text.capitalize()
+            else:
+                result = text
+            
+            return {
+                'success': True,
+                'result': result,
+                'case': case_type,
+                'original': text
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Case conversion failed: {str(e)}'}
+    
+    # Finance Tools Implementation
+    def emi_calculator(self, request_data):
+        """Calculate EMI for loans"""
+        try:
+            principal = float(request_data.form.get('principal', 0))
+            rate = float(request_data.form.get('rate', 0))
+            tenure = int(request_data.form.get('tenure', 0))
+            
+            if principal <= 0 or rate <= 0 or tenure <= 0:
+                return {'success': False, 'error': 'Invalid input values'}
+            
+            monthly_rate = rate / (12 * 100)
+            emi = principal * monthly_rate * (1 + monthly_rate)**tenure / ((1 + monthly_rate)**tenure - 1)
+            total_amount = emi * tenure
+            total_interest = total_amount - principal
+            
+            return {
+                'success': True,
+                'emi': round(emi, 2),
+                'total_amount': round(total_amount, 2),
+                'total_interest': round(total_interest, 2),
+                'principal': principal,
+                'rate': rate,
+                'tenure': tenure
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'EMI calculation failed: {str(e)}'}
+    
+    def gst_calculator(self, request_data):
+        """Calculate GST"""
+        try:
+            amount = float(request_data.form.get('amount', 0))
+            gst_rate = float(request_data.form.get('gst_rate', 18))
+            
+            if amount <= 0:
+                return {'success': False, 'error': 'Invalid amount'}
+            
+            gst_amount = (amount * gst_rate) / 100
+            total_amount = amount + gst_amount
+            
+            return {
+                'success': True,
+                'base_amount': amount,
+                'gst_rate': gst_rate,
+                'gst_amount': round(gst_amount, 2),
+                'total_amount': round(total_amount, 2)
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'GST calculation failed: {str(e)}'}
+    
+    # AI Tools Implementation
+    def text_summarizer(self, request_data):
+        """Summarize text using simple extractive method"""
+        try:
+            text = request_data.form.get('text', '')
+            max_sentences = int(request_data.form.get('max_sentences', 3))
+            
+            if not text.strip():
+                return {'success': False, 'error': 'No text provided'}
+            
+            sentences = [s.strip() for s in text.split('.') if s.strip()]
+            
+            if len(sentences) <= max_sentences:
+                summary = text
+            else:
+                # Simple word frequency scoring
+                word_freq = {}
+                for word in text.lower().split():
+                    word_freq[word] = word_freq.get(word, 0) + 1
+                
+                sentence_scores = {}
+                for sentence in sentences:
+                    score = sum(word_freq.get(word, 0) for word in sentence.lower().split())
+                    sentence_scores[sentence] = score
+                
+                top_sentences = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)[:max_sentences]
+                summary = '. '.join([sentence for sentence, score in top_sentences]) + '.'
+            
+            return {
+                'success': True,
+                'summary': summary,
+                'original_length': len(text),
+                'summary_length': len(summary),
+                'compression_ratio': f"{(1 - len(summary)/len(text)) * 100:.1f}%"
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Text summarization failed: {str(e)}'}
+    
+    # Helper methods
+    def _calculate_password_strength(self, password):
+        """Calculate password strength"""
+        score = 0
+        if len(password) >= 8: score += 1
+        if len(password) >= 12: score += 1
+        if any(c.islower() for c in password): score += 1
+        if any(c.isupper() for c in password): score += 1
+        if any(c.isdigit() for c in password): score += 1
+        if any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password): score += 1
+        
+        levels = ["Very Weak", "Weak", "Fair", "Good", "Strong", "Very Strong"]
+        return levels[min(score, 5)]
+    
+    # Placeholder implementations for remaining tools
+    def url_shortener(self, request_data):
+        return {'success': False, 'error': 'URL shortener not implemented yet'}
+    
+    def unit_converter(self, request_data):
+        return {'success': False, 'error': 'Unit converter not implemented yet'}
+    
+    def color_picker(self, request_data):
+        return {'success': False, 'error': 'Color picker not implemented yet'}
+    
+    def currency_converter(self, request_data):
+        return {'success': False, 'error': 'Currency converter not implemented yet'}
+    
+    def loan_calculator(self, request_data):
+        return {'success': False, 'error': 'Loan calculator not implemented yet'}
+    
+    def investment_calculator(self, request_data):
+        return {'success': False, 'error': 'Investment calculator not implemented yet'}
+    
+    def tax_calculator(self, request_data):
+        return {'success': False, 'error': 'Tax calculator not implemented yet'}
+    
+    def profit_calculator(self, request_data):
+        return {'success': False, 'error': 'Profit calculator not implemented yet'}
+    
+    def expense_tracker(self, request_data):
+        return {'success': False, 'error': 'Expense tracker not implemented yet'}
+    
+    def budget_planner(self, request_data):
+        return {'success': False, 'error': 'Budget planner not implemented yet'}
+    
+    def salary_calculator(self, request_data):
+        return {'success': False, 'error': 'Salary calculator not implemented yet'}
+    
+    def resume_generator(self, request_data):
+        return {'success': False, 'error': 'Resume generator not implemented yet'}
+    
+    def business_name_generator(self, request_data):
+        return {'success': False, 'error': 'Business name generator not implemented yet'}
+    
+    def blog_title_generator(self, request_data):
+        return {'success': False, 'error': 'Blog title generator not implemented yet'}
+    
+    def product_description(self, request_data):
+        return {'success': False, 'error': 'Product description not implemented yet'}
+    
+    def script_writer(self, request_data):
+        return {'success': False, 'error': 'Script writer not implemented yet'}
+    
+    def ad_copy_generator(self, request_data):
+        return {'success': False, 'error': 'Ad copy generator not implemented yet'}
+    
+    def faq_generator(self, request_data):
+        return {'success': False, 'error': 'FAQ generator not implemented yet'}
+    
+    def content_rewriter(self, request_data):
+        return {'success': False, 'error': 'Content rewriter not implemented yet'}
+    
+    def grammar_checker(self, request_data):
+        return {'success': False, 'error': 'Grammar checker not implemented yet'}
+    
+    def plagiarism_checker(self, request_data):
+        return {'success': False, 'error': 'Plagiarism checker not implemented yet'}
+    
+    def keyword_extractor(self, request_data):
+        return {'success': False, 'error': 'Keyword extractor not implemented yet'}
+    
+    def assignment_planner(self, request_data):
+        return {'success': False, 'error': 'Assignment planner not implemented yet'}
+    
+    def study_schedule(self, request_data):
+        return {'success': False, 'error': 'Study schedule not implemented yet'}
+    
+    def gpa_calculator(self, request_data):
+        return {'success': False, 'error': 'GPA calculator not implemented yet'}
+    
+    def citation_generator(self, request_data):
+        return {'success': False, 'error': 'Citation generator not implemented yet'}
+    
+    def research_helper(self, request_data):
+        return {'success': False, 'error': 'Research helper not implemented yet'}
+    
+    def note_taker(self, request_data):
+        return {'success': False, 'error': 'Note taker not implemented yet'}
+    
+    def flashcard_maker(self, request_data):
+        return {'success': False, 'error': 'Flashcard maker not implemented yet'}
+    
+    def quiz_generator(self, request_data):
+        return {'success': False, 'error': 'Quiz generator not implemented yet'}
+    
+    def essay_writer(self, request_data):
+        return {'success': False, 'error': 'Essay writer not implemented yet'}
+    
+    def presentation_maker(self, request_data):
+        return {'success': False, 'error': 'Presentation maker not implemented yet'}
+    
+    def mind_map_creator(self, request_data):
+        return {'success': False, 'error': 'Mind map creator not implemented yet'}
+    
+    def aadhaar_validator(self, request_data):
+        return {'success': False, 'error': 'Aadhaar validator not implemented yet'}
+    
+    def pan_validator(self, request_data):
+        return {'success': False, 'error': 'PAN validator not implemented yet'}
+    
+    def gst_validator(self, request_data):
+        return {'success': False, 'error': 'GST validator not implemented yet'}
+    
+    def passport_checker(self, request_data):
+        return {'success': False, 'error': 'Passport checker not implemented yet'}
+    
+    def voter_id_checker(self, request_data):
+        return {'success': False, 'error': 'Voter ID checker not implemented yet'}
+    
+    def driving_license_checker(self, request_data):
+        return {'success': False, 'error': 'Driving license checker not implemented yet'}
+    
+    def ration_card_reader(self, request_data):
+        return {'success': False, 'error': 'Ration card reader not implemented yet'}
+    
+    def document_verifier(self, request_data):
+        return {'success': False, 'error': 'Document verifier not implemented yet'}
+    
+    def legal_term_explainer(self, request_data):
+        return {'success': False, 'error': 'Legal term explainer not implemented yet'}
+    
+    def rent_agreement_reader(self, request_data):
+        return {'success': False, 'error': 'Rent agreement reader not implemented yet'}
+
+# Initialize the processor
+processor = ToolProcessor()

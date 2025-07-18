@@ -1,128 +1,60 @@
-{% extends "base.html" %}
-
-{% block title %}{{ tool_display_name }} - Suntyn AI{% endblock %}
-
-{% block content %}
-<div class="container-fluid">
-    <!-- Tool Header -->
-    <div class="tool-header bg-gradient-primary text-white py-4 mb-4">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="d-flex align-items-center">
-                        <div class="tool-icon me-3">
-                            {% if tool_info %}
-                            <i class="ti ti-{{ tool_info.icon }} fs-1"></i>
-                            {% else %}
-                            <i class="ti ti-tool fs-1"></i>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <h1 class="h2 mb-1">{{ tool_display_name }}</h1>
-                            <p class="mb-0 opacity-75">
-                                {% if tool_category %}{{ tool_category }} - {% endif %}
-                                Professional AI-powered tool
-                            </p>
-                        </div>
+<!-- Route to specific tool templates -->
+{% if tool_name == 'qr-code-generator' %}
+    {% include 'tools/qr_code_generator.html' %}
+{% elif tool_name == 'password-generator' %}
+    {% include 'tools/password_generator.html' %}
+{% elif tool_name == 'emi-calculator' %}
+    {% include 'tools/emi_calculator.html' %}
+{% elif tool_name == 'pdf-merger' %}
+    {% include 'tools/pdf_merger.html' %}
+{% else %}
+    <!-- Default generic tool interface -->
+    {% extends "base.html" %}
+    
+    {% block title %}{{ tool_display_name }} - Suntyn AI{% endblock %}
+    
+    {% block content %}
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="ti ti-tool me-2"></i>
+                            {{ tool_display_name }}
+                        </h3>
                     </div>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <div class="tool-stats">
-                        <small class="d-block">Free to use</small>
-                        <small class="d-block">Secure processing</small>
+                    <div class="card-body text-center">
+                        <div class="py-5">
+                            <i class="ti ti-construction display-1 text-muted mb-4"></i>
+                            <h4 class="mb-3">{{ tool_display_name }} - Coming Soon</h4>
+                            <p class="text-muted mb-4">
+                                This tool is under development and will be available soon with premium features.
+                            </p>
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <div class="alert alert-info">
+                                        <strong>Available Now:</strong> QR Code Generator, Password Generator, 
+                                        EMI Calculator, PDF Merger, and more tools are being added daily.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="/all-tools" class="btn btn-primary me-3">
+                                    <i class="ti ti-arrow-left me-2"></i>Back to All Tools
+                                </a>
+                                <a href="/pricing" class="btn btn-outline-primary">
+                                    <i class="ti ti-crown me-2"></i>Get Premium Access
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="container">
-        <div class="row">
-            <!-- Tool Interface -->
-            <div class="col-lg-8">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">
-                            <i class="ti ti-upload text-primary"></i>
-                            Upload & Process
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Dynamic tool interface based on tool type -->
-                        <div id="tool-interface">
-                            <!-- File Upload Tools -->
-                            {% if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'image-compressor', 'image-resizer', 'image-converter', 'background-remover'] %}
-                            <div class="upload-area" id="upload-area">
-                                <div class="upload-zone text-center p-5 border border-dashed rounded">
-                                    <i class="ti ti-cloud-upload fs-1 text-muted mb-3"></i>
-                                    <h5>Drop files here or click to upload</h5>
-                                    <p class="text-muted mb-3">
-                                        {% if 'pdf' in tool_name %}
-                                        Supports: PDF files (max 16MB each)
-                                        {% elif 'image' in tool_name %}
-                                        Supports: JPG, PNG, GIF, WebP (max 16MB each)
-                                        {% endif %}
-                                    </p>
-                                    <input type="file" id="file-input" 
-                                           {% if 'pdf' in tool_name %}accept=".pdf"{% endif %}
-                                           {% if 'image' in tool_name %}accept="image/*"{% endif %}
-                                           {% if tool_name == 'pdf-merger' %}multiple{% endif %}
-                                           class="d-none">
-                                    <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-                                        <i class="ti ti-upload me-2"></i>Select Files
-                                    </button>
-                                </div>
-                                
-                                <!-- File List -->
-                                <div id="file-list" class="mt-3" style="display: none;"></div>
-                                
-                                <!-- Options Panel -->
-                                <div id="options-panel" class="mt-4" style="display: none;">
-                                    {% if tool_name == 'image-compressor' %}
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label class="form-label">Quality</label>
-                                            <input type="range" class="form-range" id="quality" min="10" max="100" value="85">
-                                            <small class="text-muted">Quality: <span id="quality-value">85</span>%</small>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">Max Width (px)</label>
-                                            <input type="number" class="form-control" id="max-width" placeholder="Auto">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">Max Height (px)</label>
-                                            <input type="number" class="form-control" id="max-height" placeholder="Auto">
-                                        </div>
-                                    </div>
-                                    {% elif tool_name == 'image-resizer' %}
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label class="form-label">Width (px)</label>
-                                            <input type="number" class="form-control" id="width" value="800" required>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">Height (px)</label>
-                                            <input type="number" class="form-control" id="height" value="600" required>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-check mt-4">
-                                                <input class="form-check-input" type="checkbox" id="maintain-ratio" checked>
-                                                <label class="form-check-label" for="maintain-ratio">
-                                                    Maintain aspect ratio
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Process Button -->
-                                <div class="text-center mt-4">
-                                    <button type="button" id="process-btn" class="btn btn-success btn-lg" style="display: none;">
-                                        <i class="ti ti-play me-2"></i>Process Files
-                                    </button>
-                                </div>
-                            </div>
+    {% endblock %}
+{% endif %}
                             
                             <!-- Calculator Tools -->
                             {% elif tool_name in ['emi-calculator', 'gst-calculator', 'loan-calculator', 'investment-calculator'] %}
