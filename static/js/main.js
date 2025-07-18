@@ -563,7 +563,7 @@ function updateFileDisplay(input) {
     });
     html += '</div>';
 
-    const existingFiles = dropZone.querySelector('.selected-files');
+    const existingFiles = dropZone ? dropZone.querySelector('.selected-files') : null;
     if (existingFiles) {
         existingFiles.remove();
     }

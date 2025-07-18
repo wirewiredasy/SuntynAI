@@ -959,37 +959,392 @@ class ToolProcessor:
         return {'success': False, 'error': 'Base64 encoder requires premium version'}
     
     def url_shortener(self, request_data):
-        return {'success': False, 'error': 'URL shortener requires premium version'}
+        """URL Shortener Tool"""
+        try:
+            url = request_data.form.get('url', '').strip()
+            if not url:
+                return {'success': False, 'error': 'Please provide a URL to shorten'}
+            
+            if not url.startswith(('http://', 'https://')):
+                url = 'https://' + url
+            
+            # Generate a short code
+            import hashlib
+            short_code = hashlib.md5(url.encode()).hexdigest()[:8]
+            
+            return {
+                'success': True, 
+                'message': 'URL shortened successfully',
+                'original_url': url,
+                'short_code': short_code,
+                'short_url': f'https://suntyn.ai/s/{short_code}'
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'URL shortener failed: {str(e)}'}
     
     def unit_converter(self, request_data):
-        return {'success': False, 'error': 'Unit converter requires premium version'}
+        """Unit Converter Tool"""
+        try:
+            value = float(request_data.form.get('value', 0))
+            from_unit = request_data.form.get('from_unit', '').lower()
+            to_unit = request_data.form.get('to_unit', '').lower()
+            
+            # Length conversions (all to meters)
+            length_units = {
+                'mm': 0.001, 'cm': 0.01, 'm': 1, 'km': 1000,
+                'inch': 0.0254, 'ft': 0.3048, 'yard': 0.9144, 'mile': 1609.34
+            }
+            
+            # Weight conversions (all to grams)
+            weight_units = {
+                'mg': 0.001, 'g': 1, 'kg': 1000, 'ton': 1000000,
+                'oz': 28.3495, 'lb': 453.592, 'stone': 6350.29
+            }
+            
+            if from_unit in length_units and to_unit in length_units:
+                result = value * length_units[from_unit] / length_units[to_unit]
+                unit_type = 'Length'
+            elif from_unit in weight_units and to_unit in weight_units:
+                result = value * weight_units[from_unit] / weight_units[to_unit]
+                unit_type = 'Weight'
+            else:
+                return {'success': False, 'error': 'Unsupported unit conversion'}
+            
+            return {
+                'success': True,
+                'message': f'{unit_type} conversion completed',
+                'result': f'{value} {from_unit} = {result:.6f} {to_unit}'
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Unit conversion failed: {str(e)}'}
     
     def color_picker(self, request_data):
-        return {'success': False, 'error': 'Color picker requires premium version'}
+        """Color Picker and Palette Generator"""
+        try:
+            color_input = request_data.form.get('color', '#3b82f6')
+            
+            # Convert hex to RGB
+            hex_color = color_input.lstrip('#')
+            rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+            
+            # Generate complementary colors
+            comp_rgb = (255 - rgb[0], 255 - rgb[1], 255 - rgb[2])
+            comp_hex = '#' + ''.join(f'{c:02x}' for c in comp_rgb)
+            
+            return {
+                'success': True,
+                'message': 'Color analysis completed',
+                'original': {'hex': color_input, 'rgb': f'rgb{rgb}'},
+                'complementary': {'hex': comp_hex, 'rgb': f'rgb{comp_rgb}'},
+                'palette': [color_input, comp_hex, '#f59e0b', '#10b981', '#ef4444']
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Color picker failed: {str(e)}'}
     
     def text_summarizer(self, request_data):
-        return {'success': False, 'error': 'Text summarizer requires premium version'}
+        """Text Summarizer Tool"""
+        try:
+            text = request_data.form.get('text', '').strip()
+            max_sentences = int(request_data.form.get('max_sentences', 3))
+            
+            if not text:
+                return {'success': False, 'error': 'Please provide text to summarize'}
+            
+            # Simple sentence extraction summarizer
+            sentences = text.split('.')
+            sentences = [s.strip() for s in sentences if s.strip()]
+            
+            if len(sentences) <= max_sentences:
+                summary = text
+            else:
+                # Take first, middle, and last sentences for basic summary
+                indices = [0, len(sentences)//2, -1] if len(sentences) >= 3 else list(range(min(max_sentences, len(sentences))))
+                summary = '. '.join([sentences[i] for i in indices[:max_sentences]]) + '.'
+            
+            return {
+                'success': True,
+                'message': 'Text summarized successfully',
+                'summary': summary,
+                'original_length': len(text),
+                'summary_length': len(summary),
+                'compression_ratio': f'{(1 - len(summary)/len(text))*100:.1f}%'
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Text summarization failed: {str(e)}'}
     
     def resume_generator(self, request_data):
-        return {'success': False, 'error': 'Resume generator requires premium version'}
+        """Resume Generator Tool"""
+        try:
+            name = request_data.form.get('name', 'Your Name')
+            email = request_data.form.get('email', 'your.email@example.com')
+            phone = request_data.form.get('phone', '+1-234-567-8900')
+            skills = request_data.form.get('skills', 'Python, JavaScript, HTML, CSS')
+            experience = request_data.form.get('experience', 'Software Developer with 2+ years experience')
+            
+            resume_content = f"""
+# {name}
+**Email:** {email} | **Phone:** {phone}
+
+## Professional Summary
+{experience}
+
+## Skills
+{skills}
+
+## Education
+Bachelor's Degree in Computer Science
+
+## Experience
+### Software Developer
+*Company Name* - Present
+- Developed web applications using modern technologies
+- Collaborated with cross-functional teams
+- Maintained and optimized existing codebase
+            """
+            
+            return {
+                'success': True,
+                'message': 'Resume generated successfully',
+                'resume_content': resume_content,
+                'download_format': 'markdown'
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Resume generation failed: {str(e)}'}
     
     def business_name_generator(self, request_data):
-        return {'success': False, 'error': 'Business name generator requires premium version'}
+        """Business Name Generator"""
+        try:
+            industry = request_data.form.get('industry', 'tech').lower()
+            keywords = request_data.form.get('keywords', '').split(',')
+            
+            prefixes = ['Pro', 'Smart', 'Quick', 'Elite', 'Prime', 'Ultra', 'Mega', 'Super']
+            suffixes = ['Solutions', 'Systems', 'Labs', 'Works', 'Tech', 'Hub', 'Pro', 'Plus']
+            
+            business_names = []
+            for prefix in prefixes[:3]:
+                for suffix in suffixes[:3]:
+                    business_names.append(f"{prefix}{suffix}")
+            
+            if keywords:
+                for keyword in keywords[:2]:
+                    keyword = keyword.strip().title()
+                    if keyword:
+                        business_names.extend([f"{keyword} Solutions", f"Smart {keyword}", f"{keyword} Pro"])
+            
+            return {
+                'success': True,
+                'message': 'Business names generated successfully',
+                'names': business_names[:12],
+                'industry': industry
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Business name generation failed: {str(e)}'}
     
     def blog_title_generator(self, request_data):
-        return {'success': False, 'error': 'Blog title generator requires premium version'}
+        """Blog Title Generator"""
+        try:
+            topic = request_data.form.get('topic', 'technology')
+            tone = request_data.form.get('tone', 'professional')
+            
+            templates = [
+                f"The Ultimate Guide to {topic.title()}",
+                f"10 Essential Tips for {topic.title()}",
+                f"How to Master {topic.title()} in 2024",
+                f"Why {topic.title()} Matters More Than Ever",
+                f"The Future of {topic.title()}: What You Need to Know",
+                f"Beginner's Guide to {topic.title()}",
+                f"Advanced {topic.title()} Strategies That Work",
+                f"{topic.title()} Best Practices for Success"
+            ]
+            
+            return {
+                'success': True,
+                'message': 'Blog titles generated successfully',
+                'titles': templates,
+                'topic': topic,
+                'tone': tone
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Blog title generation failed: {str(e)}'}
     
     def product_description(self, request_data):
-        return {'success': False, 'error': 'Product description requires premium version'}
+        """Product Description Generator"""
+        try:
+            product_name = request_data.form.get('product_name', 'Amazing Product')
+            features = request_data.form.get('features', 'high quality, durable, affordable')
+            target_audience = request_data.form.get('target_audience', 'professionals')
+            
+            description = f"""**{product_name}** - The Perfect Solution for {target_audience.title()}
+
+Transform your experience with our premium {product_name.lower()}. Designed with {features}, this product delivers exceptional value and performance.
+
+**Key Features:**
+• {features.replace(',', '\n• ')}
+• Professional-grade quality
+• Easy to use interface
+• Reliable performance
+
+**Why Choose {product_name}?**
+Our {product_name.lower()} stands out from the competition with its innovative design and superior functionality. Perfect for {target_audience} who demand excellence.
+
+**Order now and experience the difference!**
+            """
+            
+            return {
+                'success': True,
+                'message': 'Product description generated successfully',
+                'description': description,
+                'word_count': len(description.split())
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Product description generation failed: {str(e)}'}
     
     def script_writer(self, request_data):
-        return {'success': False, 'error': 'Script writer requires premium version'}
+        """Script Writer Tool"""
+        try:
+            script_type = request_data.form.get('script_type', 'video')
+            topic = request_data.form.get('topic', 'introduction')
+            duration = request_data.form.get('duration', '2')
+            
+            script_content = f"""
+# {script_type.title()} Script: {topic.title()}
+
+**Duration:** {duration} minutes
+**Type:** {script_type.title()}
+
+## Introduction (0:00-0:30)
+Hello and welcome! Today we're exploring {topic}. 
+
+## Main Content (0:30-{int(duration)*60-30}s)
+Let's dive into the key points about {topic}:
+
+1. **First Point**: [Explain the main concept]
+2. **Second Point**: [Provide supporting details]
+3. **Third Point**: [Share practical examples]
+
+## Conclusion (Last 30 seconds)
+To summarize, {topic} is important because [key takeaway]. 
+Thank you for watching, and don't forget to subscribe!
+
+---
+**Notes for Production:**
+- Maintain enthusiastic tone
+- Include visual aids during key points
+- Add call-to-action at the end
+            """
+            
+            return {
+                'success': True,
+                'message': 'Script generated successfully',
+                'script': script_content,
+                'estimated_words': len(script_content.split())
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Script writing failed: {str(e)}'}
     
     def ad_copy_generator(self, request_data):
-        return {'success': False, 'error': 'Ad copy generator requires premium version'}
+        """Advertisement Copy Generator"""
+        try:
+            product = request_data.form.get('product', 'Product')
+            benefit = request_data.form.get('benefit', 'saves time')
+            audience = request_data.form.get('audience', 'busy professionals')
+            
+            ad_variations = [
+                f"🚀 {product} - The Game-Changer for {audience.title()}!\n\n✅ {benefit.title()}\n✅ Easy to use\n✅ Proven results\n\nGet started today! #Innovation #Productivity",
+                
+                f"Attention {audience}! \n\nTired of [problem]? {product} is here to help.\n\n💡 {benefit.title()}\n💡 Professional grade\n💡 Instant results\n\nTry it now →",
+                
+                f"BREAKTHROUGH: {product} {benefit} like never before!\n\nPerfect for {audience} who want:\n• Better efficiency\n• Professional results\n• Peace of mind\n\nOrder now and save 20%!"
+            ]
+            
+            return {
+                'success': True,
+                'message': 'Ad copy variations generated successfully',
+                'variations': ad_variations,
+                'target_audience': audience
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Ad copy generation failed: {str(e)}'}
     
     def faq_generator(self, request_data):
-        return {'success': False, 'error': 'FAQ generator requires premium version'}
+        """FAQ Generator Tool"""
+        try:
+            topic = request_data.form.get('topic', 'our service')
+            business_type = request_data.form.get('business_type', 'technology')
+            
+            faqs = [
+                {
+                    'question': f"What is {topic}?",
+                    'answer': f"{topic.title()} is a comprehensive solution designed to help you achieve your goals efficiently and effectively."
+                },
+                {
+                    'question': f"How does {topic} work?",
+                    'answer': f"Our {topic} uses advanced technology to deliver results quickly and reliably. Simply follow our step-by-step process."
+                },
+                {
+                    'question': f"Who can use {topic}?",
+                    'answer': f"{topic.title()} is perfect for anyone in the {business_type} industry who wants to improve their workflow and results."
+                },
+                {
+                    'question': f"How much does {topic} cost?",
+                    'answer': f"We offer flexible pricing plans for {topic}. Contact us for a customized quote based on your needs."
+                },
+                {
+                    'question': f"Is {topic} secure?",
+                    'answer': f"Yes, {topic} follows industry-standard security practices to protect your data and ensure privacy."
+                },
+                {
+                    'question': f"How do I get started with {topic}?",
+                    'answer': f"Getting started is easy! Simply sign up, complete the setup process, and you'll be using {topic} in minutes."
+                }
+            ]
+            
+            return {
+                'success': True,
+                'message': 'FAQ generated successfully',
+                'faqs': faqs,
+                'total_questions': len(faqs)
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'FAQ generation failed: {str(e)}'}
     
     def content_rewriter(self, request_data):
-        return {'success': False, 'error': 'Content rewriter requires premium version'}
+        """Content Rewriter Tool"""
+        try:
+            content = request_data.form.get('content', '').strip()
+            style = request_data.form.get('style', 'professional')
+            
+            if not content:
+                return {'success': False, 'error': 'Please provide content to rewrite'}
+            
+            # Simple content rewriting logic
+            sentences = content.split('.')
+            rewritten_sentences = []
+            
+            for sentence in sentences:
+                sentence = sentence.strip()
+                if sentence:
+                    # Simple transformations based on style
+                    if style == 'professional':
+                        sentence = sentence.replace('very', 'extremely')
+                        sentence = sentence.replace('good', 'excellent')
+                        sentence = sentence.replace('bad', 'suboptimal')
+                    elif style == 'casual':
+                        sentence = sentence.replace('utilize', 'use')
+                        sentence = sentence.replace('demonstrate', 'show')
+                        sentence = sentence.replace('however', 'but')
+                    
+                    rewritten_sentences.append(sentence)
+            
+            rewritten_content = '. '.join(rewritten_sentences) + '.'
+            
+            return {
+                'success': True,
+                'message': 'Content rewritten successfully',
+                'original_content': content,
+                'rewritten_content': rewritten_content,
+                'style': style,
+                'word_count': len(rewritten_content.split())
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Content rewriting failed: {str(e)}'}

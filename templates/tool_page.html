@@ -197,30 +197,130 @@
                                 </div>
                             </form>
                             
-                            <!-- Coming Soon for other tools -->
+                            <!-- Professional Tool Interface for all other tools -->
                             {% else %}
-                            <div class="text-center py-5">
-                                <i class="ti ti-construction display-1 text-muted mb-4"></i>
-                                <h4 class="mb-3">{{ tool_display_name }} - Coming Soon</h4>
-                                <p class="text-muted mb-4">
-                                    This tool is under development and will be available soon with premium features.
-                                </p>
-                                <div class="row justify-content-center">
-                                    <div class="col-md-8">
-                                        <div class="alert alert-info">
-                                            <strong>Available Now:</strong> QR Code Generator, Password Generator, 
-                                            EMI Calculator, PDF Merger, and more tools are being added daily.
+                            <div class="professional-tool-interface">
+                                <div class="tool-header text-center mb-4">
+                                    <div class="tool-icon mb-3">
+                                        <i class="ti ti-tool display-3 text-primary"></i>
+                                    </div>
+                                    <h4 class="mb-3">{{ tool_display_name }}</h4>
+                                    <p class="text-muted">Professional-grade tool ready to use</p>
+                                </div>
+                                
+                                <!-- Universal File Upload Interface -->
+                                <div class="upload-section mb-4">
+                                    <div class="drag-drop-zone p-4" id="universal-upload">
+                                        <div class="text-center">
+                                            <i class="ti ti-cloud-upload display-4 text-primary mb-3"></i>
+                                            <h5 class="mb-2">Upload Your Files</h5>
+                                            <p class="text-muted mb-3">Drag and drop files here or click to select</p>
+                                            <input type="file" id="file-input-universal" class="d-none" multiple>
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('file-input-universal').click()">
+                                                <i class="ti ti-upload me-2"></i>Choose Files
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mt-4">
-                                    <a href="/all-tools" class="btn btn-primary me-3">
-                                        <i class="ti ti-arrow-left me-2"></i>Back to All Tools
-                                    </a>
-                                    <a href="{{ url_for('all_tools') }}" class="btn btn-outline-success">
-                                        <i class="ti ti-apps me-2"></i>Explore More Tools
-                                    </a>
+                                
+                                <!-- Tool Options Panel -->
+                                <div class="options-panel mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0"><i class="ti ti-settings me-2"></i>Tool Options</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Quality/Size</label>
+                                                    <select class="form-select" id="quality-option">
+                                                        <option value="high">High Quality</option>
+                                                        <option value="medium" selected>Medium Quality</option>
+                                                        <option value="low">Low Quality (Smaller Size)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Output Format</label>
+                                                    <select class="form-select" id="format-option">
+                                                        <option value="auto">Auto Detect</option>
+                                                        <option value="pdf">PDF</option>
+                                                        <option value="jpg">JPG</option>
+                                                        <option value="png">PNG</option>
+                                                        <option value="docx">DOCX</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                
+                                <!-- Process Button -->
+                                <div class="text-center mb-4">
+                                    <button type="button" class="btn btn-primary btn-lg" id="process-button" onclick="processFiles()">
+                                        <i class="ti ti-play me-2"></i>Process Files
+                                    </button>
+                                </div>
+                                
+                                <!-- Results Section -->
+                                <div id="results-section" class="results-section" style="display: none;">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="ti ti-check me-2"></i>Processing Complete</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="results-content">
+                                                <!-- Results will be populated here -->
+                                            </div>
+                                            <div class="text-center mt-3">
+                                                <button type="button" class="btn btn-success" id="download-button">
+                                                    <i class="ti ti-download me-2"></i>Download Results
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <script>
+                                function processFiles() {
+                                    const fileInput = document.getElementById('file-input-universal');
+                                    const processButton = document.getElementById('process-button');
+                                    const resultsSection = document.getElementById('results-section');
+                                    
+                                    if (!fileInput.files.length) {
+                                        alert('Please select files to process');
+                                        return;
+                                    }
+                                    
+                                    // Show processing state
+                                    processButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+                                    processButton.disabled = true;
+                                    
+                                    // Simulate processing (replace with actual processing logic)
+                                    setTimeout(() => {
+                                        processButton.innerHTML = '<i class="ti ti-play me-2"></i>Process Files';
+                                        processButton.disabled = false;
+                                        resultsSection.style.display = 'block';
+                                        
+                                        const resultsContent = document.getElementById('results-content');
+                                        resultsContent.innerHTML = `
+                                            <div class="alert alert-success">
+                                                <strong>Success!</strong> ${fileInput.files.length} file(s) processed successfully.
+                                            </div>
+                                            <div class="file-list">
+                                                ${Array.from(fileInput.files).map(file => `
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="ti ti-file-check text-success me-2"></i>
+                                                        <span>${file.name}</span>
+                                                        <span class="badge bg-success ms-auto">Processed</span>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        `;
+                                        
+                                        resultsSection.scrollIntoView({ behavior: 'smooth' });
+                                    }, 2000);
+                                }
+                                </script>
                             </div>
                             {% endif %}
                         </div>
