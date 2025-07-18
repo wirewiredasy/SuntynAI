@@ -2,6 +2,7 @@
 Professional Database Configuration for Production Deployment
 Supports both Supabase and Neon PostgreSQL databases with proper error handling
 """
+from urllib.parse import quote_plus
 
 import os
 import logging
@@ -33,6 +34,14 @@ def get_database_url():
             database_url = os.getenv("DATABASE_SUPABASE_URL")
             if not database_url:
                 raise ValueError("DATABASE_SUPABASE_URL environment variable is required")
+
+            # Fix URL encoding for special characters
+            if "Suntyn@#$134_@" in database_url:
+                # Extract parts and properly encode password
+                password = "Suntyn@#$134_"
+                encoded_password = quote_plus(password)
+                database_url = database_url.replace("Suntyn@#$134_@", f"{encoded_password}@")
+
             logger.info("Using Supabase PostgreSQL database")
             return database_url
 
@@ -52,7 +61,7 @@ def get_database_url():
         elif os.getenv("REPLIT_DB_URL"):
             logger.info("Using Replit PostgreSQL database")
             return os.getenv("REPLIT_DB_URL")
-        
+
         # Priority 4: Fallback to local development
         else:
             logger.warning("No database configuration found, using local fallback")
@@ -75,11 +84,18 @@ class DatabaseConfig:
         try:
             # Priority 1: Check for Supabase database
             db_source = os.getenv("DB_SOURCE", "").lower()
-            
+
             if db_source == "supabase":
                 database_url = os.getenv("DATABASE_SUPABASE_URL")
                 if not database_url:
                     raise ValueError("DATABASE_SUPABASE_URL environment variable is required when DB_SOURCE=supabase")
+
+            # Fix URL encoding for special characters
+                if "Suntyn@#$134_@" in database_url:
+                    # Extract parts and properly encode password
+                    password = "Suntyn@#$134_"
+                    encoded_password = quote_plus(password)
+                    database_url = database_url.replace("Suntyn@#$134_@", f"{encoded_password}@")
                 logger.info("Using Supabase PostgreSQL database")
                 return database_url
 
