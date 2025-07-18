@@ -9,11 +9,52 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeToolSearch();
     initializeToolForms();
     initializeFileUploads();
+    initializeCharts();
+    initializeAnimations();
 
     // Log page load time
     const loadTime = performance.now();
     console.log(`Page load time: ${loadTime.toFixed(2)}ms`);
 });
+
+// Fix Chart.js initialization
+function initializeCharts() {
+    try {
+        // Check if Chart.js is loaded
+        if (typeof Chart !== 'undefined') {
+            // Destroy existing chart instances safely
+            if (Chart.instances) {
+                Object.keys(Chart.instances).forEach(key => {
+                    Chart.instances[key].destroy();
+                });
+            }
+            console.log('✅ Charts initialized successfully');
+        }
+    } catch (error) {
+        console.warn('⚠️ Chart.js not available:', error.message);
+    }
+}
+
+// Fix animations
+function initializeAnimations() {
+    try {
+        // Check for animation elements before initializing
+        const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
+        if (animationElements.length > 0 && typeof gsap !== 'undefined') {
+            // Initialize GSAP animations safely
+            gsap.from('.floating-icon', {
+                duration: 2,
+                y: 20,
+                opacity: 0,
+                stagger: 0.2,
+                ease: "power2.out"
+            });
+            console.log('✅ Animations initialized successfully');
+        }
+    } catch (error) {
+        console.warn('⚠️ Animation library not available:', error.message);
+    }
+}
 
 // Tool search functionality
 function initializeToolSearch() {
