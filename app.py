@@ -10,10 +10,9 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from sqlalchemy.orm import DeclarativeBase
 import json
 from datetime import datetime
-from config import Config
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 class Base(DeclarativeBase):
     pass
@@ -25,46 +24,36 @@ login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
-    app.secret_key = os.environ.get("SESSION_SECRET")
+    app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-    # Professional database configuration with Supabase priority
-    try:
-        from database_config import get_database_url, db_config
-        database_url = get_database_url()
+    # Simple database configuration for Replit
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        # Fix postgresql URLs for SQLAlchemy
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
         app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-
-        # Configure engine options based on database type
-        if "supabase" in database_url or "postgresql" in database_url:
-            app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-                "pool_size": 5,
-                "max_overflow": 10,
-                "pool_pre_ping": True,
-                "pool_recycle": 1800,
-                "echo": False,
-                "connect_args": {
-                    "sslmode": "require",
-                    "connect_timeout": 10,
-                    "application_name": "Suntyn_AI_Platform"
-                }
-            }
-        else:
-            app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-                "pool_recycle": 300,
-                "pool_pre_ping": True,
-            }
-        logging.info(f"Database configuration loaded: {database_url[:50]}...")
-    except Exception as e:
-        logging.error(f"Database configuration error: {str(e)}")
-        # Emergency fallback to SQLite
+        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+            "pool_recycle": 300,
+            "pool_pre_ping": True,
+        }
+    else:
+        # Fallback to SQLite for development
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///suntyn_ai.db"
         app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
             "pool_recycle": 300,
             "pool_pre_ping": True,
         }
 
-    # Initialize extensions (db will be initialized with models)
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    
+    # Upload configuration
+    app.config["UPLOAD_FOLDER"] = 'uploads'
+    app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
+
+    # Initialize extensions
+    db.init_app(app)
     socketio.init_app(app, 
                      cors_allowed_origins="*",
                      ping_timeout=60,
@@ -74,16 +63,12 @@ def create_app():
                      logger=False,
                      engineio_logger=False)
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'login'
     login_manager.login_message = 'Please log in to access this page.'
-
-    # Import models after database initialization
-    from models import db as models_db, User, Tool, UserActivity, ToolHistory
-    # Use the same db instance
-    models_db.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
+        from models import User
         return User.query.get(int(user_id))
 
     # Tool categories configuration
@@ -125,95 +110,47 @@ def create_app():
                 'Expense Tracker', 'Budget Planner', 'Salary Calculator'
             ]
         },
-        'Utility Tools': {
-            'icon': 'tool',
+        'Government Documents': {
+            'icon': 'shield',
             'color': 'purple',
             'tools': [
-                'QR Code Generator', 'Barcode Generator', 'Password Generator', 'URL Shortener',
-                'Text Case Converter', 'JSON Formatter', 'XML Formatter', 'Base64 Encoder',
-                'Hash Generator', 'Unit Converter', 'Color Picker', 'UUID Generator'
-            ]
-        },
-        'AI Tools': {
-            'icon': 'brain',
-            'color': 'pink',
-            'tools': [
-                'Text Summarizer', 'Resume Generator', 'Business Name Generator',
-                'Blog Title Generator', 'Product Description', 'Script Writer',
-                'Ad Copy Generator', 'FAQ Generator', 'Content Rewriter',
-                'Grammar Checker', 'Plagiarism Checker', 'Keyword Extractor'
+                'Aadhaar Card Tools', 'PAN Card Tools', 'Passport Tools', 'Driving License Tools',
+                'Voter ID Tools', 'Birth Certificate Tools', 'Income Certificate Tools'
             ]
         },
         'Student Tools': {
             'icon': 'book',
             'color': 'indigo',
             'tools': [
-                'Assignment Planner', 'Study Schedule', 'GPA Calculator', 'Citation Generator',
-                'Research Helper', 'Note Taker', 'Flashcard Maker', 'Quiz Generator',
-                'Essay Writer', 'Presentation Maker', 'Mind Map Creator'
+                'Assignment Helper', 'Research Tools', 'Citation Generator', 'GPA Calculator',
+                'Study Planner', 'Note Organizer', 'Exam Scheduler', 'Academic Calendar'
             ]
         },
-        'Government Tools': {
-            'icon': 'shield',
+        'Utility Tools': {
+            'icon': 'tool',
             'color': 'gray',
             'tools': [
-                'Aadhaar Validator', 'PAN Validator', 'GST Validator', 'Passport Checker',
-                'Voter ID Checker', 'Driving License Checker', 'Ration Card Reader',
-                'Document Verifier', 'Legal Term Explainer', 'Rent Agreement Reader'
+                'QR Code Generator', 'Barcode Generator', 'Password Generator', 'Hash Generator',
+                'Base64 Encoder', 'URL Shortener', 'Color Picker', 'Random Generator'
+            ]
+        },
+        'AI Tools': {
+            'icon': 'brain',
+            'color': 'pink',
+            'tools': [
+                'Text Summarizer', 'Content Generator', 'Resume Builder', 'Letter Writer',
+                'Code Generator', 'Translation Tool', 'Grammar Checker', 'Paraphraser'
             ]
         }
     }
 
+    # Store categories in app config
+    app.config['TOOL_CATEGORIES'] = TOOL_CATEGORIES
+
     # Routes
     @app.route('/')
     def index():
-        recent_tools = []
-        most_used_tools = []
-
-        if current_user.is_authenticated:
-            try:
-                recent_activities = UserActivity.query.filter_by(user_id=current_user.id)\
-                    .order_by(UserActivity.created_at.desc()).limit(6).all()
-                recent_tools = [activity.tool_name for activity in recent_activities]
-
-                from sqlalchemy import func
-                most_used = models_db.session.query(
-                    UserActivity.tool_name, 
-                    func.count(UserActivity.id).label('count')
-                ).filter_by(user_id=current_user.id)\
-                 .group_by(UserActivity.tool_name)\
-                 .order_by(func.count(UserActivity.id).desc())\
-                 .limit(6).all()
-                most_used_tools = [tool[0] for tool in most_used]
-            except Exception as e:
-                logging.warning(f"Error fetching user activities: {str(e)}")
-
-        return render_template('index.html', 
-                             categories=TOOL_CATEGORIES,
-                             recent_tools=recent_tools,
-                             most_used_tools=most_used_tools)
-
-    @app.route('/dashboard')
-    @login_required
-    def dashboard():
-        try:
-            user_activities = UserActivity.query.filter_by(user_id=current_user.id)\
-                .order_by(UserActivity.created_at.desc()).limit(20).all()
-
-            tool_history = ToolHistory.query.filter_by(user_id=current_user.id)\
-                .order_by(ToolHistory.created_at.desc()).limit(10).all()
-        except Exception as e:
-            logging.warning(f"Error fetching dashboard data: {str(e)}")
-            user_activities = []
-            tool_history = []
-
-        return render_template('dashboard.html',
-                             activities=user_activities,
-                             history=tool_history)
-
-    @app.route('/pricing')
-    def pricing():
-        return render_template('pricing.html')
+        return render_template('index.html', categories=TOOL_CATEGORIES)
 
     @app.route('/about')
     def about():
@@ -223,226 +160,171 @@ def create_app():
     def contact():
         return render_template('contact.html')
 
+    @app.route('/pricing')
+    def pricing():
+        return render_template('pricing.html')
+
     @app.route('/faq')
     def faq():
         return render_template('faq.html')
-
-    @app.route('/privacy')
-    def privacy():
-        return render_template('privacy.html')
-
-    @app.route('/terms')
-    def terms():
-        return render_template('terms.html')
-
-    @app.route('/blog')
-    def blog():
-        return render_template('blog.html')
 
     @app.route('/all-tools')
     def all_tools():
         return render_template('all_tools.html', categories=TOOL_CATEGORIES)
 
-    # Tool category routes
-    @app.route('/pdf-tools')
-    def pdf_tools():
+    @app.route('/category/<category_name>')
+    def category(category_name):
+        if category_name not in TOOL_CATEGORIES:
+            flash('Category not found', 'error')
+            return redirect(url_for('index'))
         return render_template('category.html', 
-                             category='PDF Tools',
-                             tools=TOOL_CATEGORIES['PDF Tools']['tools'])
+                             category_name=category_name, 
+                             category=TOOL_CATEGORIES[category_name])
 
-    @app.route('/image-tools')
-    def image_tools():
-        return render_template('category.html', 
-                             category='Image Tools',
-                             tools=TOOL_CATEGORIES['Image Tools']['tools'])
+    @app.route('/tool/<tool_name>')
+    def tool_page(tool_name):
+        # Find which category this tool belongs to
+        tool_category = None
+        for category, data in TOOL_CATEGORIES.items():
+            if tool_name in data['tools']:
+                tool_category = category
+                break
+        
+        if not tool_category:
+            flash('Tool not found', 'error')
+            return redirect(url_for('index'))
+        
+        return render_template('tool_page.html', 
+                             tool_name=tool_name, 
+                             category=tool_category,
+                             category_data=TOOL_CATEGORIES[tool_category])
 
-    @app.route('/finance-tools')
-    def finance_tools():
-        return render_template('category.html', 
-                             category='Finance Tools',
-                             tools=TOOL_CATEGORIES['Finance Tools']['tools'])
+    @app.route('/dashboard')
+    @login_required
+    def dashboard():
+        from models import UserActivity, ToolHistory
+        recent_activity = UserActivity.query.filter_by(user_id=current_user.id).order_by(UserActivity.timestamp.desc()).limit(10).all()
+        tool_history = ToolHistory.query.filter_by(user_id=current_user.id).order_by(ToolHistory.created_at.desc()).limit(5).all()
+        return render_template('dashboard.html', recent_activity=recent_activity, tool_history=tool_history)
 
-    @app.route('/ai-tools')
-    def ai_tools():
-        return render_template('category.html', 
-                             category='AI Tools',
-                             tools=TOOL_CATEGORIES['AI Tools']['tools'])
-
-    @app.route('/video-tools')
-    def video_tools():
-        return render_template('category.html', 
-                             category='Video/Audio Tools',
-                             tools=TOOL_CATEGORIES['Video/Audio Tools']['tools'])
-
-    @app.route('/dev-tools')
-    def dev_tools():
-        return render_template('category.html', 
-                             category='Utility Tools',
-                             tools=TOOL_CATEGORIES['Utility Tools']['tools'])
-
-    @app.route('/text-tools')
-    def text_tools():
-        return render_template('category.html', 
-                             category='Utility Tools',
-                             tools=TOOL_CATEGORIES['Utility Tools']['tools'])
-
-    @app.route('/student-tools')
-    def student_tools():
-        return render_template('category.html', 
-                             category='Student Tools',
-                             tools=TOOL_CATEGORIES['Student Tools']['tools'])
-
-    @app.route('/government-tools')
-    def government_tools():
-        return render_template('category.html', 
-                             category='Government Tools',
-                             tools=TOOL_CATEGORIES['Government Tools']['tools'])
-
-    @app.route('/utility-tools')
-    def utility_tools():
-        return render_template('category.html', 
-                             category='Utility Tools',
-                             tools=TOOL_CATEGORIES['Utility Tools']['tools'])
-
-    @app.route('/health')
-    def health_check():
-        """Health check endpoint for monitoring"""
-        try:
-            # Check database health
-            from database_config import db_config
-            db_health = db_config.health_check()
-
-            return jsonify({
-                "status": "healthy",
-                "database": db_health,
-                "version": "1.0.0",
-                "tools_count": 85,
-                "environment": os.getenv("FLASK_ENV", "development")
-            })
-        except Exception as e:
-            logging.error(f"Health check failed: {str(e)}")
-            return jsonify({
-                "status": "unhealthy",
-                "error": str(e)
-            }), 500
+    # Authentication routes
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        if request.method == 'POST':
+            try:
+                from models import User
+                data = request.get_json() if request.is_json else request.form
+                
+                username = data.get('username')
+                email = data.get('email')
+                password = data.get('password')
+                
+                if not all([username, email, password]):
+                    return jsonify({'success': False, 'error': 'All fields are required'}), 400
+                
+                # Check if user exists
+                if User.query.filter_by(username=username).first():
+                    return jsonify({'success': False, 'error': 'Username already exists'}), 400
+                if User.query.filter_by(email=email).first():
+                    return jsonify({'success': False, 'error': 'Email already exists'}), 400
+                
+                # Create new user
+                user = User(username=username, email=email)
+                user.password_hash = generate_password_hash(password)
+                
+                db.session.add(user)
+                db.session.commit()
+                
+                login_user(user)
+                return jsonify({'success': True, 'redirect': url_for('dashboard')})
+                
+            except Exception as e:
+                logging.error(f"Registration error: {str(e)}")
+                return jsonify({'success': False, 'error': 'Registration failed'}), 500
+        
+        return render_template('auth/register.html')
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
-            username = request.form.get('username')
-            password = request.form.get('password')
-
-            user = User.query.filter_by(username=username).first()
-
-            if user and check_password_hash(user.password_hash, password):
-                login_user(user)
-                return redirect(url_for('index'))
-            else:
-                flash('Invalid username or password')
-
+            try:
+                from models import User
+                data = request.get_json() if request.is_json else request.form
+                
+                username = data.get('username')
+                password = data.get('password')
+                
+                if not all([username, password]):
+                    return jsonify({'success': False, 'error': 'Username and password are required'}), 400
+                
+                user = User.query.filter_by(username=username).first()
+                
+                if user and check_password_hash(user.password_hash, password):
+                    login_user(user, remember=data.get('remember', False))
+                    return jsonify({'success': True, 'redirect': url_for('dashboard')})
+                else:
+                    return jsonify({'success': False, 'error': 'Invalid username or password'}), 401
+                    
+            except Exception as e:
+                logging.error(f"Login error: {str(e)}")
+                return jsonify({'success': False, 'error': 'Login failed'}), 500
+        
         return render_template('auth/login.html')
-
-    @app.route('/signup', methods=['GET', 'POST'])
-    def signup():
-        if request.method == 'POST':
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')
-
-            if User.query.filter_by(username=username).first():
-                flash('Username already exists')
-                return render_template('auth/signup.html')
-
-            if User.query.filter_by(email=email).first():
-                flash('Email already exists')
-                return render_template('auth/signup.html')
-
-            user = User(
-                username=username,
-                email=email,
-                password_hash=generate_password_hash(password)
-            )
-
-            models_db.session.add(user)
-            models_db.session.commit()
-
-            login_user(user)
-            return redirect(url_for('index'))
-
-        return render_template('auth/signup.html')
 
     @app.route('/logout')
     @login_required
     def logout():
         logout_user()
+        flash('You have been logged out successfully', 'info')
         return redirect(url_for('index'))
 
-    # Tool routes
-    @app.route('/tools/<tool_name>')
-    def tool_page(tool_name):
-        # Log tool access
-        if current_user.is_authenticated:
-            try:
-                activity = UserActivity(
-                    user_id=current_user.id,
-                    tool_name=tool_name,
-                    action='accessed'
-                )
-                models_db.session.add(activity)
-                models_db.session.commit()
-            except Exception as e:
-                logging.warning(f"Error logging tool access: {str(e)}")
-
-        # Find which category this tool belongs to
-        tool_category = None
-        tool_info = None
-        for category, info in TOOL_CATEGORIES.items():
-            tool_display_name = tool_name.replace('-', ' ').title()
-            if tool_display_name in info['tools']:
-                tool_category = category
-                tool_info = info
-                break
-
-        return render_template('tool_page.html', 
-                             tool_name=tool_name,
-                             tool_display_name=tool_name.replace('-', ' ').title(),
-                             tool_category=tool_category,
-                             tool_info=tool_info)
-
-    @app.route('/api/process-tool/<tool_name>', methods=['POST'])
-    def process_tool_api(tool_name):
-        """API endpoint to process tools"""
+    # Tool processing route
+    @app.route('/process-tool', methods=['POST'])
+    def process_tool():
         try:
-            # Import the processor
+            tool_name = request.form.get('tool_name')
+            if not tool_name:
+                return jsonify({'success': False, 'error': 'Tool name is required'}), 400
+
+            # Import tool processor
             from tools.tool_processor import ToolProcessor
             processor = ToolProcessor()
-
-            # Record start time
-            start_time = datetime.now()
-
+            
             # Process the tool
-            result = processor.process_tool(tool_name, request)
-
-            # Calculate processing time
+            start_time = datetime.now()
+            result = processor.process_tool(tool_name, request.files, request.form)
             processing_time = (datetime.now() - start_time).total_seconds()
 
-            # Log tool usage if user is authenticated and successful
-            if current_user.is_authenticated and result.get('success'):
+            # Log activity and history if user is logged in
+            if current_user.is_authenticated:
                 try:
-                    history = ToolHistory(
+                    from models import UserActivity, ToolHistory
+                    
+                    # Log user activity
+                    activity = UserActivity(
                         user_id=current_user.id,
                         tool_name=tool_name,
-                        processing_time=processing_time,
-                        file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
+                        success=result.get('success', False)
                     )
-                    models_db.session.add(history)
-                    models_db.session.commit()
+                    db.session.add(activity)
+                    
+                    # Log tool history if successful
+                    if result.get('success'):
+                        history = ToolHistory(
+                            user_id=current_user.id,
+                            tool_name=tool_name,
+                            input_filename=request.files.get('file').filename if request.files.get('file') else None,
+                            processing_time=processing_time,
+                            file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
+                        )
+                        db.session.add(history)
+                    
+                    db.session.commit()
                 except Exception as db_error:
                     logging.warning(f"Failed to log tool history: {str(db_error)}")
 
             # Add processing time to result
             result['processing_time'] = f"{processing_time:.2f}s"
-
             return jsonify(result)
 
         except ImportError as import_error:
@@ -459,8 +341,6 @@ def create_app():
                 'error': f'Tool processing failed: {str(e)}'
             }), 500
 
-
-
     # File serving route
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
@@ -468,10 +348,42 @@ def create_app():
         upload_dir = os.path.join(app.root_path, 'uploads')
         return send_from_directory(upload_dir, filename)
 
+    # Profile and Settings routes (placeholder)
+    @app.route('/profile')
+    @login_required
+    def profile():
+        return render_template('dashboard.html')
+
+    @app.route('/settings')
+    @login_required
+    def settings():
+        return render_template('dashboard.html')
+
+    # Health check route
+    @app.route('/health')
+    def health_check():
+        try:
+            # Test database connection
+            db.session.execute(db.text('SELECT 1'))
+            return jsonify({
+                'status': 'healthy',
+                'database': 'connected',
+                'timestamp': datetime.now().isoformat()
+            })
+        except Exception as e:
+            return jsonify({
+                'status': 'unhealthy',
+                'database': 'disconnected',
+                'error': str(e),
+                'timestamp': datetime.now().isoformat()
+            }), 500
+
     # Create tables
     with app.app_context():
         try:
-            models_db.create_all()
+            # Import models to ensure they are registered
+            import models
+            db.create_all()
             logging.info("Database tables created successfully")
         except Exception as e:
             logging.error(f"Database initialization error: {str(e)}")
@@ -483,10 +395,3 @@ app = create_app()
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
-try:
-    from database_config import get_database_url, db_config
-    DATABASE_CONNECTED = True
-except Exception as e:
-    print(f"Database connection issue: {e}")
-    DATABASE_CONNECTED = False
-    db_config = None

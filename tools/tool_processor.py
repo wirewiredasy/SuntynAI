@@ -41,7 +41,7 @@ class ToolProcessor:
             'presentation': ['ppt', 'pptx']
         }
     
-    def process_tool(self, tool_name, request_data):
+    def process_tool(self, tool_name, files, form_data):
         """Main entry point for processing any tool"""
         try:
             # Complete tool mapping for all 85 tools
@@ -159,7 +159,7 @@ class ToolProcessor:
                 }
             
             # Execute the tool function
-            return tool_map[normalized_name](request_data)
+            return tool_map[normalized_name](files, form_data)
             
         except Exception as e:
             logger.error(f"Error processing tool {tool_name}: {str(e)}")
@@ -194,17 +194,17 @@ class ToolProcessor:
         return extension in allowed_extensions
     
     # PDF Tools Implementation
-    def pdf_merger(self, request_data):
+    def pdf_merger(self, files, form_data):
         """Merge multiple PDF files into one"""
         try:
-            files = request_data.files.getlist('files')
-            if len(files) < 2:
+            files_list = files.getlist('files') if files else []
+            if len(files_list) < 2:
                 return {'success': False, 'error': 'At least 2 PDF files required'}
             
             with tempfile.TemporaryDirectory() as temp_dir:
                 merger = PyPDF2.PdfMerger()
                 
-                for file in files:
+                for file in files_list:
                     if not self.validate_file_type(file.filename, ['pdf']):
                         return {'success': False, 'error': f'Invalid file: {file.filename}'}
                     
