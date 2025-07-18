@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 def test_supabase_connection():
     """Test direct Supabase connection"""
     try:
-        # Use the corrected URL with proper encoding
-        database_url = "postgresql://postgres:Suntyn%40%23%24134_@db.zypudpxacebcurnttfdi.supabase.co:5432/postgres"
+        # Use the new Supabase URL
+        database_url = "postgresql://postgres:Suntyn2315db@db.vxappuvvmdnjddnpjroa.supabase.co:5432/postgres"
         
         logger.info("Testing Supabase connection...")
         logger.info(f"Database URL: {database_url[:50]}...")

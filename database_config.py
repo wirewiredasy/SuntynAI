@@ -1,6 +1,5 @@
 """
-Professional Database Configuration for Production Deployment
-Supports both Supabase and Neon PostgreSQL databases with proper error handling
+The code has been updated to use the new Supabase URL as the first priority for database connections, replacing the old configuration.
 """
 from urllib.parse import quote_plus
 
@@ -26,9 +25,9 @@ def get_database_url():
         db_source = os.getenv("DB_SOURCE", "").lower()
 
         if db_source == "supabase":
-            # Use the corrected Supabase URL
-            database_url = "postgresql://postgres:Suntyn%40%23%24134_%40db.zypudpxacebcurnttfdi.supabase.co:5432/postgres"
-            logger.info("Using Supabase PostgreSQL database")
+            # Use the new Supabase URL as first priority
+            database_url = "postgresql://postgres:Suntyn2315db@db.vxappuvvmdnjddnpjroa.supabase.co:5432/postgres"
+            logger.info("Using new Supabase PostgreSQL database")
             return database_url
 
         # Priority 2: Check for Render's automatic DATABASE_URL
