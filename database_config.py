@@ -35,12 +35,12 @@ def get_database_url():
             if not database_url:
                 raise ValueError("DATABASE_SUPABASE_URL environment variable is required")
 
-            # Fix URL encoding for special characters
-            if "Suntyn@#$134_@" in database_url:
+            # Fix URL encoding for special characters in password
+            if "Suntyn@#$134_" in database_url:
                 # Extract parts and properly encode password
                 password = "Suntyn@#$134_"
                 encoded_password = quote_plus(password)
-                database_url = database_url.replace("Suntyn@#$134_@", f"{encoded_password}@")
+                database_url = database_url.replace(f":{password}@", f":{encoded_password}@")
 
             logger.info("Using Supabase PostgreSQL database")
             return database_url
@@ -90,12 +90,13 @@ class DatabaseConfig:
                 if not database_url:
                     raise ValueError("DATABASE_SUPABASE_URL environment variable is required when DB_SOURCE=supabase")
 
-            # Fix URL encoding for special characters
-                if "Suntyn@#$134_@" in database_url:
+                # Fix URL encoding for special characters in password
+                if "Suntyn@#$134_" in database_url:
                     # Extract parts and properly encode password
                     password = "Suntyn@#$134_"
                     encoded_password = quote_plus(password)
-                    database_url = database_url.replace("Suntyn@#$134_@", f"{encoded_password}@")
+                    database_url = database_url.replace(f":{password}@", f":{encoded_password}@")
+                
                 logger.info("Using Supabase PostgreSQL database")
                 return database_url
 
@@ -134,19 +135,23 @@ class DatabaseConfig:
             database_url = self._get_database_url()
 
             # Create engine with production-ready settings
+            if "postgresql" in database_url:
+                connect_args = {
+                    "sslmode": "require",  # Require SSL for PostgreSQL
+                    "connect_timeout": 30,
+                    "application_name": "Suntyn_AI_Platform"
+                }
+            else:
+                connect_args = {}
+
             self.engine = create_engine(
                 database_url,
-                pool_size=10,              # Connection pool size
-                max_overflow=20,           # Maximum overflow connections
+                pool_size=5,               # Connection pool size
+                max_overflow=10,           # Maximum overflow connections
                 pool_pre_ping=True,        # Verify connections before use
-                pool_recycle=3600,         # Recycle connections every hour
+                pool_recycle=1800,         # Recycle connections every 30 minutes
                 echo=False,                # Set to True for SQL debugging
-                connect_args={
-                    "sslmode": "prefer",  # Prefer SSL but allow non-SSL
-                    "connect_timeout": 60,
-                    "application_name": "Suntyn_AI_Platform",
-                    "options": "-c statement_timeout=300000"
-                }
+                connect_args=connect_args
             )
 
             # Create session factory
