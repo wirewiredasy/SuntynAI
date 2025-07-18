@@ -48,7 +48,12 @@ def get_database_url():
             logger.info("Using Neon PostgreSQL database")
             return database_url
 
-        # Priority 3: Fallback to local development
+        # Priority 3: Check for Replit PostgreSQL 
+        elif os.getenv("REPLIT_DB_URL"):
+            logger.info("Using Replit PostgreSQL database")
+            return os.getenv("REPLIT_DB_URL")
+        
+        # Priority 4: Fallback to local development
         else:
             logger.warning("No database configuration found, using local fallback")
             return "sqlite:///suntyn_ai.db"
