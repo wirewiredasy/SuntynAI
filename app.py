@@ -218,18 +218,23 @@ def create_app():
             flash(f'Tool "{tool_name}" not found. Please check the tool name or browse available tools.', 'error')
             return redirect(url_for('all_tools'))
         
-        # Try to use dedicated template first, fallback to generic
-        try:
-            return render_template(f'tools/{tool_name}.html')
-        except:
-            # Fallback to generic template if dedicated template doesn't exist
+        # Check if dedicated template exists
+        import os
+        template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}.html')
+        
+        if os.path.exists(template_path):
+            return render_template(f'tools/{tool_name}.html', 
+                                 tool_name=tool_name,
+                                 category=tool_category,
+                                 category_data=TOOL_CATEGORIES[tool_category])
+        else:
+            # Use generic template with tool-specific data
             tool_display_name = tool_name.replace('-', ' ').title()
-            return render_template('tool_page.html', 
+            return render_template('tools/default.html', 
                                  tool_name=tool_name,
                                  tool_display_name=tool_display_name,
                                  category=tool_category,
-                                 category_data=TOOL_CATEGORIES[tool_category],
-                                 tool_info=TOOL_CATEGORIES[tool_category])
+                                 category_data=TOOL_CATEGORIES[tool_category])
 
     @app.route('/dashboard')
     @login_required
@@ -327,6 +332,10 @@ def create_app():
             result = processor.process_tool(tool_name, request.files, request.form)
             processing_time = (datetime.now() - start_time).total_seconds()
 
+            # Ensure we have a valid result
+            if not isinstance(result, dict):
+                result = {'success': False, 'error': 'Invalid result from processor'}
+
             # Log activity and history if user is logged in
             if current_user.is_authenticated:
                 try:
@@ -342,10 +351,16 @@ def create_app():
                     
                     # Log tool history if successful
                     if result.get('success'):
+                        file_obj = request.files.get('file') or request.files.get('files')
+                        if hasattr(file_obj, 'filename'):
+                            filename = file_obj.filename
+                        else:
+                            filename = None
+                            
                         history = ToolHistory(
                             user_id=current_user.id,
                             tool_name=tool_name,
-                            input_filename=request.files.get('file').filename if request.files.get('file') else None,
+                            input_filename=filename,
                             processing_time=processing_time,
                             file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
                         )
