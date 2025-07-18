@@ -256,12 +256,10 @@ function initializeToolForms() {
 
 // Handle tool form submission with professional AI-like interface
 async function handleToolSubmission(form) {
-    const toolName = form.dataset.tool;
+    const toolName = form.dataset.tool || window.location.pathname.split('/').pop();
     const submitBtn = form.querySelector('button[type="submit"]');
     const resultDiv = document.getElementById('tool-result') || createResultDiv();
     
-    // Professional AI-like processing interface
-
     if (!toolName) {
         showError('Tool name not specified');
         return;
@@ -274,7 +272,6 @@ async function handleToolSubmission(form) {
 
     try {
         const formData = new FormData(form);
-
         formData.append('tool_name', toolName);
         
         const response = await fetch('/process-tool', {
@@ -282,9 +279,13 @@ async function handleToolSubmission(form) {
             body: formData
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success !== false) {
             showProfessionalSuccess(result);
         } else {
             showProfessionalError(result.error || 'Processing failed');
@@ -362,9 +363,9 @@ function showProfessionalSuccess(result) {
     if (result.hash) {
         html += `
             <div class="mt-3">
-                <label class="form-label">${result.type.toUpperCase()} Hash:</label>
+                <label class="form-label">${result.type ? result.type.toUpperCase() : 'Generated'} Hash:</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" value="${result.hash}" readonly>
+                    <input type="text" class="form-control font-monospace" value="${result.hash}" readonly>
                     <button class="btn btn-outline-secondary" onclick="copyToClipboard('${result.hash}')">
                         <i class="ti ti-copy"></i>
                     </button>
@@ -377,7 +378,48 @@ function showProfessionalSuccess(result) {
         html += `
             <div class="mt-3">
                 <label class="form-label">Formatted JSON:</label>
-                <textarea class="form-control" rows="10" readonly>${result.formatted}</textarea>
+                <textarea class="form-control font-monospace" rows="10" readonly>${result.formatted}</textarea>
+                <button class="btn btn-outline-secondary mt-2" onclick="copyToClipboard(\`${result.formatted.replace(/`/g, '\\`')}\`)">
+                    <i class="ti ti-copy me-2"></i>Copy JSON
+                </button>
+            </div>
+        `;
+    }
+
+    if (result.content) {
+        html += `
+            <div class="mt-3">
+                <label class="form-label">Generated Content:</label>
+                <textarea class="form-control" rows="15" readonly>${result.content}</textarea>
+                <button class="btn btn-outline-secondary mt-2" onclick="copyToClipboard(\`${result.content.replace(/`/g, '\\`')}\`)">
+                    <i class="ti ti-copy me-2"></i>Copy Content
+                </button>
+            </div>
+        `;
+    }
+
+    if (result.resume_content) {
+        html += `
+            <div class="mt-3">
+                <label class="form-label">Generated Resume:</label>
+                <textarea class="form-control" rows="20" readonly>${result.resume_content}</textarea>
+                <button class="btn btn-outline-secondary mt-2" onclick="copyToClipboard(\`${result.resume_content.replace(/`/g, '\\`')}\`)">
+                    <i class="ti ti-copy me-2"></i>Copy Resume
+                </button>
+            </div>
+        `;
+    }
+
+    if (result.result && typeof result.result === 'string') {
+        html += `
+            <div class="mt-3">
+                <label class="form-label">Result:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" value="${result.result}" readonly>
+                    <button class="btn btn-outline-secondary" onclick="copyToClipboard('${result.result}')">
+                        <i class="ti ti-copy"></i>
+                    </button>
+                </div>
             </div>
         `;
     }
