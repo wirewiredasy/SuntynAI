@@ -30,23 +30,36 @@ def create_app():
     app.secret_key = os.environ.get("SESSION_SECRET")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     
-    # Professional database configuration
+    # Professional database configuration with Supabase priority
     try:
         from database_config import get_database_url
         database_url = get_database_url()
         app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-            "pool_size": 10,
-            "max_overflow": 20,
-            "pool_pre_ping": True,
-            "pool_recycle": 3600,
-            "echo": False
-        }
-        logging.info("Professional database configuration loaded")
+        
+        # Configure engine options based on database type
+        if "supabase" in database_url or "postgresql" in database_url:
+            app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+                "pool_size": 5,
+                "max_overflow": 10,
+                "pool_pre_ping": True,
+                "pool_recycle": 1800,
+                "echo": False,
+                "connect_args": {
+                    "sslmode": "require",
+                    "connect_timeout": 10,
+                    "application_name": "Suntyn_AI_Platform"
+                }
+            }
+        else:
+            app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+                "pool_recycle": 300,
+                "pool_pre_ping": True,
+            }
+        logging.info(f"Database configuration loaded: {database_url[:50]}...")
     except Exception as e:
         logging.error(f"Database configuration error: {str(e)}")
-        # Fallback to basic configuration
-        app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+        # Emergency fallback to SQLite
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///suntyn_ai.db"
         app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
             "pool_recycle": 300,
             "pool_pre_ping": True,

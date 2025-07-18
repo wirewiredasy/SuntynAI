@@ -73,14 +73,9 @@ class DatabaseConfig:
     def _get_database_url(self):
         """Get database URL based on environment configuration"""
         try:
-            # Check for Render environment variables first
-            if os.getenv("DATABASE_URL"):
-                logger.info("Using Render PostgreSQL database")
-                return os.getenv("DATABASE_URL")
-
-            # Check for custom database source
+            # Priority 1: Check for Supabase database
             db_source = os.getenv("DB_SOURCE", "").lower()
-
+            
             if db_source == "supabase":
                 database_url = os.getenv("DATABASE_SUPABASE_URL")
                 if not database_url:
@@ -88,6 +83,12 @@ class DatabaseConfig:
                 logger.info("Using Supabase PostgreSQL database")
                 return database_url
 
+            # Priority 2: Check for any DATABASE_URL
+            elif os.getenv("DATABASE_URL"):
+                logger.info("Using DATABASE_URL")
+                return os.getenv("DATABASE_URL")
+
+            # Priority 3: Check for Neon database
             elif db_source == "neon":
                 database_url = os.getenv("DATABASE_NEON_URL")
                 if not database_url:
@@ -100,17 +101,16 @@ class DatabaseConfig:
                 logger.info("Using Neon PostgreSQL database")
                 return database_url
 
-            # Fallback to default Render database
-            elif os.getenv("DATABASE_URL"):
-                logger.info("Using default DATABASE_URL")
-                return os.getenv("DATABASE_URL")
-
+            # Priority 4: Fallback to SQLite for development
             else:
-                raise ValueError("No valid database configuration found. Please set DATABASE_URL or configure DB_SOURCE with appropriate database URL")
+                logger.warning("No database configuration found, using SQLite fallback")
+                return "sqlite:///suntyn_ai.db"
 
         except Exception as e:
             logger.error(f"Database URL configuration error: {str(e)}")
-            raise
+            # Return SQLite as emergency fallback
+            logger.warning("Using SQLite as emergency fallback")
+            return "sqlite:///suntyn_ai.db"
 
     def _initialize_database(self):
         """Initialize database connection with proper error handling"""
