@@ -576,11 +576,15 @@
     <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 
+    <!-- Essential Third-party Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" defer></script>
+    
     <!-- Deferred Non-Critical Scripts -->
     <script>
-        // Secure library loading with error handling
+        // Safe library loading with proper error handling
         window.addEventListener('load', function() {
-            const scripts = [
+            const optionalScripts = [
                 { 
                     src: 'https://cdn.socket.io/4.0.0/socket.io.min.js', 
                     condition: () => document.querySelector('[data-websocket]')
@@ -588,19 +592,6 @@
                 { 
                     src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js', 
                     condition: () => document.querySelector('.sortable') 
-                },
-                { 
-                    src: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js', 
-                    condition: () => document.querySelector('canvas[id$="Chart"]') 
-                },
-                { 
-                    src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js', 
-                    condition: () => document.querySelector('.hero-content, .tool-card') || document.querySelector('.hero-section')
-                },
-                { 
-                    src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js', 
-                    condition: () => document.querySelector('[data-parallax]'),
-                    dependency: 'gsap'
                 },
                 { 
                     src: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js', 
@@ -612,54 +603,53 @@
                 }
             ];
 
-            const loadedScripts = new Set();
+            function loadOptionalScript({ src, condition }) {
+                if (!condition()) return;
 
-            function loadScript({ src, condition, dependency }) {
-                if (!condition()) return Promise.resolve();
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = true;
+                script.crossOrigin = 'anonymous';
 
-                if (dependency && !loadedScripts.has(dependency)) {
-                    return Promise.resolve(); // Skip if dependency not loaded
-                }
+                script.onload = () => console.log(`✅ Loaded: ${src.split('/').pop()}`);
+                script.onerror = () => console.warn(`⚠️ Failed to load: ${src.split('/').pop()}`);
 
-                return new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.async = true;
-                    script.defer = true;
-                    script.crossOrigin = 'anonymous';
-
-                    script.onload = function() {
-                        console.log(`✅ Loaded: ${src.split('/').pop()}`);
-                        loadedScripts.add(src.includes('gsap') ? 'gsap' : src.split('/').pop());
-                        resolve();
-                    };
-
-                    script.onerror = function() {
-                        console.warn(`Failed to load script: ${src}`);
-                        reject(new Error(`Failed to load ${src}`));
-                    };
-
-                    document.head.appendChild(script);
-                });
+                document.head.appendChild(script);
             }
 
-            // Load scripts with dependencies
-            requestIdleCallback(() => {
-                scripts.forEach(scriptConfig => {
-                    loadScript(scriptConfig).catch(error => {
-                        console.warn('Script loading error:', error);
-                    });
+            // Load optional scripts with delay
+            if (requestIdleCallback) {
+                requestIdleCallback(() => {
+                    optionalScripts.forEach(loadOptionalScript);
                 });
-            });
+            } else {
+                setTimeout(() => {
+                    optionalScripts.forEach(loadOptionalScript);
+                }, 1000);
+            }
         });
     </script>
-    <!-- Main Application Scripts with error handling -->
+    
+    <!-- Enhanced Error Handling -->
     <script>
-        // Global error handler for missing libraries
+        // Global error handler with proper fallbacks
         window.addEventListener('error', function(e) {
-            if (e.message.includes('Lenis') || e.message.includes('gsap')) {
-                console.warn('External library failed to load, using fallbacks');
+            // Silently handle library loading failures
+            if (e.message.includes('gsap') || e.message.includes('Chart') || e.message.includes('Lenis')) {
+                console.warn('External library error handled:', e.message);
+                return true; // Prevent error from bubbling up
             }
+            
+            // Only log actual application errors
+            if (e.filename && e.filename.includes(window.location.hostname)) {
+                console.error('Application error:', e.message, 'at', e.filename + ':' + e.lineno);
+            }
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.warn('Promise rejection handled:', e.reason);
+            e.preventDefault(); // Prevent console errors
         });
     </script>
 
@@ -874,61 +864,48 @@
     })();
     </script>
 
-    <!-- Service Worker Registration with improved error handling -->
+    <!-- Optimized Performance Monitoring -->
     <script>
-        // Performance monitoring
         (function() {
-            let startTime = performance.now();
+            const startTime = performance.now();
 
-            window.addEventListener('load', function() {
-                const loadTime = performance.now() - startTime;
-                console.log(`🚀 Page fully loaded in ${Math.round(loadTime)}ms`);
-
-                // Report performance to analytics if needed
-                if (loadTime > 3000) {
-                    console.warn('⚠️ Page load time is slow:', Math.round(loadTime), 'ms');
-                }
-            });
-
-            // Service Worker Registration with improved error handling
-            if ('serviceWorker' in navigator) {
+            // Safe service worker registration
+            if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
                 window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/service-worker.js', {
-                        scope: '/',
-                        updateViaCache: 'none'
+                    navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registered successfully');
                     })
-                    .then(function(registration) {
-                        console.log('✅ Service Worker registered');
-
-                        // Check for updates
-                        registration.addEventListener('updatefound', () => {
-                            console.log('🔄 Service Worker update available');
-                        });
-                    })
-                    .catch(function(error) {
-                        console.warn('⚠️ Service Worker registration failed:', error.message);
+                    .catch(error => {
+                        // Silently handle service worker errors
+                        console.info('Service Worker not available');
                     });
                 });
             }
 
+            // Performance monitoring
+            window.addEventListener('load', function() {
+                const loadTime = performance.now() - startTime;
+                console.log(`🚀 Page loaded in ${Math.round(loadTime)}ms`);
+
+                // Only warn for very slow loads
+                if (loadTime > 5000) {
+                    console.warn('⚠️ Slow page load detected');
+                }
+            });
+
             // Resource hints for better performance
-            function addResourceHints() {
-                const hints = [
-                    { rel: 'dns-prefetch', href: '//fonts.googleapis.com' },
-                    { rel: 'dns-prefetch', href: '//cdn.jsdelivr.net' },
-                    { rel: 'dns-prefetch', href: '//cdnjs.cloudflare.com' }
-                ];
+            const hints = [
+                'https://cdn.jsdelivr.net',
+                'https://cdnjs.cloudflare.com'
+            ];
 
-                hints.forEach(hint => {
-                    const link = document.createElement('link');
-                    link.rel = hint.rel;
-                    link.href = hint.href;
-                    document.head.appendChild(link);
-                });
-            }
-
-            // Add resource hints after DOM is ready
-            document.addEventListener('DOMContentLoaded', addResourceHints);
+            hints.forEach(domain => {
+                const link = document.createElement('link');
+                link.rel = 'dns-prefetch';
+                link.href = domain;
+                document.head.appendChild(link);
+            });
         })();
     </script>
 </body>

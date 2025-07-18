@@ -755,95 +755,81 @@ class SuntynAI {
         });
     }
 
+    // Animation system with safe GSAP loading
     initializeAnimations() {
-        // Check if animations should be disabled
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (prefersReducedMotion) {
-            console.log('🎯 Reduced motion preferred, skipping complex animations');
-            return;
-        }
+        // Wait for GSAP to load
+        const initGSAP = () => {
+            if (typeof gsap === 'undefined') {
+                console.info('GSAP not available, using CSS animations');
+                this.initializeCSSAnimations();
+                return;
+            }
 
-        // Modern animation system with GSAP (if available)
-        if (typeof gsap !== 'undefined') {
             try {
-                // Register ScrollTrigger plugin if available
-                if (typeof ScrollTrigger !== 'undefined') {
-                    gsap.registerPlugin(ScrollTrigger);
+                // Animate tool cards on scroll
+                const toolCards = document.querySelectorAll('.tool-card');
+                toolCards.forEach((card, index) => {
+                    gsap.set(card, { y: 50, opacity: 0 });
+
+                    gsap.to(card, {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.6,
+                        delay: index * 0.1,
+                        ease: "power2.out"
+                    });
+                });
+
+                // Hero animations
+                const heroTitle = document.querySelector('.hero-title');
+                if (heroTitle) {
+                    gsap.from(heroTitle, {
+                        y: 50,
+                        opacity: 0,
+                        duration: 1,
+                        ease: "power2.out"
+                    });
                 }
 
-                // Wait for smooth scroll to initialize
-                setTimeout(() => {
-                    // Hero section timeline animation
-                    const heroTl = gsap.timeline();
-
-                    if (document.querySelector('.hero-title')) {
-                        heroTl.fromTo('.hero-title', 
-                            { y: 100, opacity: 0 },
-                            { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
-                        );
-                    }
-
-                    if (document.querySelector('.hero-subtitle')) {
-                        heroTl.fromTo('.hero-subtitle',
-                            { y: 50, opacity: 0 },
-                            { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
-                            "-=0.6"
-                        );
-                    }
-
-                    if (document.querySelector('.hero-buttons')) {
-                        heroTl.fromTo('.hero-buttons',
-                            { y: 30, opacity: 0 },
-                            { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
-                            "-=0.4"
-                        );
-                    }
-
-                    // Create floating icons if they don't exist
-                    this.createFloatingIcons();
-
-                    // Enhanced parallax with better performance (only if ScrollTrigger is available)
-                    if (typeof ScrollTrigger !== 'undefined') {
-                        const parallaxElements = document.querySelectorAll('[data-parallax]');
-                        parallaxElements.forEach(element => {
-                            const speed = parseFloat(element.dataset.parallax) || 0.5;
-                            gsap.to(element, {
-                                yPercent: -50 * speed,
-                                ease: "none",
-                                scrollTrigger: {
-                                    trigger: element,
-                                    start: "top bottom",
-                                    end: "bottom top",
-                                    scrub: 1
-                                }
-                            });
-                        });
-                    }
-
-                    // Animate floating icons if they exist
-                    const floatingIcons = document.querySelectorAll('.floating-icon');
-                    if (floatingIcons.length > 0) {
-                        gsap.to(floatingIcons, {
-                            y: -20,
-                            rotation: 360,
-                            duration: 6,
-                            ease: "none",
-                            repeat: -1,
-                            stagger: 0.5
-                        });
-                    }
-
-                    console.log('✨ Modern animation system initialized');
-                }, 300);
+                console.log('✨ GSAP animations initialized');
             } catch (error) {
-                console.warn('⚠️ GSAP animation initialization failed:', error);
+                console.warn('GSAP animation error:', error);
                 this.initializeCSSAnimations();
             }
+        };
+
+        // Check if GSAP is already loaded
+        if (typeof gsap !== 'undefined') {
+            initGSAP();
         } else {
-            // Fallback to CSS animations
-            console.log('🎯 GSAP not available, using CSS animations');
-            this.initializeCSSAnimations();
+            // Wait for GSAP to load
+            let attempts = 0;
+            const checkGSAP = setInterval(() => {
+                attempts++;
+                if (typeof gsap !== 'undefined') {
+                    clearInterval(checkGSAP);
+                    initGSAP();
+                } else if (attempts > 10) {
+                    clearInterval(checkGSAP);
+                    this.initializeCSSAnimations();
+                }
+            }, 100);
         }
+    }
+
+    // Fallback CSS animations
+    initializeCSSAnimations() {
+        const toolCards = document.querySelectorAll('.tool-card');
+        toolCards.forEach((card, index) => {
+            card.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+        });
+
+        const heroTitle = document.querySelector('.hero-title');
+        if (heroTitle) {
+            heroTitle.style.animation = 'fadeInUp 1s ease-out';
+        }
+
+        console.log('✨ CSS animations initialized');
     }
 
     initializeKeyboardShortcuts() {
@@ -1060,6 +1046,8 @@ class SuntynAI {
         try {
             await navigator.clipboard.writeText(text);
             this.showNotification('Copied to clipboard!', 'success');
+        ```python
+
         } catch (err) {
             console.error('Failed to copy:', err);
             this.showNotification('Failed to copy to clipboard', 'error');
@@ -1295,6 +1283,56 @@ class SuntynAI {
     updateResultContent(result) {
         // This method will be overridden by individual tool scripts
         console.log('Tool result:', result);
+    }
+    
+    // Chart management with proper cleanup
+    initializeCharts() {
+        // Clean up existing charts safely
+        if (window.Chart && Chart.registry) {
+            try {
+                // Get all chart instances and destroy them
+                Object.values(Chart.registry.instances || {}).forEach(chart => {
+                    if (chart && typeof chart.destroy === 'function') {
+                        chart.destroy();
+                    }
+                });
+            } catch (error) {
+                console.warn('Chart cleanup warning:', error.message);
+            }
+        }
+
+    // Scroll to top button with error handling
+        const scrollToTopBtn = document.querySelector('.scroll-to-top-btn');
+        if (scrollToTopBtn) {
+            const handleScroll = this.throttle(() => {
+                try {
+                    if (window.pageYOffset > 300) {
+                        scrollToTopBtn.classList.add('visible');
+                    } else {
+                        scrollToTopBtn.classList.remove('visible');
+                    }
+                } catch (error) {
+                    console.warn('Scroll handler error:', error);
+                }
+            }, 100);
+
+            window.addEventListener('scroll', handleScroll);
+
+            const handleClick = (e) => {
+                try {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } catch (error) {
+                    // Fallback for older browsers
+                    window.scrollTo(0, 0);
+                }
+            };
+
+            scrollToTopBtn.addEventListener('click', handleClick);
+        }
     }
 }
 

@@ -1,4 +1,3 @@
-
 /**
  * Performance Optimization Utilities
  * Handles caching, compression, and resource optimization
@@ -33,7 +32,7 @@ class PerformanceOptimizer {
     optimizeScrollPerformance() {
         // Passive event listeners for better scroll performance
         let ticking = false;
-        
+
         const optimizedScrollHandler = () => {
             if (!ticking) {
                 requestAnimationFrame(() => {
@@ -46,7 +45,7 @@ class PerformanceOptimizer {
         };
 
         window.addEventListener('scroll', optimizedScrollHandler, { passive: true });
-        
+
         // Optimize scroll for low-end devices
         if (this.isLowEndDevice) {
             document.documentElement.style.scrollBehavior = 'auto';
@@ -57,7 +56,7 @@ class PerformanceOptimizer {
         // Update scroll-dependent elements efficiently
         const scrollTop = window.pageYOffset;
         const scrollToTopBtn = document.querySelector('.scroll-to-top-btn');
-        
+
         if (scrollToTopBtn) {
             if (scrollTop > 300) {
                 scrollToTopBtn.style.opacity = '1';
@@ -72,7 +71,7 @@ class PerformanceOptimizer {
     optimizeJavaScriptExecution() {
         // Defer non-critical JavaScript
         const deferredTasks = [];
-        
+
         window.addDeferredTask = (task) => {
             deferredTasks.push(task);
         };
@@ -86,7 +85,7 @@ class PerformanceOptimizer {
                 } catch (error) {
                     console.warn('Deferred task failed:', error);
                 }
-                
+
                 if (deferredTasks.length > 0) {
                     requestIdleCallback(executeDeferredTasks);
                 }
@@ -262,10 +261,10 @@ class PerformanceOptimizer {
                 }
 
                 console.table(metrics);
-                
+
                 // Show performance indicator
                 this.showPerformanceIndicator(metrics['Total Load Time']);
-                
+
                 // Report slow performance
                 if (metrics['Total Load Time'] > 3000) {
                     console.warn('🐌 Slow page load detected:', metrics['Total Load Time'], 'ms');
@@ -291,7 +290,7 @@ class PerformanceOptimizer {
         const indicator = document.createElement('div');
         indicator.className = 'performance-indicator';
         indicator.textContent = `Load: ${loadTime}ms`;
-        
+
         if (loadTime > 3000) {
             indicator.style.backgroundColor = '#dc3545';
         } else if (loadTime > 1000) {
@@ -299,10 +298,10 @@ class PerformanceOptimizer {
         } else {
             indicator.style.backgroundColor = '#28a745';
         }
-        
+
         document.body.appendChild(indicator);
         indicator.classList.add('show');
-        
+
         setTimeout(() => {
             indicator.classList.remove('show');
             setTimeout(() => indicator.remove(), 300);
@@ -318,12 +317,87 @@ class PerformanceOptimizer {
             });
         }
     }
+
+    // Optimized Performance Monitoring
+    (function() {
+        const startTime = performance.now();
+
+        // Safe Core Web Vitals tracking
+        function trackWebVitals() {
+            if (!('PerformanceObserver' in window)) {
+                console.info('PerformanceObserver not supported');
+                return;
+            }
+
+            try {
+                // First Input Delay (FID)
+                new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        const fid = entry.processingStart - entry.startTime;
+                        console.log(`FID: ${Math.round(fid)}ms`);
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'web_vitals', {
+                                name: 'FID',
+                                value: Math.round(fid)
+                            });
+                        }
+                        break;
+                    }
+                }).observe({type: 'first-input', buffered: true});
+
+                // Largest Contentful Paint (LCP)
+                new PerformanceObserver((entryList) => {
+                    const entries = entryList.getEntries();
+                    const lastEntry = entries[entries.length - 1];
+                    console.log(`LCP: ${Math.round(lastEntry.startTime)}ms`);
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'web_vitals', {
+                            name: 'LCP',
+                            value: Math.round(lastEntry.startTime)
+                        });
+                    }
+                }).observe({type: 'largest-contentful-paint', buffered: true});
+
+                // Cumulative Layout Shift (CLS)
+                let clsValue = 0;
+                new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                            clsValue += entry.value;
+                        }
+                    }
+                    console.log(`CLS: ${clsValue.toFixed(3)}`);
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'web_vitals', {
+                            name: 'CLS',
+                            value: Math.round(clsValue * 1000)
+                        });
+                    }
+                }).observe({type: 'layout-shift', buffered: true});
+
+            } catch (error) {
+                console.warn('Web Vitals tracking error:', error);
+            }
+        }
+
+        // Initialize tracking
+        if (document.readyState === 'complete') {
+            trackWebVitals();
+        } else {
+            window.addEventListener('load', trackWebVitals);
+        }
+
+        // Log total script execution time
+        const endTime = performance.now();
+        const scriptTime = endTime - startTime;
+        console.log(`Performance monitoring script took ${scriptTime.toFixed(3)}ms`);
+    })();
 }
 
 // Initialize performance optimizer
 window.addEventListener('DOMContentLoaded', () => {
     window.performanceOptimizer = new PerformanceOptimizer();
-    
+
     // Measure performance after page load
     window.addEventListener('load', () => {
         setTimeout(() => {
