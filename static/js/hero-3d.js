@@ -1,428 +1,400 @@
 
-// Advanced 3D Hero Section Controller
-class Hero3D {
+// Advanced Interactive Hero Demo System
+class HeroInteractiveDemo {
     constructor() {
-        this.canvas = document.getElementById('hero-canvas');
-        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
-        this.particles = [];
-        this.toolCubes = [];
-        this.mouse = { x: 0, y: 0 };
-        this.animationId = null;
-        
+        this.currentDemo = 'pdf';
+        this.animationTimers = new Map();
         this.init();
     }
 
     init() {
-        if (!this.canvas) return;
-        
-        this.setupCanvas();
-        this.createParticles();
-        this.setupToolInteractions();
-        this.setupMouseTracking();
-        this.animate();
-        this.setupIntersectionObserver();
+        this.setupDemoTabs();
+        this.startDemoAnimations();
+        this.setupStatsCounter();
+        this.setupScrollEffects();
+        this.setupResponsiveHandling();
     }
 
-    setupCanvas() {
-        const updateCanvasSize = () => {
-            const rect = this.canvas.getBoundingClientRect();
-            this.canvas.width = rect.width * window.devicePixelRatio;
-            this.canvas.height = rect.height * window.devicePixelRatio;
-            this.canvas.style.width = rect.width + 'px';
-            this.canvas.style.height = rect.height + 'px';
-            this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        };
+    setupDemoTabs() {
+        const tabs = document.querySelectorAll('.demo-tab');
+        const panels = document.querySelectorAll('.demo-panel');
 
-        updateCanvasSize();
-        window.addEventListener('resize', updateCanvasSize);
-    }
-
-    createParticles() {
-        const particleCount = window.innerWidth < 768 ? 50 : 100;
-        
-        for (let i = 0; i < particleCount; i++) {
-            this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                radius: Math.random() * 2 + 1,
-                opacity: Math.random() * 0.5 + 0.2,
-                hue: Math.random() * 60 + 180, // Blue to cyan range
-                connections: []
-            });
-        }
-    }
-
-    setupToolInteractions() {
-        this.toolCubes = document.querySelectorAll('.tool-cube');
-        const infoPanel = document.getElementById('tool-info');
-
-        this.toolCubes.forEach(cube => {
-            const toolName = cube.getAttribute('data-tool');
-            
-            cube.addEventListener('mouseenter', () => {
-                this.showToolInfo(toolName, infoPanel);
-                this.highlightConnections(cube);
-                cube.style.animationPlayState = 'paused';
-            });
-
-            cube.addEventListener('mouseleave', () => {
-                this.hideToolInfo(infoPanel);
-                this.removeHighlights();
-                cube.style.animationPlayState = 'running';
-            });
-
-            cube.addEventListener('click', () => {
-                this.triggerToolEffect(cube);
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const demoType = tab.dataset.demo;
+                this.switchDemo(demoType);
             });
         });
     }
 
-    showToolInfo(toolName, panel) {
-        if (!panel) return;
+    switchDemo(demoType) {
+        // Update active tab
+        document.querySelectorAll('.demo-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-demo="${demoType}"]`).classList.add('active');
 
-        const toolDescriptions = {
-            'PDF Tools': {
-                description: 'Merge, split, compress and convert PDF documents with AI-powered processing.',
-                features: ['Smart Merge', 'Auto Compress', 'OCR Extract']
-            },
-            'Image Editor': {
-                description: 'Advanced image editing with AI enhancement and batch processing.',
-                features: ['AI Enhance', 'Batch Process', 'Smart Crop']
-            },
-            'Financial Tools': {
-                description: 'Comprehensive financial calculators and analysis tools.',
-                features: ['EMI Calculator', 'Investment Analysis', 'Tax Planner']
-            },
-            'AI Content': {
-                description: 'Generate and optimize content using advanced AI models.',
-                features: ['Text Generation', 'Content Optimization', 'Translation']
-            },
-            'Utilities': {
-                description: 'Essential productivity tools for everyday tasks.',
-                features: ['QR Generator', 'URL Shortener', 'Password Gen']
-            },
-            'Converters': {
-                description: 'Convert between various file formats and data types.',
-                features: ['Multi-format', 'Batch Convert', 'Quality Preserve']
-            }
-        };
-
-        const info = toolDescriptions[toolName];
-        if (info) {
-            panel.querySelector('.panel-title').textContent = toolName;
-            panel.querySelector('.panel-description').textContent = info.description;
-            
-            const featuresContainer = panel.querySelector('.panel-features');
-            featuresContainer.innerHTML = '';
-            info.features.forEach(feature => {
-                const tag = document.createElement('span');
-                tag.className = 'feature-tag';
-                tag.textContent = feature;
-                featuresContainer.appendChild(tag);
-            });
-            
-            panel.classList.add('active');
-        }
-    }
-
-    hideToolInfo(panel) {
-        if (panel) {
+        // Update active panel
+        document.querySelectorAll('.demo-panel').forEach(panel => {
             panel.classList.remove('active');
+        });
+        document.getElementById(`demo-${demoType}`).classList.add('active');
+
+        // Clear existing animations
+        this.clearDemoAnimations();
+
+        // Start new demo animation
+        this.currentDemo = demoType;
+        this.startDemoAnimation(demoType);
+    }
+
+    startDemoAnimations() {
+        // Start with PDF demo by default
+        this.startDemoAnimation('pdf');
+    }
+
+    startDemoAnimation(demoType) {
+        switch (demoType) {
+            case 'pdf':
+                this.animatePDFDemo();
+                break;
+            case 'image':
+                this.animateImageDemo();
+                break;
+            case 'qr':
+                this.animateQRDemo();
+                break;
+            case 'ai':
+                this.animateAIDemo();
+                break;
         }
     }
 
-    highlightConnections(cube) {
-        const energyPaths = document.querySelectorAll('.energy-path');
-        energyPaths.forEach(path => {
-            path.style.stroke = '#4ecdc4';
-            path.style.strokeWidth = '3';
-            path.style.opacity = '1';
-            path.style.filter = 'drop-shadow(0 0 10px #4ecdc4)';
-        });
-
-        const coreInner = document.querySelector('.core-inner');
-        if (coreInner) {
-            coreInner.style.boxShadow = '0 0 80px rgba(78, 205, 196, 1), inset 0 0 30px rgba(255, 255, 255, 0.3)';
-        }
-    }
-
-    removeHighlights() {
-        const energyPaths = document.querySelectorAll('.energy-path');
-        energyPaths.forEach(path => {
-            path.style.stroke = 'url(#energyGradient)';
-            path.style.strokeWidth = '2';
-            path.style.opacity = '0.6';
-            path.style.filter = 'none';
-        });
-
-        const coreInner = document.querySelector('.core-inner');
-        if (coreInner) {
-            coreInner.style.boxShadow = '0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.2)';
-        }
-    }
-
-    triggerToolEffect(cube) {
-        // Create ripple effect
-        const ripple = document.createElement('div');
-        ripple.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(78, 205, 196, 0.6) 0%, transparent 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 1000;
-        `;
+    animatePDFDemo() {
+        const progressBars = document.querySelectorAll('#demo-pdf .progress-bar');
         
-        cube.appendChild(ripple);
-
-        // Animate ripple
-        ripple.animate([
-            { width: '0px', height: '0px', opacity: 1 },
-            { width: '200px', height: '200px', opacity: 0 }
-        ], {
-            duration: 600,
-            easing: 'ease-out'
-        }).onfinish = () => ripple.remove();
-
-        // Pulse effect
-        cube.animate([
-            { transform: 'scale(1)' },
-            { transform: 'scale(1.3)' },
-            { transform: 'scale(1)' }
-        ], {
-            duration: 400,
-            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        // Reset all progress bars
+        progressBars.forEach(bar => {
+            bar.style.width = '0%';
         });
-    }
 
-    setupMouseTracking() {
-        document.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            this.mouse.x = e.clientX - rect.left;
-            this.mouse.y = e.clientY - rect.top;
-        });
-    }
-
-    animate() {
-        if (!this.ctx) return;
-        
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Update and draw particles
-        this.particles.forEach((particle, i) => {
-            // Update position
-            particle.x += particle.vx;
-            particle.y += particle.vy;
-
-            // Bounce off edges
-            if (particle.x < 0 || particle.x > this.canvas.width) particle.vx *= -1;
-            if (particle.y < 0 || particle.y > this.canvas.height) particle.vy *= -1;
-
-            // Mouse interaction
-            const dx = this.mouse.x - particle.x;
-            const dy = this.mouse.y - particle.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+        // Animate progress bars sequentially
+        let delay = 0;
+        progressBars.forEach((bar, index) => {
+            const timer = setTimeout(() => {
+                const targetWidth = index === 2 ? '75%' : '100%';
+                bar.style.width = targetWidth;
+                
+                // Add completion effect
+                if (index < 2) {
+                    setTimeout(() => {
+                        bar.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+                    }, 1000);
+                }
+            }, delay);
             
-            if (distance < 100) {
-                const force = (100 - distance) / 100;
-                particle.vx += dx * force * 0.001;
-                particle.vy += dy * force * 0.001;
+            this.animationTimers.set(`pdf-progress-${index}`, timer);
+            delay += 800;
+        });
+
+        // Repeat animation
+        const repeatTimer = setTimeout(() => {
+            if (this.currentDemo === 'pdf') {
+                this.animatePDFDemo();
             }
+        }, 5000);
+        this.animationTimers.set('pdf-repeat', repeatTimer);
+    }
 
-            // Draw particle
-            this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = `hsla(${particle.hue}, 70%, 60%, ${particle.opacity})`;
-            this.ctx.fill();
+    animateImageDemo() {
+        const beforeImage = document.querySelector('#demo-image .image-before .image-placeholder');
+        const afterImage = document.querySelector('#demo-image .image-after .image-placeholder');
+        const stats = document.querySelectorAll('#demo-image .stat .value');
 
-            // Draw connections
-            this.particles.slice(i + 1).forEach(otherParticle => {
-                const dx = particle.x - otherParticle.x;
-                const dy = particle.y - otherParticle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+        // Reset states
+        afterImage.classList.remove('compressed');
+        
+        // Animate compression
+        const timer1 = setTimeout(() => {
+            afterImage.classList.add('compressed');
+            
+            // Animate stats
+            this.animateValue(stats[0], 0, 70, '%', 1000);
+            this.animateValue(stats[1], 0, 95, '%', 1000);
+        }, 1000);
 
-                if (distance < 150) {
-                    const opacity = (150 - distance) / 150 * 0.3;
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(particle.x, particle.y);
-                    this.ctx.lineTo(otherParticle.x, otherParticle.y);
-                    this.ctx.strokeStyle = `hsla(${particle.hue}, 70%, 60%, ${opacity})`;
-                    this.ctx.lineWidth = 1;
-                    this.ctx.stroke();
+        this.animationTimers.set('image-compress', timer1);
+
+        // Repeat animation
+        const repeatTimer = setTimeout(() => {
+            if (this.currentDemo === 'image') {
+                this.animateImageDemo();
+            }
+        }, 4000);
+        this.animationTimers.set('image-repeat', repeatTimer);
+    }
+
+    animateQRDemo() {
+        const squares = document.querySelectorAll('#demo-qr .qr-square');
+        
+        // Animate QR code generation
+        squares.forEach((square, index) => {
+            const timer = setTimeout(() => {
+                square.classList.toggle('active');
+            }, index * 100);
+            
+            this.animationTimers.set(`qr-square-${index}`, timer);
+        });
+
+        // Repeat animation
+        const repeatTimer = setTimeout(() => {
+            if (this.currentDemo === 'qr') {
+                this.animateQRDemo();
+            }
+        }, 3000);
+        this.animationTimers.set('qr-repeat', repeatTimer);
+    }
+
+    animateAIDemo() {
+        const textElement = document.querySelector('#demo-ai .generated-text');
+        const wordCountElement = document.getElementById('word-count');
+        const cursor = document.querySelector('.typing-cursor');
+        
+        const sampleText = "Subject: Project Completion Update\n\nDear Team,\n\nI'm pleased to inform you that our latest project has been successfully completed ahead of schedule. The deliverables have been thoroughly tested and are ready for deployment.";
+        
+        // Reset
+        textElement.textContent = '';
+        if (wordCountElement) wordCountElement.textContent = '0';
+        
+        // Show cursor
+        if (cursor) cursor.style.display = 'inline';
+        
+        // Type text
+        let charIndex = 0;
+        const typeInterval = setInterval(() => {
+            if (charIndex < sampleText.length) {
+                textElement.textContent += sampleText[charIndex];
+                charIndex++;
+                
+                // Update word count
+                const wordCount = textElement.textContent.split(' ').length;
+                if (wordCountElement) {
+                    wordCountElement.textContent = wordCount;
+                }
+            } else {
+                clearInterval(typeInterval);
+                // Hide cursor
+                if (cursor) cursor.style.display = 'none';
+                
+                // Repeat animation
+                const repeatTimer = setTimeout(() => {
+                    if (this.currentDemo === 'ai') {
+                        this.animateAIDemo();
+                    }
+                }, 3000);
+                this.animationTimers.set('ai-repeat', repeatTimer);
+            }
+        }, 50);
+        
+        this.animationTimers.set('ai-typing', typeInterval);
+    }
+
+    animateValue(element, start, end, suffix = '', duration = 1000) {
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const current = Math.floor(start + (end - start) * easeOutQuart);
+            
+            element.textContent = current + suffix;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+
+    clearDemoAnimations() {
+        // Clear all existing timers
+        this.animationTimers.forEach((timer, key) => {
+            clearTimeout(timer);
+            clearInterval(timer);
+        });
+        this.animationTimers.clear();
+    }
+
+    setupStatsCounter() {
+        const stats = document.querySelectorAll('.stat-number[data-target]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.target);
+                    this.animateValue(entry.target, 0, target, target >= 1000 ? '+' : '', 2000);
+                    observer.unobserve(entry.target);
                 }
             });
+        }, { threshold: 0.5 });
+        
+        stats.forEach(stat => observer.observe(stat));
+    }
+
+    setupScrollEffects() {
+        // Parallax effect for floating shapes
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const shapes = document.querySelectorAll('.shape');
+            
+            shapes.forEach((shape, index) => {
+                const speed = 0.1 + (index * 0.05);
+                shape.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.1}deg)`;
+            });
         });
 
-        this.animationId = requestAnimationFrame(() => this.animate());
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe animated elements
+        document.querySelectorAll('.tool-card, .feature-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            observer.observe(el);
+        });
+    }
+
+    setupResponsiveHandling() {
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                this.handleResize();
+            }, 250);
+        });
+    }
+
+    handleResize() {
+        // Restart current demo animation for responsive adjustments
+        this.clearDemoAnimations();
+        setTimeout(() => {
+            this.startDemoAnimation(this.currentDemo);
+        }, 100);
+    }
+
+    destroy() {
+        this.clearDemoAnimations();
+        window.removeEventListener('scroll', this.scrollHandler);
+        window.removeEventListener('resize', this.resizeHandler);
+    }
+}
+
+// Enhanced Performance Optimizations
+class PerformanceOptimizer {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.optimizeAnimations();
+        this.setupIntersectionObserver();
+        this.enableHardwareAcceleration();
+    }
+
+    optimizeAnimations() {
+        // Use CSS transforms instead of changing layout properties
+        const style = document.createElement('style');
+        style.textContent = `
+            .hero-interactive-demo * {
+                will-change: auto;
+            }
+            
+            .demo-container,
+            .floating-shapes .shape,
+            .tool-card {
+                will-change: transform;
+            }
+            
+            .progress-bar {
+                will-change: width;
+            }
+            
+            .typing-cursor {
+                will-change: opacity;
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     setupIntersectionObserver() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const element = entry.target;
                 if (entry.isIntersecting) {
-                    this.startAnimations();
+                    element.classList.add('in-viewport');
                 } else {
-                    this.pauseAnimations();
+                    element.classList.remove('in-viewport');
                 }
             });
-        }, { threshold: 0.1 });
+        }, {
+            rootMargin: '100px'
+        });
 
-        const heroContainer = document.querySelector('.hero-3d-container');
-        if (heroContainer) {
-            observer.observe(heroContainer);
-        }
-    }
-
-    startAnimations() {
-        if (!this.animationId) {
-            this.animate();
-        }
-        
-        // Resume CSS animations
-        this.toolCubes.forEach(cube => {
-            cube.style.animationPlayState = 'running';
+        document.querySelectorAll('.shape, .tool-card').forEach(el => {
+            observer.observe(el);
         });
     }
 
-    pauseAnimations() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
+    enableHardwareAcceleration() {
+        const acceleratedElements = document.querySelectorAll(
+            '.demo-container, .floating-shapes, .hero-content, .tool-card'
+        );
         
-        // Pause CSS animations for performance
-        this.toolCubes.forEach(cube => {
-            cube.style.animationPlayState = 'paused';
+        acceleratedElements.forEach(el => {
+            el.style.transform = 'translateZ(0)';
+            el.style.backfaceVisibility = 'hidden';
         });
-    }
-
-    destroy() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-        }
-        
-        // Clean up event listeners
-        this.toolCubes.forEach(cube => {
-            cube.replaceWith(cube.cloneNode(true));
-        });
-    }
-}
-
-// Enhanced Title Animation
-class TitleAnimator {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        const titleWords = document.querySelectorAll('.title-word');
-        if (titleWords.length === 0) return;
-
-        this.setupTypewriterEffect(titleWords);
-        this.setupGlitchEffect();
-    }
-
-    setupTypewriterEffect(words) {
-        words.forEach((word, index) => {
-            const text = word.textContent;
-            word.textContent = '';
-            
-            setTimeout(() => {
-                this.typeText(word, text, 100);
-            }, index * 500);
-        });
-    }
-
-    typeText(element, text, speed) {
-        let i = 0;
-        const timer = setInterval(() => {
-            element.textContent += text.charAt(i);
-            i++;
-            if (i >= text.length) {
-                clearInterval(timer);
-                this.addTextEffects(element);
-            }
-        }, speed);
-    }
-
-    addTextEffects(element) {
-        // Add glow effect on completion
-        element.style.textShadow = '0 0 20px rgba(78, 205, 196, 0.8)';
-        
-        setTimeout(() => {
-            element.style.textShadow = '';
-        }, 1000);
-    }
-
-    setupGlitchEffect() {
-        const highlightWords = document.querySelectorAll('.highlight-3d');
-        
-        highlightWords.forEach(word => {
-            setInterval(() => {
-                if (Math.random() < 0.1) { // 10% chance
-                    this.glitchWord(word);
-                }
-            }, 2000);
-        });
-    }
-
-    glitchWord(element) {
-        const originalText = element.textContent;
-        const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-        
-        // Create glitch effect
-        let glitchText = '';
-        for (let i = 0; i < originalText.length; i++) {
-            if (Math.random() < 0.3) {
-                glitchText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
-            } else {
-                glitchText += originalText[i];
-            }
-        }
-        
-        element.textContent = glitchText;
-        element.style.color = '#ff6b6b';
-        
-        setTimeout(() => {
-            element.textContent = originalText;
-            element.style.color = '';
-        }, 100);
     }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on the homepage with 3D hero
-    if (document.querySelector('.hero-3d-container')) {
-        new Hero3D();
-        new TitleAnimator();
-        
-        // Add performance monitoring
-        const hero3DContainer = document.querySelector('.hero-3d-container');
-        if (hero3DContainer) {
-            const perfObserver = new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                entries.forEach(entry => {
-                    if (entry.duration > 16.67) { // More than 60fps
-                        console.warn('Hero3D performance warning:', entry);
-                    }
-                });
-            });
-            
-            if ('observe' in perfObserver) {
-                perfObserver.observe({ entryTypes: ['measure'] });
-            }
-        }
-    }
+    // Initialize demo system
+    const heroDemo = new HeroInteractiveDemo();
+    
+    // Initialize performance optimizations
+    const optimizer = new PerformanceOptimizer();
+    
+    // Global functions for external access
+    window.initializeHeroDemo = () => heroDemo;
+    window.animateStats = () => heroDemo.setupStatsCounter();
+    window.setupDemoTabs = () => heroDemo.setupDemoTabs();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        heroDemo.destroy();
+    });
+    
+    console.log('🚀 Advanced Hero Interactive Demo initialized');
 });
 
-// Export for potential external use
+// Export for potential module use
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { Hero3D, TitleAnimator };
+    module.exports = { HeroInteractiveDemo, PerformanceOptimizer };
 }
