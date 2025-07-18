@@ -583,8 +583,7 @@
             const scripts = [
                 { 
                     src: 'https://cdn.socket.io/4.0.0/socket.io.min.js', 
-                    condition: () => document.querySelector('[data-websocket]'),
-                    integrity: 'sha384-DkkOIcnYGAHPmFCzZdRAq2R5vBJtNZeHLBUCJhB5n3h8K9hBYLKthtkkKMIKFjLy'
+                    condition: () => document.querySelector('[data-websocket]')
                 },
                 { 
                     src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js', 
@@ -596,8 +595,12 @@
                 },
                 { 
                     src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js', 
-                    condition: () => document.querySelector('.hero-content, .tool-card'),
-                    integrity: 'sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug=='
+                    condition: () => document.querySelector('.hero-content, .tool-card') || document.querySelector('.hero-section')
+                },
+                { 
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js', 
+                    condition: () => document.querySelector('[data-parallax]'),
+                    dependency: 'gsap'
                 },
                 { 
                     src: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js', 
@@ -609,26 +612,44 @@
                 }
             ];
 
-            scripts.forEach(({ src, condition, integrity }) => {
-                if (condition()) {
-                    requestIdleCallback(() => {
-                        const script = document.createElement('script');
-                        script.src = src;
-                        script.async = true;
-                        script.defer = true;
-                        script.crossOrigin = 'anonymous';
-                        if (integrity) {
-                            script.integrity = integrity;
-                        }
-                        script.onerror = function() {
-                            console.warn(`Failed to load script: ${src}`);
-                        };
-                        script.onload = function() {
-                            console.log(`✅ Loaded: ${src.split('/').pop()}`);
-                        };
-                        document.head.appendChild(script);
-                    });
+            const loadedScripts = new Set();
+
+            function loadScript({ src, condition, dependency }) {
+                if (!condition()) return Promise.resolve();
+
+                if (dependency && !loadedScripts.has(dependency)) {
+                    return Promise.resolve(); // Skip if dependency not loaded
                 }
+
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    script.defer = true;
+                    script.crossOrigin = 'anonymous';
+
+                    script.onload = function() {
+                        console.log(`✅ Loaded: ${src.split('/').pop()}`);
+                        loadedScripts.add(src.includes('gsap') ? 'gsap' : src.split('/').pop());
+                        resolve();
+                    };
+
+                    script.onerror = function() {
+                        console.warn(`Failed to load script: ${src}`);
+                        reject(new Error(`Failed to load ${src}`));
+                    };
+
+                    document.head.appendChild(script);
+                });
+            }
+
+            // Load scripts with dependencies
+            requestIdleCallback(() => {
+                scripts.forEach(scriptConfig => {
+                    loadScript(scriptConfig).catch(error => {
+                        console.warn('Script loading error:', error);
+                    });
+                });
             });
         });
     </script>

@@ -37,14 +37,25 @@ self.addEventListener('install', event => {
             caches.open(STATIC_CACHE)
                 .then(cache => {
                     console.log('📦 Caching critical resources...');
-                    return cache.addAll(CRITICAL_RESOURCES);
+                    return cache.addAll(CRITICAL_RESOURCES).catch(err => {
+                        console.warn('Some critical resources failed to cache:', err);
+                        // Try to cache resources individually
+                        return Promise.allSettled(
+                            CRITICAL_RESOURCES.map(resource => cache.add(resource))
+                        );
+                    });
                 }),
             // Cache external resources separately
             caches.open(DYNAMIC_CACHE)
                 .then(cache => {
                     console.log('📦 Caching external resources...');
-                    return cache.addAll(EXTERNAL_RESOURCES).catch(err => {
-                        console.warn('Some external resources failed to cache:', err);
+                    return Promise.allSettled(
+                        EXTERNAL_RESOURCES.map(resource => cache.add(resource))
+                    ).then(results => {
+                        const failed = results.filter(r => r.status === 'rejected');
+                        if (failed.length > 0) {
+                            console.warn(`${failed.length} external resources failed to cache`);
+                        }
                         return Promise.resolve();
                     });
                 })
@@ -55,6 +66,8 @@ self.addEventListener('install', event => {
         })
         .catch(error => {
             console.error('❌ Failed to cache resources:', error);
+            // Still skip waiting to activate the service worker
+            return self.skipWaiting();
         })
     );
 });

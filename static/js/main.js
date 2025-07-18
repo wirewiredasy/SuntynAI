@@ -77,6 +77,19 @@ function initializeCharts() {
             });
         }
 
+        // Also destroy Chart.js registry instances
+        if (typeof Chart !== 'undefined' && Chart.registry) {
+            try {
+                Object.values(Chart.registry.instances || {}).forEach(instance => {
+                    if (instance && typeof instance.destroy === 'function') {
+                        instance.destroy();
+                    }
+                });
+            } catch (error) {
+                console.warn('Error destroying Chart registry instances:', error);
+            }
+        }
+
         window.chartInstances = [];
 
         // Initialize dashboard charts if they exist
@@ -631,23 +644,31 @@ class SuntynAI {
     initializeGlobalEventListeners() {
         // Global click handlers
         document.addEventListener('click', (e) => {
-            // Close dropdowns when clicking outside
-            if (!e.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                    menu.classList.remove('show');
-                });
-            }
+            try {
+                // Close dropdowns when clicking outside
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                }
 
-            // Handle copy buttons
-            if (e.target.matches('[data-copy]') || e.target.closest('[data-copy]')) {
-                const button = e.target.closest('[data-copy]');
-                this.copyToClipboard(button.dataset.copy);
-            }
+                // Handle copy buttons
+                if (e.target.matches('[data-copy]') || e.target.closest('[data-copy]')) {
+                    const button = e.target.closest('[data-copy]');
+                    if (button && button.dataset.copy) {
+                        this.copyToClipboard(button.dataset.copy);
+                    }
+                }
 
-            // Handle download buttons
-            if (e.target.matches('[data-download]') || e.target.closest('[data-download]')) {
-                const button = e.target.closest('[data-download]');
-                this.downloadFile(button.dataset.download, button.dataset.filename);
+                // Handle download buttons
+                if (e.target.matches('[data-download]') || e.target.closest('[data-download]')) {
+                    const button = e.target.closest('[data-download]');
+                    if (button && button.dataset.download) {
+                        this.downloadFile(button.dataset.download, button.dataset.filename);
+                    }
+                }
+            } catch (error) {
+                console.warn('Click handler error:', error);
             }
         });
 
@@ -735,74 +756,92 @@ class SuntynAI {
     }
 
     initializeAnimations() {
-        // Modern animation system with Lenis + GSAP
-        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            gsap.registerPlugin(ScrollTrigger);
+        // Check if animations should be disabled
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            console.log('🎯 Reduced motion preferred, skipping complex animations');
+            return;
+        }
 
-            // Wait for smooth scroll to initialize
-            setTimeout(() => {
-                // Hero section timeline animation
-                const heroTl = gsap.timeline();
-
-                if (document.querySelector('.hero-title')) {
-                    heroTl.fromTo('.hero-title', 
-                        { y: 100, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
-                    );
+        // Modern animation system with GSAP (if available)
+        if (typeof gsap !== 'undefined') {
+            try {
+                // Register ScrollTrigger plugin if available
+                if (typeof ScrollTrigger !== 'undefined') {
+                    gsap.registerPlugin(ScrollTrigger);
                 }
 
-                if (document.querySelector('.hero-subtitle')) {
-                    heroTl.fromTo('.hero-subtitle',
-                        { y: 50, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
-                        "-=0.6"
-                    );
-                }
+                // Wait for smooth scroll to initialize
+                setTimeout(() => {
+                    // Hero section timeline animation
+                    const heroTl = gsap.timeline();
 
-                if (document.querySelector('.hero-buttons')) {
-                    heroTl.fromTo('.hero-buttons',
-                        { y: 30, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
-                        "-=0.4"
-                    );
-                }
+                    if (document.querySelector('.hero-title')) {
+                        heroTl.fromTo('.hero-title', 
+                            { y: 100, opacity: 0 },
+                            { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+                        );
+                    }
 
-                // Create floating icons if they don't exist
-                this.createFloatingIcons();
+                    if (document.querySelector('.hero-subtitle')) {
+                        heroTl.fromTo('.hero-subtitle',
+                            { y: 50, opacity: 0 },
+                            { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
+                            "-=0.6"
+                        );
+                    }
 
-                // Enhanced parallax with better performance
-                const parallaxElements = document.querySelectorAll('[data-parallax]');
-                parallaxElements.forEach(element => {
-                    const speed = parseFloat(element.dataset.parallax) || 0.5;
-                    gsap.to(element, {
-                        yPercent: -50 * speed,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top bottom",
-                            end: "bottom top",
-                            scrub: 1
-                        }
-                    });
-                });
+                    if (document.querySelector('.hero-buttons')) {
+                        heroTl.fromTo('.hero-buttons',
+                            { y: 30, opacity: 0 },
+                            { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
+                            "-=0.4"
+                        );
+                    }
 
-                // Animate floating icons if they exist
-                const floatingIcons = document.querySelectorAll('.floating-icon');
-                if (floatingIcons.length > 0) {
-                    gsap.to(floatingIcons, {
-                        y: -20,
-                        rotation: 360,
-                        duration: 6,
-                        ease: "none",
-                        repeat: -1,
-                        stagger: 0.5
-                    });
-                }
+                    // Create floating icons if they don't exist
+                    this.createFloatingIcons();
 
-                console.log('✨ Modern animation system initialized');
-            }, 300);
+                    // Enhanced parallax with better performance (only if ScrollTrigger is available)
+                    if (typeof ScrollTrigger !== 'undefined') {
+                        const parallaxElements = document.querySelectorAll('[data-parallax]');
+                        parallaxElements.forEach(element => {
+                            const speed = parseFloat(element.dataset.parallax) || 0.5;
+                            gsap.to(element, {
+                                yPercent: -50 * speed,
+                                ease: "none",
+                                scrollTrigger: {
+                                    trigger: element,
+                                    start: "top bottom",
+                                    end: "bottom top",
+                                    scrub: 1
+                                }
+                            });
+                        });
+                    }
+
+                    // Animate floating icons if they exist
+                    const floatingIcons = document.querySelectorAll('.floating-icon');
+                    if (floatingIcons.length > 0) {
+                        gsap.to(floatingIcons, {
+                            y: -20,
+                            rotation: 360,
+                            duration: 6,
+                            ease: "none",
+                            repeat: -1,
+                            stagger: 0.5
+                        });
+                    }
+
+                    console.log('✨ Modern animation system initialized');
+                }, 300);
+            } catch (error) {
+                console.warn('⚠️ GSAP animation initialization failed:', error);
+                this.initializeCSSAnimations();
+            }
         } else {
             // Fallback to CSS animations
+            console.log('🎯 GSAP not available, using CSS animations');
             this.initializeCSSAnimations();
         }
     }
@@ -859,18 +898,34 @@ class SuntynAI {
         window.addEventListener('beforeunload', () => {
             try {
                 // Clean up any running animations
-                if (window.gsap) {
-                    window.gsap.killTweensOf('*');
+                if (typeof gsap !== 'undefined') {
+                    gsap.killTweensOf('*');
                 }
 
                 // Clean up charts safely
-                if (typeof Chart !== 'undefined' && Chart.registry) {
-                    const instances = Object.values(Chart.registry.instances || {});
-                    instances.forEach(instance => {
-                        if (instance && typeof instance.destroy === 'function') {
-                            instance.destroy();
+                if (window.chartInstances && Array.isArray(window.chartInstances)) {
+                    window.chartInstances.forEach(chart => {
+                        if (chart && typeof chart.destroy === 'function') {
+                            try {
+                                chart.destroy();
+                            } catch (error) {
+                                console.warn('Chart cleanup error:', error);
+                            }
                         }
                     });
+                }
+
+                // Clean up Chart.js registry instances
+                if (typeof Chart !== 'undefined' && Chart.registry) {
+                    try {
+                        Object.values(Chart.registry.instances || {}).forEach(instance => {
+                            if (instance && typeof instance.destroy === 'function') {
+                                instance.destroy();
+                            }
+                        });
+                    } catch (error) {
+                        console.warn('Chart registry cleanup error:', error);
+                    }
                 }
             } catch (error) {
                 console.warn('Cleanup warning:', error);

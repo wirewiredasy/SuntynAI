@@ -243,18 +243,19 @@ class PerformanceOptimizer {
                     return;
                 }
 
+                // Safely calculate metrics with fallbacks
                 const metrics = {
-                    'DNS Lookup': Math.round(navigation.domainLookupEnd - navigation.domainLookupStart) || 0,
-                    'TCP Connection': Math.round(navigation.connectEnd - navigation.connectStart) || 0,
-                    'Server Response': Math.round(navigation.responseEnd - navigation.responseStart) || 0,
-                    'DOM Processing': Math.round(navigation.domContentLoadedEventEnd - navigation.responseEnd) || 0,
-                    'Resource Loading': Math.round(navigation.loadEventEnd - navigation.domContentLoadedEventEnd) || 0,
-                    'Total Load Time': Math.round(navigation.loadEventEnd - navigation.fetchStart) || 0
+                    'DNS Lookup': Math.round(Math.max(0, navigation.domainLookupEnd - navigation.domainLookupStart)) || 0,
+                    'TCP Connection': Math.round(Math.max(0, navigation.connectEnd - navigation.connectStart)) || 0,
+                    'Server Response': Math.round(Math.max(0, navigation.responseEnd - navigation.responseStart)) || 0,
+                    'DOM Processing': Math.round(Math.max(0, navigation.domContentLoadedEventEnd - navigation.responseEnd)) || 0,
+                    'Resource Loading': Math.round(Math.max(0, navigation.loadEventEnd - navigation.domContentLoadedEventEnd)) || 0,
+                    'Total Load Time': Math.round(Math.max(0, navigation.loadEventEnd - navigation.fetchStart)) || 0
                 };
 
                 if (paint && paint.length > 0) {
                     paint.forEach(entry => {
-                        if (entry && entry.name && entry.startTime) {
+                        if (entry && entry.name && typeof entry.startTime === 'number') {
                             metrics[entry.name] = Math.round(entry.startTime);
                         }
                     });
