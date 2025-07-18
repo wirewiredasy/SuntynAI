@@ -293,9 +293,9 @@ def create_app():
             if not tool_name:
                 return jsonify({'success': False, 'error': 'Tool name is required'}), 400
 
-            # Import tool processor
-            from tools.tool_processor import ToolProcessor
-            processor = ToolProcessor()
+            # Import universal tool processor
+            from tools.universal_processor import UniversalToolProcessor
+            processor = UniversalToolProcessor()
             
             # Process the tool
             start_time = datetime.now()

@@ -52,8 +52,11 @@ class ToolProcessor:
         }
     
     def process_tool(self, tool_name, files, form_data):
-        """Main entry point for processing any tool"""
+        """Main entry point for processing any tool - Returns JSON response"""
         try:
+            # Log the tool processing attempt
+            logger.info(f"Processing tool: {tool_name}")
+            
             # Complete tool mapping for all 85 tools
             tool_map = {
                 # PDF Tools (14 tools)

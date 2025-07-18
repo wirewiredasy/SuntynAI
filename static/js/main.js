@@ -267,11 +267,13 @@ function initializeToolForms() {
     });
 }
 
-// Handle tool form submission
+// Handle tool form submission with professional AI-like interface
 async function handleToolSubmission(form) {
     const toolName = form.dataset.tool;
     const submitBtn = form.querySelector('button[type="submit"]');
     const resultDiv = document.getElementById('tool-result') || createResultDiv();
+    
+    // Professional AI-like processing interface
 
     if (!toolName) {
         showError('Tool name not specified');
@@ -286,7 +288,9 @@ async function handleToolSubmission(form) {
     try {
         const formData = new FormData(form);
 
-        const response = await fetch(`/api/process-tool/${toolName}`, {
+        formData.append('tool_name', toolName);
+        
+        const response = await fetch('/process-tool', {
             method: 'POST',
             body: formData
         });
@@ -294,14 +298,14 @@ async function handleToolSubmission(form) {
         const result = await response.json();
 
         if (result.success) {
-            showSuccess(result);
+            showProfessionalSuccess(result);
         } else {
-            showError(result.error || 'Processing failed');
+            showProfessionalError(result.error || 'Processing failed');
         }
 
     } catch (error) {
         console.error('Tool processing error:', error);
-        showError('Network error occurred. Please try again.');
+        showProfessionalError('Network error occurred. Please try again.');
     } finally {
         // Reset button
         submitBtn.disabled = false;
@@ -309,40 +313,61 @@ async function handleToolSubmission(form) {
     }
 }
 
-// Show success result
-function showSuccess(result) {
+// Professional AI-like success display
+function showProfessionalSuccess(result) {
     const resultDiv = document.getElementById('tool-result') || createResultDiv();
 
     let html = `
-        <div class="alert alert-success" role="alert">
-            <i class="ti ti-check-circle me-2"></i>
-            ${result.message || 'Processing completed successfully!'}
-        </div>
+        <div class="card border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="ti ti-check text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1">Processing Complete</h5>
+                        <p class="text-muted mb-0">${result.message || 'Your request has been processed successfully'}</p>
+                    </div>
+                </div>
+                
+                ${result.processing_time ? `
+                    <div class="d-flex align-items-center text-muted mb-3">
+                        <i class="ti ti-clock me-2"></i>
+                        <small>Processed in ${result.processing_time}</small>
+                    </div>
+                ` : ''}
     `;
 
     // Add download link if available
     if (result.download_url) {
         html += `
-            <div class="mt-3">
-                <a href="${result.download_url}" class="btn btn-primary" download>
-                    <i class="ti ti-download me-2"></i>Download Result
+            <div class="d-grid gap-2 mb-3">
+                <a href="${result.download_url}" class="btn btn-primary btn-lg" download>
+                    <i class="ti ti-download me-2"></i>Download ${result.result_filename || 'Result'}
                 </a>
             </div>
         `;
     }
 
-    // Add specific result content
+    // Add specific result content with professional styling
     if (result.password) {
         html += `
-            <div class="mt-3">
-                <label class="form-label">Generated Password:</label>
+            <div class="bg-light p-3 rounded mb-3">
+                <label class="form-label fw-bold">Generated Password:</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" value="${result.password}" readonly>
+                    <input type="text" class="form-control font-monospace" value="${result.password}" readonly>
                     <button class="btn btn-outline-secondary" onclick="copyToClipboard('${result.password}')">
                         <i class="ti ti-copy"></i>
                     </button>
                 </div>
-                <small class="text-muted">Strength: ${result.strength}</small>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="badge bg-${result.strength === 'Strong' ? 'success' : result.strength === 'Medium' ? 'warning' : 'danger'}">
+                        ${result.strength} Password
+                    </span>
+                    <small class="text-muted">Length: ${result.length || result.password.length} characters</small>
+                </div>
             </div>
         `;
     }
@@ -370,68 +395,42 @@ function showSuccess(result) {
         `;
     }
 
-    if (result.summary) {
-        html += `
-            <div class="mt-3">
-                <label class="form-label">Summary:</label>
-                <div class="card">
-                    <div class="card-body">
-                        <p>${result.summary}</p>
-                        <small class="text-muted">
-                            Compression: ${result.compression_ratio} 
-                            (${result.original_length} → ${result.summary_length} characters)
-                        </small>
-                    </div>
-                </div>
+    // Close the card body and card
+    html += `
             </div>
-        `;
-    }
+        </div>
+    `;
 
-    if (result.emi) {
-        html += `
-            <div class="mt-3">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Monthly EMI</h5>
-                                <h3 class="text-primary">₹${result.emi}</h3>
-                            </div>
+    resultDiv.innerHTML = html;
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Professional AI-like error display
+function showProfessionalError(message) {
+    const resultDiv = document.getElementById('tool-result') || createResultDiv();
+
+    const html = `
+        <div class="card border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="ti ti-alert-circle text-white"></i>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Interest</h5>
-                                <h3 class="text-warning">₹${result.total_interest}</h3>
-                            </div>
-                        </div>
+                    <div>
+                        <h5 class="card-title mb-1 text-danger">Processing Error</h5>
+                        <p class="text-muted mb-0">${message}</p>
                     </div>
                 </div>
                 <div class="mt-3">
-                    <p><strong>Total Amount:</strong> ₹${result.total_amount}</p>
+                    <button class="btn btn-outline-primary" onclick="location.reload()">
+                        <i class="ti ti-refresh me-2"></i>Try Again
+                    </button>
                 </div>
             </div>
-        `;
-    }
-
-    if (result.uuids) {
-        html += `
-            <div class="mt-3">
-                <label class="form-label">Generated UUIDs:</label>
-                <div class="list-group">
-                    ${result.uuids.map(uuid => `
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <code>${uuid}</code>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('${uuid}')">
-                                <i class="ti ti-copy"></i>
-                            </button>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }
+        </div>
+    `;
 
     resultDiv.innerHTML = html;
     resultDiv.scrollIntoView({ behavior: 'smooth' });
