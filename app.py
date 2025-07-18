@@ -40,6 +40,8 @@ def create_app():
             from urllib.parse import quote
             if "Suntyn@#$134_" in database_url:
                 database_url = database_url.replace("Suntyn@#$134_", quote("Suntyn@#$134_", safe=''))
+            elif "Suntyn2315db" in database_url:
+                database_url = database_url.replace("Suntyn2315db", quote("Suntyn2315db", safe=''))
             
             # Test connection briefly before using
             from sqlalchemy import create_engine, text
