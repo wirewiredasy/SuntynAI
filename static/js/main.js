@@ -1,46 +1,53 @@
 // Main JavaScript for Suntyn AI
 console.log('🚀 Initializing Suntyn AI...');
 
-// Initialize application
+// Initialize application with lazy loading
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Suntyn AI initialized successfully');
 
-    // Initialize components
+    // Initialize critical components first
     initializeToolSearch();
     initializeToolForms();
-    initializeFileUploads();
-    initializeCharts();
-    initializeAnimations();
+    
+    // Lazy load heavy components
+    requestIdleCallback(() => {
+        initializeFileUploads();
+        initializeCharts();
+    });
+    
+    // Defer animations until page is interactive
+    setTimeout(() => {
+        if (document.readyState === 'complete') {
+            initializeAnimations();
+        }
+    }, 100);
 
     // Log page load time
     const loadTime = performance.now();
     console.log(`Page load time: ${loadTime.toFixed(2)}ms`);
 });
 
-// Fix Chart.js initialization
+// Fix Chart.js initialization with proper error handling
 function initializeCharts() {
     try {
-        // Check if Chart.js is loaded
         if (typeof Chart !== 'undefined') {
-            // Destroy existing chart instances safely
-            if (Chart.instances && typeof Chart.instances.forEach === 'function') {
-                Chart.instances.forEach(instance => {
+            // Safe chart cleanup
+            if (Chart.registry && Chart.registry.instances) {
+                const instances = Object.values(Chart.registry.instances);
+                instances.forEach(instance => {
                     if (instance && typeof instance.destroy === 'function') {
-                        instance.destroy();
-                    }
-                });
-            } else if (Chart.instances && typeof Chart.instances === 'object') {
-                Object.keys(Chart.instances).forEach(key => {
-                    const instance = Chart.instances[key];
-                    if (instance && typeof instance.destroy === 'function') {
-                        instance.destroy();
+                        try {
+                            instance.destroy();
+                        } catch (e) {
+                            console.warn('Chart cleanup warning:', e.message);
+                        }
                     }
                 });
             }
             console.log('✅ Charts initialized successfully');
         }
     } catch (error) {
-        console.warn('⚠️ Chart.js not available:', error.message);
+        console.warn('⚠️ Chart.js initialization skipped:', error.message);
     }
 }
 
@@ -711,40 +718,54 @@ class SuntynAI {
     }
 
     initializePerformanceMonitoring() {
-        // Monitor performance using modern Performance API
+        // Optimized performance monitoring
         if ('performance' in window) {
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    if (performance.getEntriesByType) {
-                        const navigation = performance.getEntriesByType('navigation')[0];
-                        if (navigation) {
-                            const loadTime = navigation.loadEventEnd - navigation.fetchStart;
-                            console.log(`Page load time: ${Math.round(loadTime)}ms`);
-                        }
-                    } else {
-                        const loadTime = performance.now();
-                        console.log(`Page load time: ${Math.round(loadTime)}ms`);
-                    }
-                }, 100);
-            });
-        }
-
-        // Safe Chart.js cleanup
-        if (typeof Chart !== 'undefined') {
-            window.addEventListener('beforeunload', () => {
+            const measurePerformance = () => {
                 try {
-                    if (Chart.instances && Array.isArray(Chart.instances)) {
-                        Chart.instances.forEach(chart => {
-                            if (chart && typeof chart.destroy === 'function') {
-                                chart.destroy();
-                            }
-                        });
+                    const navigation = performance.getEntriesByType('navigation')[0];
+                    if (navigation) {
+                        const metrics = {
+                            'DNS Lookup': Math.round(navigation.domainLookupEnd - navigation.domainLookupStart),
+                            'Connection': Math.round(navigation.connectEnd - navigation.connectStart),
+                            'Response': Math.round(navigation.responseEnd - navigation.responseStart),
+                            'DOM Processing': Math.round(navigation.domContentLoadedEventEnd - navigation.responseEnd),
+                            'Total Load': Math.round(navigation.loadEventEnd - navigation.fetchStart)
+                        };
+                        console.log('📊 Performance Metrics:', metrics);
                     }
                 } catch (error) {
-                    console.warn('Chart cleanup error:', error);
+                    console.warn('Performance monitoring error:', error);
                 }
-            });
+            };
+            
+            if (document.readyState === 'complete') {
+                measurePerformance();
+            } else {
+                window.addEventListener('load', measurePerformance);
+            }
         }
+
+        // Memory cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            try {
+                // Clean up any running animations
+                if (window.gsap) {
+                    window.gsap.killTweensOf('*');
+                }
+                
+                // Clean up charts safely
+                if (typeof Chart !== 'undefined' && Chart.registry) {
+                    const instances = Object.values(Chart.registry.instances || {});
+                    instances.forEach(instance => {
+                        if (instance && typeof instance.destroy === 'function') {
+                            instance.destroy();
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('Cleanup warning:', error);
+            }
+        });
     }
 
     initializePWA() {
