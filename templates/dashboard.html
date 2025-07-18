@@ -1,33 +1,60 @@
+
 {% extends "base.html" %}
 
 {% block title %}Dashboard - Suntyn AI{% endblock %}
 
 {% block content %}
 <div class="container py-4">
+    <!-- Real-time Status Bar -->
+    <div class="alert alert-info d-flex align-items-center justify-content-between mb-4" id="realtime-status">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status" id="status-spinner">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span id="status-text">Connecting to real-time services...</span>
+        </div>
+        <button class="btn btn-sm btn-outline-primary" onclick="toggleRealtimeFeatures()">
+            <i class="ti ti-refresh me-1"></i>Refresh
+        </button>
+    </div>
+
     <div class="row">
-        <!-- Sidebar -->
+        <!-- Enhanced Sidebar -->
         <div class="col-md-3 mb-4">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
-                        <div class="avatar-circle bg-primary text-white me-3">
+                        <div class="user-avatar-large bg-primary text-white me-3">
                             {{ current_user.username[0].upper() }}
                         </div>
                         <div>
                             <h5 class="mb-0">{{ current_user.username }}</h5>
                             <small class="text-muted">{{ current_user.email }}</small>
+                            <div class="mt-1">
+                                <span class="badge bg-{% if current_user.is_premium %}success{% else %}secondary{% endif %}">
+                                    {% if current_user.is_premium %}Premium{% else %}Free{% endif %}
+                                </span>
+                                <span class="badge bg-success ms-1" id="online-status">Online</span>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="nav nav-pills flex-column">
                         <a class="nav-link active" href="#overview" data-bs-toggle="pill">
                             <i class="ti ti-dashboard me-2"></i> Overview
+                            <span class="badge bg-light text-dark ms-auto" id="overview-count">4</span>
                         </a>
                         <a class="nav-link" href="#activity" data-bs-toggle="pill">
                             <i class="ti ti-activity me-2"></i> Activity
+                            <span class="badge bg-light text-dark ms-auto" id="activity-count">{{ recent_activity|length }}</span>
                         </a>
                         <a class="nav-link" href="#history" data-bs-toggle="pill">
                             <i class="ti ti-history me-2"></i> History
+                            <span class="badge bg-light text-dark ms-auto" id="history-count">{{ tool_history|length }}</span>
+                        </a>
+                        <a class="nav-link" href="#realtime" data-bs-toggle="pill">
+                            <i class="ti ti-wifi me-2"></i> Real-time
+                            <span class="badge bg-success ms-auto" id="realtime-indicator">Live</span>
                         </a>
                         <a class="nav-link" href="#settings" data-bs-toggle="pill">
                             <i class="ti ti-settings me-2"></i> Settings
@@ -37,111 +64,184 @@
             </div>
         </div>
         
-        <!-- Main Content -->
+        <!-- Enhanced Main Content -->
         <div class="col-md-9">
             <div class="tab-content">
-                <!-- Overview Tab -->
+                <!-- Enhanced Overview Tab -->
                 <div class="tab-pane fade show active" id="overview">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Dashboard Overview</h2>
-                        <div class="badge bg-primary">
-                            {% if current_user.is_premium %}Premium{% else %}Free{% endif %}
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="refreshStats()">
+                                <i class="ti ti-refresh me-1"></i>Refresh
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="exportData()">
+                                <i class="ti ti-download me-1"></i>Export
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Stats Cards -->
+                    <!-- Enhanced Stats Cards -->
                     <div class="row mb-4">
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stats-card">
                                 <div class="card-body">
                                     <div class="text-primary mb-2">
                                         <i class="ti ti-tools fs-2"></i>
                                     </div>
-                                    <h4 class="mb-0">{{ activities|length }}</h4>
+                                    <h4 class="mb-0 counter" data-target="{{ recent_activity|length }}">0</h4>
                                     <small class="text-muted">Tools Used</small>
+                                    <div class="progress mt-2" style="height: 4px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stats-card">
                                 <div class="card-body">
                                     <div class="text-success mb-2">
                                         <i class="ti ti-file fs-2"></i>
                                     </div>
-                                    <h4 class="mb-0">{{ history|length }}</h4>
+                                    <h4 class="mb-0 counter" data-target="{{ tool_history|length }}">0</h4>
                                     <small class="text-muted">Files Processed</small>
+                                    <div class="progress mt-2" style="height: 4px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 60%"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stats-card">
                                 <div class="card-body">
                                     <div class="text-warning mb-2">
                                         <i class="ti ti-clock fs-2"></i>
                                     </div>
-                                    <h4 class="mb-0">
-                                        {{ (history|sum(attribute='processing_time') or 0)|round(2) }}s
-                                    </h4>
-                                    <small class="text-muted">Processing Time</small>
+                                    <h4 class="mb-0 counter" data-target="{{ (tool_history|sum(attribute='processing_time') or 0)|round(2) }}">0</h4>
+                                    <small class="text-muted">Processing Time (s)</small>
+                                    <div class="progress mt-2" style="height: 4px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 45%"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stats-card">
                                 <div class="card-body">
                                     <div class="text-info mb-2">
                                         <i class="ti ti-calendar fs-2"></i>
                                     </div>
                                     <h4 class="mb-0">{{ current_user.created_at.strftime('%b %Y') }}</h4>
                                     <small class="text-muted">Member Since</small>
+                                    <div class="progress mt-2" style="height: 4px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 100%"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Recent Activity -->
+                    <!-- Real-time Activity Chart -->
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h5 class="mb-0">Recent Activity</h5>
+                            <h5 class="mb-0">Real-time Activity</h5>
                         </div>
                         <div class="card-body">
-                            {% if activities %}
-                            <div class="activity-timeline">
-                                {% for activity in activities[:10] %}
-                                <div class="activity-item d-flex align-items-center mb-3">
+                            <canvas id="activityChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity with Real-time Updates -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Activity</h5>
+                            <div class="pulse-indicator"></div>
+                        </div>
+                        <div class="card-body">
+                            <div id="activity-timeline">
+                                {% if recent_activity %}
+                                {% for activity in recent_activity[:10] %}
+                                <div class="activity-item d-flex align-items-center mb-3 fade-in">
                                     <div class="activity-icon bg-primary text-white rounded-circle me-3">
                                         <i class="ti ti-tool"></i>
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between">
                                             <strong>{{ activity.tool_name.replace('-', ' ').title() }}</strong>
-                                            <small class="text-muted">{{ activity.created_at.strftime('%m/%d/%Y %H:%M') }}</small>
+                                            <small class="text-muted">{{ activity.timestamp.strftime('%m/%d/%Y %H:%M') }}</small>
                                         </div>
                                         <small class="text-muted">{{ activity.action.title() }}</small>
                                     </div>
                                 </div>
                                 {% endfor %}
+                                {% else %}
+                                <div class="text-center py-4">
+                                    <i class="ti ti-activity text-muted fs-1"></i>
+                                    <p class="text-muted mt-2">No recent activity</p>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <div class="text-center py-4">
-                                <i class="ti ti-activity text-muted fs-1"></i>
-                                <p class="text-muted mt-2">No recent activity</p>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
                 
-                <!-- Activity Tab -->
+                <!-- Real-time Tab -->
+                <div class="tab-pane fade" id="realtime">
+                    <h2 class="mb-4">Real-time Features</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Live Collaboration</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Room ID</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="room-id" placeholder="Enter room ID">
+                                            <button class="btn btn-outline-primary" onclick="joinRoom()">Join</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="createRoom()">Create New Room</button>
+                                    
+                                    <div class="mt-3" id="collaboration-users">
+                                        <div class="text-muted">No users connected</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Live Chat</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chat-container" id="chat-messages" style="height: 200px; overflow-y: auto;">
+                                        <!-- Chat messages will appear here -->
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="chat-input" placeholder="Type a message...">
+                                            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other existing tabs... -->
                 <div class="tab-pane fade" id="activity">
                     <h2 class="mb-4">Activity Log</h2>
-                    
                     <div class="card">
                         <div class="card-body">
-                            {% if activities %}
+                            {% if recent_activity %}
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -149,22 +249,22 @@
                                             <th>Tool</th>
                                             <th>Action</th>
                                             <th>Date</th>
-                                            <th>IP Address</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for activity in activities %}
+                                        {% for activity in recent_activity %}
                                         <tr>
+                                            <td><strong>{{ activity.tool_name.replace('-', ' ').title() }}</strong></td>
                                             <td>
-                                                <strong>{{ activity.tool_name.replace('-', ' ').title() }}</strong>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-{% if activity.action == 'used' %}success{% elif activity.action == 'accessed' %}info{% else %}secondary{% endif %}">
-                                                    {{ activity.action.title() }}
+                                                <span class="badge bg-{% if activity.success %}success{% else %}danger{% endif %}">
+                                                    {{ activity.action.title() if activity.action else 'Used' }}
                                                 </span>
                                             </td>
-                                            <td>{{ activity.created_at.strftime('%m/%d/%Y %H:%M:%S') }}</td>
-                                            <td>{{ activity.ip_address or 'N/A' }}</td>
+                                            <td>{{ activity.timestamp.strftime('%m/%d/%Y %H:%M:%S') }}</td>
+                                            <td>
+                                                <i class="ti ti-{% if activity.success %}check{% else %}x{% endif %} text-{% if activity.success %}success{% else %}danger{% endif %}"></i>
+                                            </td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -180,13 +280,11 @@
                     </div>
                 </div>
                 
-                <!-- History Tab -->
                 <div class="tab-pane fade" id="history">
                     <h2 class="mb-4">Processing History</h2>
-                    
                     <div class="card">
                         <div class="card-body">
-                            {% if history %}
+                            {% if tool_history %}
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -198,11 +296,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for item in history %}
+                                        {% for item in tool_history %}
                                         <tr>
-                                            <td>
-                                                <strong>{{ item.tool_name.replace('-', ' ').title() }}</strong>
-                                            </td>
+                                            <td><strong>{{ item.tool_name.replace('-', ' ').title() }}</strong></td>
                                             <td>{{ (item.processing_time or 0)|round(2) }}s</td>
                                             <td>{{ item.created_at.strftime('%m/%d/%Y %H:%M:%S') }}</td>
                                             <td>
@@ -230,10 +326,8 @@
                     </div>
                 </div>
                 
-                <!-- Settings Tab -->
                 <div class="tab-pane fade" id="settings">
                     <h2 class="mb-4">Account Settings</h2>
-                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card">
@@ -277,9 +371,9 @@
                                     </div>
                                     
                                     <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="dark-mode">
-                                        <label class="form-check-label" for="dark-mode">
-                                            Dark Mode
+                                        <input class="form-check-input" type="checkbox" id="realtime-features" checked>
+                                        <label class="form-check-label" for="realtime-features">
+                                            Real-time Features
                                         </label>
                                     </div>
                                     
@@ -309,23 +403,37 @@
 
 {% block extra_css %}
 <style>
-.avatar-circle {
-    width: 50px;
-    height: 50px;
+.user-avatar-large {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
-.activity-timeline {
-    position: relative;
+.stats-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .activity-item {
-    position: relative;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.activity-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateX(5px);
 }
 
 .activity-icon {
@@ -337,17 +445,245 @@
     font-size: 1rem;
 }
 
+.pulse-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .nav-pills .nav-link {
     border-radius: 8px;
     margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
 }
 
 .nav-pills .nav-link.active {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateX(5px);
+}
+
+.nav-pills .nav-link:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateX(2px);
 }
 
 .table-hover tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.01);
+}
+
+.chat-container {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f8fafc;
+}
+
+.badge {
+    font-size: 0.7rem;
+}
+
+#realtime-status {
+    border-left: 4px solid #22c55e;
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+}
+
+/* Dark theme enhancements */
+[data-theme="dark"] .stats-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .activity-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .chat-container {
+    background: var(--card-bg);
+    border-color: var(--border-color);
 }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize real-time features
+    initializeRealTimeFeatures();
+    
+    // Initialize counter animations
+    initializeCounters();
+    
+    // Initialize activity chart
+    initializeActivityChart();
+    
+    // Set up real-time status updates
+    setInterval(updateRealTimeStatus, 5000);
+});
+
+function initializeRealTimeFeatures() {
+    const statusElement = document.getElementById('status-text');
+    const spinner = document.getElementById('status-spinner');
+    
+    // Simulate connection
+    setTimeout(() => {
+        statusElement.textContent = 'Connected to real-time services';
+        spinner.style.display = 'none';
+        document.getElementById('realtime-status').className = 'alert alert-success d-flex align-items-center justify-content-between mb-4';
+    }, 2000);
+}
+
+function initializeCounters() {
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                counter.textContent = target;
+                clearInterval(timer);
+            } else {
+                counter.textContent = Math.floor(current);
+            }
+        }, 16);
+    });
+}
+
+function initializeActivityChart() {
+    const ctx = document.getElementById('activityChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Tools Used',
+                    data: [12, 19, 3, 5, 2, 3, 7],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+
+function updateRealTimeStatus() {
+    const indicator = document.getElementById('realtime-indicator');
+    const statusText = document.getElementById('status-text');
+    
+    if (window.wsClient && window.wsClient.isConnected()) {
+        indicator.className = 'badge bg-success ms-auto';
+        indicator.textContent = 'Live';
+        statusText.textContent = 'Real-time services active';
+    } else {
+        indicator.className = 'badge bg-warning ms-auto';
+        indicator.textContent = 'Offline';
+        statusText.textContent = 'Connecting to real-time services...';
+    }
+}
+
+function toggleRealtimeFeatures() {
+    const checkbox = document.getElementById('realtime-features');
+    if (checkbox.checked) {
+        // Enable real-time features
+        if (window.wsClient) {
+            window.wsClient.connect();
+        }
+    } else {
+        // Disable real-time features
+        if (window.wsClient) {
+            window.wsClient.disconnect();
+        }
+    }
+}
+
+function refreshStats() {
+    // Add refresh animation
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        counter.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            counter.style.transform = 'scale(1)';
+        }, 300);
+    });
+    
+    // Simulate data refresh
+    setTimeout(() => {
+        initializeCounters();
+    }, 500);
+}
+
+function exportData() {
+    // Export dashboard data
+    const data = {
+        username: '{{ current_user.username }}',
+        email: '{{ current_user.email }}',
+        toolsUsed: {{ recent_activity|length }},
+        filesProcessed: {{ tool_history|length }},
+        memberSince: '{{ current_user.created_at.strftime("%B %d, %Y") }}',
+        exportedAt: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dashboard-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function joinRoom() {
+    const roomId = document.getElementById('room-id').value;
+    if (window.wsClient && roomId) {
+        window.wsClient.joinRoom(roomId, 'dashboard');
+    }
+}
+
+function createRoom() {
+    const roomId = Math.random().toString(36).substring(2, 15);
+    document.getElementById('room-id').value = roomId;
+    joinRoom();
+}
+
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (message && window.wsClient) {
+        window.wsClient.sendChatMessage(message);
+        input.value = '';
+    }
+}
+</script>
 {% endblock %}

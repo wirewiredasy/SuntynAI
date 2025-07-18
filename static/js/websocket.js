@@ -15,17 +15,16 @@ class WebSocketClient {
     }
 
     init() {
-        // Temporarily disable WebSocket to stabilize the application
-        console.log('🔌 WebSocket client initialized (disabled for stability)');
-        this.connected = false;
-        this.updateConnectionStatus(false);
+        // Enable WebSocket for real-time features
+        console.log('🔌 WebSocket client initialized');
         
-        // Uncomment below to re-enable WebSocket
-        // if (typeof io !== 'undefined') {
-        //     this.connect();
-        // } else {
-        //     console.warn('Socket.IO not available, real-time features disabled');
-        // }
+        if (typeof io !== 'undefined') {
+            this.connect();
+        } else {
+            console.warn('Socket.IO not available, real-time features disabled');
+            this.connected = false;
+            this.updateConnectionStatus(false);
+        }
     }
 
     connect() {

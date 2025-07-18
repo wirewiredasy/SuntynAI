@@ -1,344 +1,162 @@
-// Suntyn AI - Theme Management
-// Handles dark/light mode switching and theme persistence
-
+// Enhanced Dark Theme Manager with Real-time Features
 class ThemeManager {
     constructor() {
-        this.currentTheme = 'light';
-        this.themeKey = 'suntyn-theme';
-        this.systemPreference = 'light';
-        this.observers = [];
+        this.currentTheme = localStorage.getItem('theme') || 'light';
         this.init();
     }
 
     init() {
-        this.detectSystemPreference();
-        this.loadSavedTheme();
-        this.setupThemeToggle();
-        this.setupSystemPreferenceWatcher();
         this.applyTheme(this.currentTheme);
-        console.log('🎨 Theme manager initialized');
-    }
-
-    detectSystemPreference() {
-        if (window.matchMedia) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            this.systemPreference = mediaQuery.matches ? 'dark' : 'light';
-        }
-    }
-
-    loadSavedTheme() {
-        const savedTheme = localStorage.getItem(this.themeKey);
-        if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'auto')) {
-            this.currentTheme = savedTheme;
-        } else {
-            this.currentTheme = 'auto';
-        }
-    }
-
-    setupThemeToggle() {
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                this.toggleTheme();
-            });
-        }
-
-        // Setup theme dropdown if available
-        const themeDropdown = document.querySelector('.theme-dropdown');
-        if (themeDropdown) {
-            themeDropdown.addEventListener('click', (e) => {
-                const themeOption = e.target.closest('[data-theme]');
-                if (themeOption) {
-                    this.setTheme(themeOption.dataset.theme);
-                }
-            });
-        }
-    }
-
-    setupSystemPreferenceWatcher() {
-        if (window.matchMedia) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            mediaQuery.addEventListener('change', (e) => {
-                this.systemPreference = e.matches ? 'dark' : 'light';
-                if (this.currentTheme === 'auto') {
-                    this.applyTheme('auto');
-                }
-            });
-        }
-    }
-
-    toggleTheme() {
-        const themes = ['light', 'dark', 'auto'];
-        const currentIndex = themes.indexOf(this.currentTheme);
-        const nextTheme = themes[(currentIndex + 1) % themes.length];
-        this.setTheme(nextTheme);
-    }
-
-    setTheme(theme) {
-        if (theme === this.currentTheme) return;
-        
-        this.currentTheme = theme;
-        this.saveTheme();
-        this.applyTheme(theme);
-        this.notifyObservers(theme);
-        
-        // Show theme change notification
-        if (window.app) {
-            const themeLabel = this.getThemeLabel(theme);
-            window.app.showNotification(`Theme changed to ${themeLabel}`, 'info', 2000);
-        }
+        this.setupToggle();
+        this.setupAutoTheme();
+        this.setupRealTimeSync();
+        console.log('🎨 Enhanced theme manager initialized');
     }
 
     applyTheme(theme) {
-        const html = document.documentElement;
-        const body = document.body;
-        
-        // Remove existing theme classes
-        html.classList.remove('theme-light', 'theme-dark');
-        body.classList.remove('theme-light', 'theme-dark');
-        
-        // Determine actual theme to apply
-        let actualTheme = theme;
-        if (theme === 'auto') {
-            actualTheme = this.systemPreference;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        this.currentTheme = theme;
+
+        // Update theme toggle state
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.setAttribute('data-theme', theme);
         }
-        
-        // Apply theme
-        html.dataset.theme = actualTheme;
-        html.classList.add(`theme-${actualTheme}`);
-        body.classList.add(`theme-${actualTheme}`);
-        
-        // Update theme toggle icon
-        this.updateThemeToggleIcon(theme);
-        
+
         // Update meta theme-color
-        this.updateMetaThemeColor(actualTheme);
-        
-        // Apply theme to charts and visualizations
-        this.applyThemeToCharts(actualTheme);
-        
-        // Trigger theme change event
-        const event = new CustomEvent('themeChange', {
-            detail: { theme: actualTheme, userTheme: theme }
-        });
-        document.dispatchEvent(event);
-    }
-
-    updateThemeToggleIcon(theme) {
-        const themeIcon = document.getElementById('theme-icon');
-        if (!themeIcon) return;
-        
-        const icons = {
-            light: 'ti-sun',
-            dark: 'ti-moon',
-            auto: 'ti-device-desktop'
-        };
-        
-        // Remove all theme icons
-        Object.values(icons).forEach(iconClass => {
-            themeIcon.classList.remove(iconClass);
-        });
-        
-        // Add current theme icon
-        themeIcon.classList.add(icons[theme] || icons.auto);
-    }
-
-    updateMetaThemeColor(theme) {
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
-            const colors = {
-                light: '#3b82f6',
-                dark: '#1e40af'
-            };
-            metaThemeColor.setAttribute('content', colors[theme] || colors.light);
+            metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
         }
+
+        // Dispatch theme change event
+        const event = new CustomEvent('themeChanged', { detail: { theme } });
+        document.dispatchEvent(event);
+
+        // Update charts and dynamic content
+        this.updateDynamicContent(theme);
     }
 
-    applyThemeToCharts(theme) {
-        // Apply theme to Chart.js charts
-        if (typeof Chart !== 'undefined') {
-            const isDark = theme === 'dark';
-            Chart.defaults.color = isDark ? '#f1f5f9' : '#1f2937';
-            Chart.defaults.borderColor = isDark ? '#475569' : '#e5e7eb';
-            Chart.defaults.backgroundColor = isDark ? '#334155' : '#f8fafc';
-            
-            // Update existing charts
-            Chart.instances.forEach(chart => {
-                chart.update();
+    setupToggle() {
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+                this.applyTheme(newTheme);
+                this.animateToggle(themeToggle);
             });
         }
-        
-        // Apply theme to other visualization libraries
-        this.applyThemeToCustomCharts(theme);
     }
 
-    applyThemeToCustomCharts(theme) {
-        const isDark = theme === 'dark';
-        const chartElements = document.querySelectorAll('.chart-container');
-        
-        chartElements.forEach(element => {
-            if (isDark) {
-                element.classList.add('chart-dark');
-                element.classList.remove('chart-light');
-            } else {
-                element.classList.add('chart-light');
-                element.classList.remove('chart-dark');
+    setupAutoTheme() {
+        // Auto theme based on system preference
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        if (!localStorage.getItem('theme')) {
+            this.applyTheme(mediaQuery.matches ? 'dark' : 'light');
+        }
+
+        mediaQuery.addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme-manual')) {
+                this.applyTheme(e.matches ? 'dark' : 'light');
             }
         });
     }
 
-    saveTheme() {
-        localStorage.setItem(this.themeKey, this.currentTheme);
+    setupRealTimeSync() {
+        // Sync theme across tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme' && e.newValue !== this.currentTheme) {
+                this.applyTheme(e.newValue);
+            }
+        });
     }
 
-    getThemeLabel(theme) {
-        const labels = {
-            light: 'Light',
-            dark: 'Dark',
-            auto: 'Auto'
-        };
-        return labels[theme] || 'Auto';
+    animateToggle(toggle) {
+        toggle.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            toggle.style.transform = 'scale(1)';
+        }, 150);
+    }
+
+    updateDynamicContent(theme) {
+        // Update charts if Chart.js is available
+        if (window.Chart) {
+            Chart.defaults.color = theme === 'dark' ? '#f1f5f9' : '#374151';
+            Chart.defaults.borderColor = theme === 'dark' ? '#334155' : '#e5e7eb';
+            Chart.defaults.backgroundColor = theme === 'dark' ? '#1e293b' : '#ffffff';
+
+            // Update existing charts
+            Object.values(Chart.instances).forEach(chart => {
+                chart.update();
+            });
+        }
+
+        // Update other dynamic elements
+        this.updateCodeBlocks(theme);
+        this.updateLoadingSpinners(theme);
+        this.updateProgressBars(theme);
+    }
+
+    updateCodeBlocks(theme) {
+        const codeBlocks = document.querySelectorAll('pre, code');
+        codeBlocks.forEach(block => {
+            if (theme === 'dark') {
+                block.style.backgroundColor = '#1e293b';
+                block.style.color = '#f1f5f9';
+            } else {
+                block.style.backgroundColor = '#f8fafc';
+                block.style.color = '#374151';
+            }
+        });
+    }
+
+    updateLoadingSpinners(theme) {
+        const spinners = document.querySelectorAll('.spinner-border');
+        spinners.forEach(spinner => {
+            if (theme === 'dark') {
+                spinner.style.borderColor = '#334155';
+                spinner.style.borderTopColor = '#6366f1';
+            } else {
+                spinner.style.borderColor = '#e5e7eb';
+                spinner.style.borderTopColor = '#3b82f6';
+            }
+        });
+    }
+
+    updateProgressBars(theme) {
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(bar => {
+            const parentProgress = bar.closest('.progress');
+            if (parentProgress) {
+                if (theme === 'dark') {
+                    parentProgress.style.backgroundColor = '#334155';
+                } else {
+                    parentProgress.style.backgroundColor = '#e5e7eb';
+                }
+            }
+        });
     }
 
     getCurrentTheme() {
         return this.currentTheme;
     }
 
-    getActualTheme() {
-        return this.currentTheme === 'auto' ? this.systemPreference : this.currentTheme;
-    }
-
     isDarkMode() {
-        return this.getActualTheme() === 'dark';
+        return this.currentTheme === 'dark';
     }
 
-    isLightMode() {
-        return this.getActualTheme() === 'light';
-    }
-
-    // Observer pattern for theme changes
-    subscribe(callback) {
-        this.observers.push(callback);
-        return () => {
-            this.observers = this.observers.filter(obs => obs !== callback);
-        };
-    }
-
-    notifyObservers(theme) {
-        this.observers.forEach(callback => {
-            try {
-                callback(theme);
-            } catch (error) {
-                console.error('Error in theme observer:', error);
-            }
-        });
-    }
-
-    // Utility methods
-    getThemeColors() {
-        const isDark = this.isDarkMode();
-        return {
-            primary: isDark ? '#60a5fa' : '#3b82f6',
-            secondary: isDark ? '#3b82f6' : '#1e40af',
-            success: isDark ? '#34d399' : '#10b981',
-            warning: isDark ? '#fbbf24' : '#f59e0b',
-            danger: isDark ? '#f87171' : '#ef4444',
-            info: isDark ? '#60a5fa' : '#3b82f6',
-            light: isDark ? '#f8fafc' : '#f8fafc',
-            dark: isDark ? '#0f172a' : '#1f2937',
-            background: isDark ? '#0f172a' : '#ffffff',
-            surface: isDark ? '#334155' : '#f8fafc',
-            text: isDark ? '#f8fafc' : '#1f2937',
-            textSecondary: isDark ? '#e2e8f0' : '#6b7280',
-            border: isDark ? '#64748b' : '#e5e7eb'
-        };
-    }
-
-    getCSSVariables() {
-        const colors = this.getThemeColors();
-        const cssVars = {};
-        
-        for (const [key, value] of Object.entries(colors)) {
-            cssVars[`--color-${key}`] = value;
-        }
-        
-        return cssVars;
-    }
-
-    applyCSSVariables() {
-        const variables = this.getCSSVariables();
-        const root = document.documentElement;
-        
-        for (const [property, value] of Object.entries(variables)) {
-            root.style.setProperty(property, value);
+    setTheme(theme) {
+        if (theme === 'light' || theme === 'dark') {
+            this.applyTheme(theme);
+            localStorage.setItem('theme-manual', 'true');
         }
     }
 
-    // Animation for theme transitions
-    enableTransitions() {
-        const style = document.createElement('style');
-        style.textContent = `
-            * {
-                transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
-            }
-            
-            .theme-transition-disabled * {
-                transition: none !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    disableTransitions() {
-        document.body.classList.add('theme-transition-disabled');
-        setTimeout(() => {
-            document.body.classList.remove('theme-transition-disabled');
-        }, 100);
-    }
-
-    // Accessibility improvements
-    updateAccessibility() {
-        const isDark = this.isDarkMode();
-        
-        // Update focus indicators
-        const focusStyle = document.getElementById('focus-styles') || document.createElement('style');
-        focusStyle.id = 'focus-styles';
-        focusStyle.textContent = `
-            :focus {
-                outline: 2px solid ${isDark ? '#60a5fa' : '#3b82f6'};
-                outline-offset: 2px;
-            }
-        `;
-        
-        if (!document.head.contains(focusStyle)) {
-            document.head.appendChild(focusStyle);
-        }
-    }
-
-    // Print styles
-    updatePrintStyles() {
-        const printStyle = document.getElementById('print-styles') || document.createElement('style');
-        printStyle.id = 'print-styles';
-        printStyle.textContent = `
-            @media print {
-                * {
-                    color: black !important;
-                    background: white !important;
-                    box-shadow: none !important;
-                }
-                
-                .navbar,
-                .footer,
-                .btn,
-                .alert {
-                    display: none !important;
-                }
-            }
-        `;
-        
-        if (!document.head.contains(printStyle)) {
-            document.head.appendChild(printStyle);
-        }
+    toggleTheme() {
+        const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
     }
 }
 
@@ -346,5 +164,106 @@ class ThemeManager {
 const themeManager = new ThemeManager();
 
 // Export for global access
-window.ThemeManager = ThemeManager;
 window.themeManager = themeManager;
+
+// Real-time theme synchronization
+document.addEventListener('DOMContentLoaded', function() {
+    // Theme persistence for forms
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function() {
+            // Preserve theme state during form submissions
+            const themeInput = document.createElement('input');
+            themeInput.type = 'hidden';
+            themeInput.name = 'theme';
+            themeInput.value = themeManager.getCurrentTheme();
+            form.appendChild(themeInput);
+        });
+    });
+
+    // Theme-aware notifications
+    const originalAlert = window.alert;
+    window.alert = function(message) {
+        const theme = themeManager.getCurrentTheme();
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-info alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = `
+            top: 20px; 
+            right: 20px; 
+            z-index: 9999; 
+            max-width: 400px;
+            ${theme === 'dark' ? 'background-color: #1e293b; color: #f1f5f9; border-color: #334155;' : ''}
+        `;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    };
+
+    // Theme-aware tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        tooltip.addEventListener('show.bs.tooltip', function() {
+            const theme = themeManager.getCurrentTheme();
+            if (theme === 'dark') {
+                this.setAttribute('data-bs-custom-class', 'tooltip-dark');
+            }
+        });
+    });
+});
+
+// CSS for dark theme tooltips
+const darkTooltipStyles = `
+    .tooltip-dark .tooltip-inner {
+        background-color: #1e293b;
+        color: #f1f5f9;
+    }
+    .tooltip-dark .tooltip-arrow::before {
+        border-top-color: #1e293b;
+    }
+`;
+
+// Add dark tooltip styles to head
+const styleElement = document.createElement('style');
+styleElement.textContent = darkTooltipStyles;
+document.head.appendChild(styleElement);
+
+// Theme transition effects
+document.addEventListener('themeChanged', function(e) {
+    const { theme } = e.detail;
+
+    // Add smooth transition to all elements
+    const elements = document.querySelectorAll('*');
+    elements.forEach(element => {
+        element.style.transition = 'background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease';
+    });
+
+    // Remove transitions after animation
+    setTimeout(() => {
+        elements.forEach(element => {
+            element.style.transition = '';
+        });
+    }, 300);
+
+    // Update real-time indicators
+    const realtimeIndicators = document.querySelectorAll('.realtime-indicator');
+    realtimeIndicators.forEach(indicator => {
+        indicator.style.animation = 'pulse 0.5s ease-in-out';
+    });
+});
+
+// Export theme utilities
+window.themeUtils = {
+    getCurrentTheme: () => themeManager.getCurrentTheme(),
+    isDarkMode: () => themeManager.isDarkMode(),
+    setTheme: (theme) => themeManager.setTheme(theme),
+    toggleTheme: () => themeManager.toggleTheme()
+};
