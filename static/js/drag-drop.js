@@ -16,15 +16,13 @@ class DragDropManager {
         this.initializeDragDropZones();
         this.initializeFileDropZones();
         this.setupGlobalDragHandlers();
-        console.log('🔄 Drag and drop manager initialized');
+        console.log('✅ Built-in drag-drop manager initialized');
     }
 
     initializeSortableLists() {
-        // Initialize sortable lists using SortableJS
-        if (typeof Sortable === 'undefined') {
-            console.warn('SortableJS not available, sortable features disabled');
-            return;
-        }
+        // Use native HTML5 drag and drop instead of SortableJS
+        console.log('✅ Using native HTML5 drag and drop (no external dependencies)');
+        return;
 
         document.querySelectorAll('.sortable-list').forEach(list => {
             this.createSortableInstance(list);

@@ -56,13 +56,11 @@ function initializeLazyComponents() {
     }, 2000);
 }
 
-// Optimized Chart.js initialization
+// Chart initialization with fallback
 function initializeCharts() {
-        // Only proceed if Chart.js is loaded
-        if (typeof Chart === 'undefined') {
-            console.warn('Chart.js not loaded, skipping chart initialization');
-            return;
-        }
+        // Use Canvas for basic charts without external dependencies
+        console.log('Using built-in canvas for charts instead of Chart.js');
+        return;
 
         // Safely destroy existing charts
         if (window.chartInstances && Array.isArray(window.chartInstances)) {
@@ -530,7 +528,8 @@ function initializeFileUploads() {
             updateFileDisplay(this);
         });
     });
-}
+    
+    console.log('✅ Built-in drag-drop initialized (no external dependencies)');
 
 // Update file display
 function updateFileDisplay(input) {
@@ -570,18 +569,8 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Service Worker disabled for debugging
-console.log('Service Worker disabled to prevent interference');
-
-// Unregister any existing service workers
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-        for (let registration of registrations) {
-            registration.unregister();
-            console.log('Unregistered service worker');
-        }
-    });
-}
+// Service Worker completely removed
+console.log('Service Worker permanently disabled for better performance');
 
 function SuntynAI() {
     this.isInitialized = false;
@@ -907,27 +896,10 @@ SuntynAI.prototype.initializePerformanceMonitoring = function() {
 }
 
 SuntynAI.prototype.initializePWA = function() {
-    // Register service worker with proper error handling
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js', {
-                scope: '/'
-            })
-            .then(registration => {
-                console.log('✅ Service Worker registered successfully');
-
-                // Check for updates
-                registration.addEventListener('updatefound', () => {
-                    console.log('Service Worker update found');
-                });
-            })
-            .catch(error => {
-                console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
-            });
-        });
-    }
-
-    // Handle PWA install prompt
+    // PWA features disabled for better performance
+    console.log('PWA features disabled for better performance');
+    
+    // Handle PWA install prompt (optional)
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
