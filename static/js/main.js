@@ -172,21 +172,10 @@ function initializeAnimations() {
         const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
         if (animationElements.length === 0) return;
 
-        // Load GSAP only when needed
-        if (typeof gsap !== 'undefined') {
-            gsap.from('.floating-icon', {
-                duration: 1,
-                y: 10,
-                opacity: 0,
-                stagger: 0.1,
-                ease: "power2.out"
-            });
-        } else {
-            // Fallback CSS animations
-            animationElements.forEach((el, i) => {
-                el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
-            });
-        }
+        // Use CSS animations instead of GSAP for better compatibility
+        animationElements.forEach((el, i) => {
+            el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
+        });
 
         window.animationsInitialized = true;
         console.log('✅ Animations initialized successfully');
@@ -581,16 +570,16 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Service Worker registration (optional)
+// Service Worker disabled for debugging
+console.log('Service Worker disabled to prevent interference');
+
+// Unregister any existing service workers
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then((registration) => {
-                console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-                console.log('SW registration failed: ', registrationError);
-            });
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let registration of registrations) {
+            registration.unregister();
+            console.log('Unregistered service worker');
+        }
     });
 }
 

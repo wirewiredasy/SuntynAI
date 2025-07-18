@@ -1177,12 +1177,16 @@ Bachelor's Degree in Computer Science
             features = request_data.form.get('features', 'high quality, durable, affordable')
             target_audience = request_data.form.get('target_audience', 'professionals')
             
+            # Fix f-string backslash issue
+            newline = '\n'
+            feature_list = features.replace(',', f'{newline}• ')
+            
             description = f"""**{product_name}** - The Perfect Solution for {target_audience.title()}
 
 Transform your experience with our premium {product_name.lower()}. Designed with {features}, this product delivers exceptional value and performance.
 
 **Key Features:**
-• {features.replace(',', '\n• ')}
+• {feature_list}
 • Professional-grade quality
 • Easy to use interface
 • Reliable performance

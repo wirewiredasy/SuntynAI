@@ -460,7 +460,8 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
-        return render_template('errors/500.html'), 500
+        from datetime import datetime
+        return render_template('errors/500.html', moment=datetime.utcnow), 500
 
     @app.errorhandler(403)
     def forbidden_error(error):
