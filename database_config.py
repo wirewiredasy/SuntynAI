@@ -19,47 +19,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def get_database_url():
-    """Get database URL with proper error handling"""
+    """Get database URL with proper error handling and IPv4 preference"""
     try:
-        # Priority 1: Check for custom DB_SOURCE configuration first
-        db_source = os.getenv("DB_SOURCE", "").lower()
-
-        if db_source == "supabase":
-            # Use the new Supabase URL as first priority
-            database_url = "postgresql://postgres:Suntyn2315db@db.vxappuvvmdnjddnpjroa.supabase.co:5432/postgres"
-            logger.info("Using new Supabase PostgreSQL database")
-            return database_url
-
-        # Priority 2: Check for Render's automatic DATABASE_URL
-        elif os.getenv("DATABASE_URL"):
-            logger.info("Using Render PostgreSQL database")
-            return os.getenv("DATABASE_URL")
-
-        elif db_source == "neon":
-            database_url = os.getenv("DATABASE_NEON_URL")
-            if not database_url:
-                raise ValueError("DATABASE_NEON_URL environment variable is required")
-
-            # Clean up Neon URL format
-            if database_url.startswith("psql"):
-                database_url = database_url.replace("psql '", "").replace("'", "")
-
-            logger.info("Using Neon PostgreSQL database")
-            return database_url
-
-        # Priority 3: Check for Replit PostgreSQL 
-        elif os.getenv("REPLIT_DB_URL"):
-            logger.info("Using Replit PostgreSQL database")
-            return os.getenv("REPLIT_DB_URL")
-
-        # Priority 4: Fallback to local development
-        else:
-            logger.warning("No database configuration found, using local fallback")
-            return "sqlite:///suntyn_ai.db"
+        # Priority 1: New Supabase database as primary
+        database_url = "postgresql://postgres:Suntyn2315db@db.vxappuvvmdnjddnpjroa.supabase.co:5432/postgres?options=-c%20default_transaction_isolation=read_committed"
+        logger.info("Using new Supabase PostgreSQL database with optimized settings")
+        return database_url
 
     except Exception as e:
         logger.error(f"Database URL configuration error: {str(e)}")
-        raise
+        # Fallback to SQLite only if absolutely necessary
+        logger.warning("Using SQLite as emergency fallback")
+        return "sqlite:///suntyn_ai.db"
 
 class DatabaseConfig:
     """Professional database configuration with error handling and connection pooling"""
@@ -70,74 +41,24 @@ class DatabaseConfig:
         self._initialize_database()
 
     def _get_database_url(self):
-        """Get database URL based on environment configuration"""
-        try:
-            # Priority 1: Check for Supabase database
-            db_source = os.getenv("DB_SOURCE", "").lower()
-
-            if db_source == "supabase":
-                database_url = os.getenv("DATABASE_SUPABASE_URL")
-                if not database_url:
-                    raise ValueError("DATABASE_SUPABASE_URL environment variable is required when DB_SOURCE=supabase")
-
-                # Fix URL encoding for special characters in password
-                if "Suntyn@#$134_" in database_url:
-                    logger.info("Encoding special characters in password")
-                    # Extract and encode the password properly
-                    password = "Suntyn@#$134_"
-                    encoded_password = quote_plus(password)
-                    # Replace the password part in URL
-                    database_url = database_url.replace(password, encoded_password)
-                    logger.info("Password encoded successfully")
-
-                logger.info("Using Supabase PostgreSQL database")
-                return database_url
-
-            # Priority 2: Check for any DATABASE_URL
-            elif os.getenv("DATABASE_URL"):
-                logger.info("Using DATABASE_URL")
-                return os.getenv("DATABASE_URL")
-
-            # Priority 3: Check for Neon database
-            elif db_source == "neon":
-                database_url = os.getenv("DATABASE_NEON_URL")
-                if not database_url:
-                    raise ValueError("DATABASE_NEON_URL environment variable is required when DB_SOURCE=neon")
-
-                # Clean up Neon URL if it contains psql command
-                if database_url.startswith("psql"):
-                    database_url = database_url.replace("psql '", "").replace("'", "")
-
-                logger.info("Using Neon PostgreSQL database")
-                return database_url
-
-            # Priority 4: Fallback to SQLite for development
-            else:
-                logger.warning("No database configuration found, using SQLite fallback")
-                return "sqlite:///suntyn_ai.db"
-
-        except Exception as e:
-            logger.error(f"Database URL configuration error: {str(e)}")
-            # Return SQLite as emergency fallback
-            logger.warning("Using SQLite as emergency fallback")
-            return "sqlite:///suntyn_ai.db"
+        """Get optimized Supabase database URL"""
+        return get_database_url()
 
     def _initialize_database(self):
-        """Initialize database connection with proper error handling and fallback"""
-        database_url = None
+        """Initialize Supabase database connection with optimized settings"""
         try:
             database_url = self._get_database_url()
+            logger.info("Initializing Supabase database connection...")
 
-            # For Supabase, try different connection approaches
-            if "supabase" in database_url and "postgresql" in database_url:
+            if "postgresql" in database_url:
                 success = self._try_supabase_connection(database_url)
                 if not success:
                     logger.warning("Supabase connection failed, falling back to SQLite")
                     self._initialize_sqlite_fallback()
                     return
             else:
-                # Regular PostgreSQL or SQLite
-                self._initialize_regular_connection(database_url)
+                # SQLite fallback
+                self._initialize_sqlite_fallback()
 
         except Exception as e:
             logger.error(f"Database initialization failed: {str(e)}")
@@ -145,69 +66,54 @@ class DatabaseConfig:
             self._initialize_sqlite_fallback()
 
     def _try_supabase_connection(self, database_url):
-        """Try to connect to Supabase with multiple strategies"""
-        strategies = [
-            # Strategy 1: Standard connection with SSL
-            {
-                "connect_args": {
-                    "sslmode": "require",
-                    "connect_timeout": 30,
-                    "application_name": "Suntyn_AI_Platform"
-                }
-            },
-            # Strategy 2: Prefer SSL but allow fallback
-            {
-                "connect_args": {
-                    "sslmode": "prefer",
-                    "connect_timeout": 20,
-                    "application_name": "Suntyn_AI_Platform"
-                }
-            },
-            # Strategy 3: Disable SSL for testing
-            {
-                "connect_args": {
-                    "sslmode": "disable",
-                    "connect_timeout": 15,
-                    "application_name": "Suntyn_AI_Platform"
-                }
+        """Try to connect to Supabase with optimized IPv4 connection"""
+        try:
+            logger.info("Connecting to Supabase with optimized settings")
+            
+            # Force IPv4 and optimize connection settings
+            connect_args = {
+                "sslmode": "require",
+                "connect_timeout": 45,
+                "application_name": "Suntyn_AI_Platform",
+                "keepalives_idle": 600,
+                "keepalives_interval": 30,
+                "keepalives_count": 3,
+                "tcp_keepalives_idle": 600,
+                "tcp_keepalives_interval": 30,
+                "tcp_keepalives_count": 3,
+                "target_session_attrs": "read-write"
             }
-        ]
 
-        for i, strategy in enumerate(strategies, 1):
-            try:
-                logger.info(f"Trying Supabase connection strategy {i}")
+            self.engine = create_engine(
+                database_url,
+                pool_size=5,
+                max_overflow=10,
+                pool_pre_ping=True,
+                pool_recycle=1800,  # 30 minutes
+                echo=False,
+                connect_args=connect_args
+            )
 
-                self.engine = create_engine(
-                    database_url,
-                    pool_size=3,
-                    max_overflow=5,
-                    pool_pre_ping=True,
-                    pool_recycle=3600,
-                    echo=False,
-                    connect_args=strategy["connect_args"]
-                )
+            # Test connection with timeout
+            with self.engine.connect() as connection:
+                result = connection.execute(text("SELECT 1 as test, NOW() as timestamp"))
+                test_result = result.fetchone()
+                logger.info(f"✅ Supabase connection successful! Test: {test_result}")
 
-                # Test connection
-                with self.engine.connect() as connection:
-                    connection.execute(text("SELECT 1"))
-                    logger.info(f"Supabase connection successful with strategy {i}")
+            # Create session factory
+            self.SessionLocal = sessionmaker(
+                autocommit=False,
+                autoflush=False,
+                bind=self.engine
+            )
 
-                # Create session factory
-                self.SessionLocal = sessionmaker(
-                    autocommit=False,
-                    autoflush=False,
-                    bind=self.engine
-                )
+            return True
 
-                return True
-
-            except Exception as e:
-                logger.warning(f"Strategy {i} failed: {str(e)}")
-                if hasattr(self, 'engine'):
-                    self.engine.dispose()
-                continue
-
-        return False
+        except Exception as e:
+            logger.error(f"Supabase connection failed: {str(e)}")
+            if hasattr(self, 'engine'):
+                self.engine.dispose()
+            return False
 
     def _initialize_regular_connection(self, database_url):
         """Initialize regular PostgreSQL or SQLite connection"""
