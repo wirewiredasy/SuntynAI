@@ -75,71 +75,73 @@ def create_app():
     TOOL_CATEGORIES = {
         'PDF Tools': {
             'icon': 'file-text',
-            'color': 'red',
+            'color': 'danger',
             'tools': [
-                'PDF Merger', 'PDF Splitter', 'PDF Compressor', 'PDF to Word',
-                'PDF to Excel', 'PDF to PowerPoint', 'Word to PDF', 'Excel to PDF',
-                'PowerPoint to PDF', 'PDF Password Remover', 'PDF Watermark',
-                'PDF Page Extractor', 'PDF Converter', 'PDF Editor'
+                'pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-word',
+                'pdf-to-excel', 'pdf-to-powerpoint', 'word-to-pdf', 'excel-to-pdf',
+                'powerpoint-to-pdf', 'pdf-password-remover', 'pdf-watermark',
+                'pdf-page-extractor', 'pdf-converter', 'pdf-editor'
             ]
         },
         'Image Tools': {
-            'icon': 'image',
-            'color': 'blue',
+            'icon': 'photo',
+            'color': 'primary',
             'tools': [
-                'Image Compressor', 'Image Resizer', 'Image Converter', 'Background Remover',
-                'Image Cropper', 'Image Enhancer', 'Watermark Remover', 'Meme Generator',
-                'Image Filter', 'Photo Editor', 'Collage Maker', 'Image Optimizer'
+                'image-compressor', 'image-resizer', 'image-converter', 'background-remover',
+                'image-cropper', 'image-enhancer', 'watermark-remover', 'meme-generator',
+                'image-filter', 'photo-editor', 'collage-maker', 'image-optimizer'
             ]
         },
         'Video/Audio Tools': {
-            'icon': 'play-circle',
-            'color': 'green',
+            'icon': 'video',
+            'color': 'success',
             'tools': [
-                'Video Compressor', 'Video Converter', 'Audio Converter', 'Video Trimmer',
-                'Audio Trimmer', 'Video Merger', 'Audio Merger', 'Video to Audio',
-                'Audio to Video', 'Video Editor', 'Audio Editor', 'Screen Recorder'
+                'video-compressor', 'video-converter', 'audio-converter', 'video-trimmer',
+                'audio-trimmer', 'video-merger', 'audio-merger', 'video-to-audio',
+                'audio-to-video', 'video-editor', 'audio-editor', 'screen-recorder'
             ]
         },
         'Finance Tools': {
-            'icon': 'dollar-sign',
-            'color': 'yellow',
+            'icon': 'calculator',
+            'color': 'warning',
             'tools': [
-                'EMI Calculator', 'GST Calculator', 'Currency Converter', 'Loan Calculator',
-                'Investment Calculator', 'Tax Calculator', 'Profit Calculator',
-                'Expense Tracker', 'Budget Planner', 'Salary Calculator'
+                'emi-calculator', 'gst-calculator', 'currency-converter', 'loan-calculator',
+                'investment-calculator', 'tax-calculator', 'profit-calculator',
+                'expense-tracker', 'budget-planner', 'salary-calculator'
             ]
         },
-        'Government Documents': {
-            'icon': 'shield',
-            'color': 'purple',
+        'Government Tools': {
+            'icon': 'shield-check',
+            'color': 'info',
             'tools': [
-                'Aadhaar Card Tools', 'PAN Card Tools', 'Passport Tools', 'Driving License Tools',
-                'Voter ID Tools', 'Birth Certificate Tools', 'Income Certificate Tools'
+                'aadhaar-validator', 'pan-validator', 'gst-validator', 'vehicle-number-validator',
+                'passport-checker', 'driving-license-validator', 'voter-id-checker'
             ]
         },
         'Student Tools': {
-            'icon': 'book',
-            'color': 'indigo',
+            'icon': 'book-2',
+            'color': 'secondary',
             'tools': [
-                'Assignment Helper', 'Research Tools', 'Citation Generator', 'GPA Calculator',
-                'Study Planner', 'Note Organizer', 'Exam Scheduler', 'Academic Calendar'
+                'gpa-calculator', 'assignment-planner', 'citation-generator', 'study-schedule',
+                'research-helper', 'note-organizer', 'exam-scheduler', 'academic-calendar'
             ]
         },
         'Utility Tools': {
-            'icon': 'tool',
-            'color': 'gray',
+            'icon': 'tools',
+            'color': 'dark',
             'tools': [
-                'QR Code Generator', 'Barcode Generator', 'Password Generator', 'Hash Generator',
-                'Base64 Encoder', 'URL Shortener', 'Color Picker', 'Random Generator'
+                'qr-code-generator', 'barcode-generator', 'password-generator', 'hash-generator',
+                'base64-encoder', 'url-shortener', 'color-picker', 'random-generator',
+                'json-formatter', 'uuid-generator', 'text-case-converter'
             ]
         },
         'AI Tools': {
             'icon': 'brain',
-            'color': 'pink',
+            'color': 'purple',
             'tools': [
-                'Text Summarizer', 'Content Generator', 'Resume Builder', 'Letter Writer',
-                'Code Generator', 'Translation Tool', 'Grammar Checker', 'Paraphraser'
+                'text-summarizer', 'content-generator', 'resume-builder', 'letter-writer',
+                'code-generator', 'translation-tool', 'grammar-checker', 'paraphraser',
+                'business-name-generator'
             ]
         }
     }
@@ -191,13 +193,18 @@ def create_app():
                 break
         
         if not tool_category:
-            flash('Tool not found', 'error')
-            return redirect(url_for('index'))
+            flash(f'Tool "{tool_name}" not found. Please check the tool name or browse available tools.', 'error')
+            return redirect(url_for('all_tools'))
+        
+        # Generate tool display name
+        tool_display_name = tool_name.replace('-', ' ').title()
         
         return render_template('tool_page.html', 
-                             tool_name=tool_name, 
+                             tool_name=tool_name,
+                             tool_display_name=tool_display_name,
                              category=tool_category,
-                             category_data=TOOL_CATEGORIES[tool_category])
+                             category_data=TOOL_CATEGORIES[tool_category],
+                             tool_info=TOOL_CATEGORIES[tool_category])
 
     @app.route('/dashboard')
     @login_required

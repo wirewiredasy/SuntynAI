@@ -21,8 +21,13 @@
             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                 <div class="card tool-card h-100">
                     <div class="card-body text-center p-3">
-                        <h6 class="card-title">{{ tool }}</h6>
-                        <a href="{{ url_for('tool_page', tool_name=tool.lower().replace(' ', '-')) }}" class="btn btn-sm btn-primary">
+                        <div class="tool-icon mb-3">
+                            <div class="rounded-circle bg-{{ category_data.color }} bg-opacity-10 text-{{ category_data.color }} p-2 d-inline-flex">
+                                <i class="ti ti-{{ category_data.icon }}"></i>
+                            </div>
+                        </div>
+                        <h6 class="card-title">{{ tool.replace('-', ' ').title() }}</h6>
+                        <a href="{{ url_for('tool_page', tool_name=tool) }}" class="btn btn-sm btn-{{ category_data.color }}">
                             Use Tool
                         </a>
                     </div>

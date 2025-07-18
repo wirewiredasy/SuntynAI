@@ -358,7 +358,7 @@
     <div class="category-section mb-5" data-category="{{ category_name.lower().replace(' ', '-') }}">
         <div class="category-header d-flex align-items-center mb-4">
             <div class="category-icon me-3">
-                <div class="rounded-circle bg-{{ category_info.color }}-100 text-{{ category_info.color }}-600 p-3">
+                <div class="rounded-circle bg-{{ category_info.color }} bg-opacity-10 text-{{ category_info.color }} p-3">
                     <i class="ti ti-{{ category_info.icon }} fs-4"></i>
                 </div>
             </div>
@@ -374,25 +374,29 @@
                 <div class="card tool-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center">
                         <div class="tool-icon mb-3">
-                            <div class="rounded-circle bg-{{ category_info.color }}-100 text-{{ category_info.color }}-600 p-3 d-inline-flex">
+                            <div class="rounded-circle bg-{{ category_info.color }} bg-opacity-10 text-{{ category_info.color }} p-3 d-inline-flex">
                                 <i class="ti ti-{{ category_info.icon }} fs-4"></i>
                             </div>
                         </div>
-                        <h5 class="card-title">{{ tool }}</h5>
+                        <h5 class="card-title">{{ tool.replace('-', ' ').title() }}</h5>
                         <p class="card-text text-muted small mb-3">
-                            {% if 'PDF' in tool %}
+                            {% if 'pdf' in tool %}
                             Process and manipulate PDF documents
-                            {% elif 'Image' in tool %}
+                            {% elif 'image' in tool or 'photo' in tool %}
                             Edit and enhance images
-                            {% elif 'Calculator' in tool %}
+                            {% elif 'calculator' in tool %}
                             Perform financial calculations
-                            {% elif 'Generator' in tool %}
+                            {% elif 'generator' in tool %}
                             Generate content with AI
+                            {% elif 'validator' in tool %}
+                            Validate government documents
+                            {% elif 'compressor' in tool %}
+                            Compress files efficiently
                             {% else %}
                             Professional tool for productivity
                             {% endif %}
                         </p>
-                        <a href="{{ url_for('tool_page', tool_name=tool.lower().replace(' ', '-')) }}" 
+                        <a href="{{ url_for('tool_page', tool_name=tool) }}" 
                            class="btn btn-{{ category_info.color }} btn-sm">
                             <i class="ti ti-arrow-right"></i> Use Tool
                         </a>
@@ -417,7 +421,7 @@
             <div class="col-md-4 mb-4">
                 <div class="feature-card text-center">
                     <div class="feature-icon mb-3">
-                        <div class="rounded-circle bg-primary-100 text-primary p-3 d-inline-flex">
+                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-3 d-inline-flex">
                             <i class="ti ti-zap fs-2"></i>
                         </div>
                     </div>
@@ -429,7 +433,7 @@
             <div class="col-md-4 mb-4">
                 <div class="feature-card text-center">
                     <div class="feature-icon mb-3">
-                        <div class="rounded-circle bg-success-100 text-success p-3 d-inline-flex">
+                        <div class="rounded-circle bg-success bg-opacity-10 text-success p-3 d-inline-flex">
                             <i class="ti ti-shield-check fs-2"></i>
                         </div>
                     </div>
@@ -441,7 +445,7 @@
             <div class="col-md-4 mb-4">
                 <div class="feature-card text-center">
                     <div class="feature-icon mb-3">
-                        <div class="rounded-circle bg-info-100 text-info p-3 d-inline-flex">
+                        <div class="rounded-circle bg-info bg-opacity-10 text-info p-3 d-inline-flex">
                             <i class="ti ti-device-mobile fs-2"></i>
                         </div>
                     </div>
@@ -453,7 +457,7 @@
             <div class="col-md-4 mb-4">
                 <div class="feature-card text-center">
                     <div class="feature-icon mb-3">
-                        <div class="rounded-circle bg-warning-100 text-warning p-3 d-inline-flex">
+                        <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-3 d-inline-flex">
                             <i class="ti ti-users fs-2"></i>
                         </div>
                     </div>
@@ -465,7 +469,7 @@
             <div class="col-md-4 mb-4">
                 <div class="feature-card text-center">
                     <div class="feature-icon mb-3">
-                        <div class="rounded-circle bg-danger-100 text-danger p-3 d-inline-flex">
+                        <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-3 d-inline-flex">
                             <i class="ti ti-robot fs-2"></i>
                         </div>
                     </div>
