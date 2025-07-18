@@ -37,10 +37,13 @@ def get_database_url():
 
             # Fix URL encoding for special characters in password
             if "Suntyn@#$134_" in database_url:
-                # Extract parts and properly encode password
+                logger.info("Encoding special characters in password")
+                # Extract and encode the password properly
                 password = "Suntyn@#$134_"
                 encoded_password = quote_plus(password)
-                database_url = database_url.replace(f":{password}@", f":{encoded_password}@")
+                # Replace the password part in URL
+                database_url = database_url.replace(password, encoded_password)
+                logger.info("Password encoded successfully")
 
             logger.info("Using Supabase PostgreSQL database")
             return database_url
@@ -92,10 +95,13 @@ class DatabaseConfig:
 
                 # Fix URL encoding for special characters in password
                 if "Suntyn@#$134_" in database_url:
-                    # Extract parts and properly encode password
+                    logger.info("Encoding special characters in password")
+                    # Extract and encode the password properly
                     password = "Suntyn@#$134_"
                     encoded_password = quote_plus(password)
-                    database_url = database_url.replace(f":{password}@", f":{encoded_password}@")
+                    # Replace the password part in URL
+                    database_url = database_url.replace(password, encoded_password)
+                    logger.info("Password encoded successfully")
                 
                 logger.info("Using Supabase PostgreSQL database")
                 return database_url
