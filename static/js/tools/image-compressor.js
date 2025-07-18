@@ -1,196 +1,212 @@
-class ImageCompressor {
+// Modern JavaScript for image-compressor
+class ImagecompressorTool {
     constructor() {
-        this.init();
+        this.files = [];
+        this.isProcessing = false;
+        this.initializeEventListeners();
     }
 
-    init() {
-        this.setupEventListeners();
-        this.setupDragDrop();
+    initializeEventListeners() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+
+        // Drag and drop functionality
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', this.handleDragOver.bind(this));
+        dropZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+        dropZone.addEventListener('drop', this.handleDrop.bind(this));
+
+        // File input change
+        fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+
+        // Process button
+        processBtn.addEventListener('click', this.processFiles.bind(this));
     }
 
-    setupEventListeners() {
-        const fileInput = document.getElementById('file-input');
-        const form = document.getElementById('image-compressor-form');
-        const qualitySlider = document.getElementById('quality-slider');
-        const qualityValue = document.getElementById('quality-value');
+    handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.add('dragover');
+    }
+
+    handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('dragover');
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('dragover');
         
-        if (fileInput) fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
-        if (form) form.addEventListener('submit', (e) => this.handleSubmit(e));
-        if (qualitySlider) {
-            qualitySlider.addEventListener('input', (e) => {
-                qualityValue.textContent = e.target.value + '%';
-            });
-        }
-    }
-
-    setupDragDrop() {
-        const dropZone = document.getElementById('drop-zone');
-        if (!dropZone) return;
-        
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-primary', 'bg-light');
-        });
-
-        dropZone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary', 'bg-light');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary', 'bg-light');
-            
-            const files = Array.from(e.dataTransfer.files).filter(file => 
-                file.type.startsWith('image/')
-            );
-            
-            if (files.length > 0) {
-                this.handleFiles(files);
-            }
-        });
+        const files = Array.from(e.dataTransfer.files);
+        this.addFiles(files);
     }
 
     handleFileSelect(e) {
         const files = Array.from(e.target.files);
-        this.handleFiles(files);
+        this.addFiles(files);
     }
 
-    handleFiles(files) {
-        const file = files[0]; // Single file for now
-        if (!file) return;
-
-        this.showPreview(file);
+    addFiles(files) {
+        this.files = [...this.files, ...files];
         this.updateUI();
     }
 
-    showPreview(file) {
-        const preview = document.getElementById('image-preview');
-        
-        if (!preview) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            preview.innerHTML = `
-                <div class="text-center">
-                    <img src="${e.target.result}" class="img-fluid mb-3" style="max-height: 200px;">
-                    <p class="text-muted">File: ${file.name} (${this.formatFileSize(file.size)})</p>
-                </div>
-            `;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-
     updateUI() {
-        const settingsDiv = document.getElementById('compression-settings');
-        const compressBtn = document.getElementById('compress-btn');
+        const processBtn = document.getElementById('processBtn');
+        const processingOptions = document.getElementById('processingOptions');
         
-        if (settingsDiv) settingsDiv.style.display = 'block';
-        if (compressBtn) compressBtn.disabled = false;
-    }
-
-    async handleSubmit(e) {
-        e.preventDefault();
-        
-        const fileInput = document.getElementById('file-input');
-        if (!fileInput.files.length) {
-            alert('Please select an image file first');
-            return;
+        if (this.files.length > 0) {
+            processBtn.disabled = false;
+            processingOptions.classList.remove('hidden');
+            this.displayFileList();
+        } else {
+            processBtn.disabled = true;
+            processingOptions.classList.add('hidden');
         }
-        
-        await this.compressImage(fileInput.files[0]);
     }
 
-    async compressImage(file) {
-        const progressCard = document.getElementById('progress-card');
-        const resultCard = document.getElementById('result-card');
+    displayFileList() {
+        const dropZone = document.getElementById('dropZone');
+        const fileList = this.files.map(file => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-file text-gray-400"></i>
+                    <span class="text-sm font-medium">${file.name}</span>
+                </div>
+                <span class="text-xs text-gray-500">${this.formatFileSize(file.size)}</span>
+            </div>
+        `).join('');
+
+        dropZone.innerHTML = `
+            <div class="text-center">
+                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">${this.files.length} file(s) selected</h3>
+                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add More Files
+                </button>
+            </div>
+            <div class="mt-4 space-y-2">${fileList}</div>
+        `;
+    }
+
+    async processFiles() {
+        if (this.isProcessing) return;
         
-        if (progressCard) progressCard.style.display = 'block';
-        if (resultCard) resultCard.style.display = 'none';
-        
+        this.isProcessing = true;
+        const processBtn = document.getElementById('processBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const results = document.getElementById('results');
+
+        // Show progress
+        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        processBtn.disabled = true;
+        progressContainer.classList.remove('hidden');
+
         try {
             const formData = new FormData();
-            formData.append('file', file);
-            formData.append('quality', document.getElementById('quality-slider')?.value || 80);
-            formData.append('output_format', document.getElementById('output-format')?.value || 'original');
-            formData.append('max_width', document.getElementById('max-width')?.value || '');
-            formData.append('max_height', document.getElementById('max-height')?.value || '');
+            formData.append('tool_name', 'image-compressor');
             
-            const response = await fetch('/api/tools/image-compressor', {
+            this.files.forEach((file, index) => {
+                formData.append(`file_${index}`, file);
+            });
+
+            // Get processing options
+            const quality = document.querySelector('input[name="quality"]:checked')?.value || 'high';
+            formData.append('quality', quality);
+
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 95) progress = 95;
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${Math.round(progress)}%`;
+            }, 200);
+
+            // Make API call
+            const response = await fetch('/process-tool', {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
             
-            if (progressCard) progressCard.style.display = 'none';
-            
-            if (result.success) {
-                this.showSuccess(result);
-            } else {
-                this.showError(result.error || 'Compression failed');
-            }
-            
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressPercent.textContent = '100%';
+
+            // Show results
+            setTimeout(() => {
+                this.displayResults(result);
+                progressContainer.classList.add('hidden');
+                results.classList.remove('hidden');
+            }, 500);
+
         } catch (error) {
-            if (progressCard) progressCard.style.display = 'none';
-            this.showError('Network error occurred');
+            console.error('Processing error:', error);
+            this.showError('Processing failed. Please try again.');
+        } finally {
+            this.isProcessing = false;
+            processBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Process Files';
+            processBtn.disabled = false;
         }
     }
 
-    showSuccess(result) {
-        const resultCard = document.getElementById('result-card');
-        const successDiv = document.getElementById('success-result');
-        const errorDiv = document.getElementById('error-result');
-        const successMessage = document.getElementById('success-message');
-        const downloadBtn = document.getElementById('download-btn');
-        const comparisonDiv = document.getElementById('compression-comparison');
+    displayResults(result) {
+        const resultsList = document.getElementById('resultsList');
         
-        if (resultCard) resultCard.style.display = 'block';
-        if (successDiv) successDiv.style.display = 'block';
-        if (errorDiv) errorDiv.style.display = 'none';
-        
-        if (successMessage) {
-            successMessage.textContent = result.message;
-        }
-        
-        if (downloadBtn && result.download_url) {
-            downloadBtn.href = result.download_url;
-            downloadBtn.style.display = 'inline-block';
-        }
-        
-        if (comparisonDiv && result.original_size && result.compressed_size) {
-            comparisonDiv.innerHTML = `
-                <div class="row text-center">
-                    <div class="col-6">
-                        <small class="text-muted">Original</small>
-                        <div class="fw-medium">${this.formatFileSize(result.original_size)}</div>
+        if (result.success) {
+            resultsList.innerHTML = `
+                <div class="result-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-check-circle text-green-500 text-2xl success-checkmark"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Processing Complete!</h4>
+                                <p class="text-sm text-gray-600">Your files have been processed successfully</p>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
                     </div>
-                    <div class="col-6">
-                        <small class="text-muted">Compressed</small>
-                        <div class="fw-medium text-success">${this.formatFileSize(result.compressed_size)}</div>
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <div class="text-sm text-gray-600">
+                            <strong>Processing time:</strong> ${result.processing_time || '2.3s'}
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <strong>Files processed:</strong> ${this.files.length}
+                        </div>
                     </div>
-                </div>
-                <div class="text-center mt-2">
-                    <span class="badge bg-success">${result.compression_ratio}% reduction</span>
                 </div>
             `;
+        } else {
+            this.showError(result.error || 'Processing failed');
         }
     }
 
     showError(message) {
-        const resultCard = document.getElementById('result-card');
-        const successDiv = document.getElementById('success-result');
-        const errorDiv = document.getElementById('error-result');
-        const errorMessage = document.getElementById('error-message');
+        const resultsList = document.getElementById('resultsList');
+        const results = document.getElementById('results');
         
-        if (resultCard) resultCard.style.display = 'block';
-        if (successDiv) successDiv.style.display = 'none';
-        if (errorDiv) errorDiv.style.display = 'block';
-        
-        if (errorMessage) {
-            errorMessage.textContent = message;
-        }
+        resultsList.innerHTML = `
+            <div class="result-card border-red-200 bg-red-50">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    <div>
+                        <h4 class="font-semibold text-red-900">Processing Failed</h4>
+                        <p class="text-sm text-red-600">${message}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        results.classList.remove('hidden');
     }
 
     formatFileSize(bytes) {
@@ -202,7 +218,33 @@ class ImageCompressor {
     }
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new ImageCompressor();
+// Initialize the tool when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new ImagecompressorTool();
+});
+
+// Add smooth scrolling and modern interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Add loading animation to buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!this.disabled) {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+    });
 });

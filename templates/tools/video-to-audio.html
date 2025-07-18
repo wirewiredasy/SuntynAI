@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video To Audio - Suntyn AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/tools/video-to-audio.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                            <i class="fas fa-magic text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl font-bold text-gray-900">Video To Audio</h1>
+                            <p class="text-gray-600 mt-2">Professional AI-powered video/audio tools tool</p>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex space-x-4">
+                        <button class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-star mr-2"></i>Free Forever
+                        </button>
+                        <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all">
+                            <i class="fas fa-share-alt mr-2"></i>Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Tool Interface -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-xl p-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Upload & Process</h2>
+                        
+                        <!-- File Upload Area -->
+                        <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-primary transition-colors cursor-pointer">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Drop files here or click to browse</h3>
+                            <p class="text-gray-500 mb-4">Support for multiple file formats</p>
+                            <button class="px-8 py-3 bg-primary text-white rounded-xl hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-plus mr-2"></i>Choose Files
+                            </button>
+                            <input type="file" id="fileInput" multiple hidden>
+                        </div>
+
+                        <!-- Processing Options -->
+                        <div id="processingOptions" class="mt-8 hidden">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Processing Options</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="option-card">
+                                    <label class="flex items-center space-x-3 p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
+                                        <input type="radio" name="quality" value="high" class="text-primary" checked>
+                                        <div>
+                                            <div class="font-medium">High Quality</div>
+                                            <div class="text-sm text-gray-500">Best results, longer processing</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="option-card">
+                                    <label class="flex items-center space-x-3 p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
+                                        <input type="radio" name="quality" value="fast" class="text-primary">
+                                        <div>
+                                            <div class="font-medium">Fast Processing</div>
+                                            <div class="text-sm text-gray-500">Quick results, good quality</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Process Button -->
+                        <div class="mt-8 text-center">
+                            <button id="processBtn" class="px-12 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-all transform hover:scale-105 disabled:opacity-50" disabled>
+                                <i class="fas fa-play mr-2"></i>Process Files
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div id="progressContainer" class="mt-6 hidden">
+                            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                <span>Processing...</span>
+                                <span id="progressPercent">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="progressBar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Results -->
+                        <div id="results" class="mt-8 hidden">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Results</h3>
+                            <div id="resultsList" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Features -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Features</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span class="text-gray-700">AI-powered processing</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span class="text-gray-700">Batch processing</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span class="text-gray-700">Multiple formats</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span class="text-gray-700">Privacy protected</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Usage Stats</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Files Processed</span>
+                                <span class="font-semibold text-primary">1.2M+</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Happy Users</span>
+                                <span class="font-semibold text-primary">50K+</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Success Rate</span>
+                                <span class="font-semibold text-primary">99.9%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Tools -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Related Tools</h3>
+                        <div class="space-y-3">
+                            <a href="#" class="block p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                                <div class="font-medium text-gray-900">PDF Merger</div>
+                                <div class="text-sm text-gray-600">Combine multiple PDFs</div>
+                            </a>
+                            <a href="#" class="block p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                                <div class="font-medium text-gray-900">Image Compressor</div>
+                                <div class="text-sm text-gray-600">Reduce image size</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/tools/video-to-audio.js"></script>
+</body>
+</html>

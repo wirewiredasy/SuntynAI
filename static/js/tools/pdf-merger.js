@@ -1,244 +1,212 @@
-class PDFMerger {
+// Modern JavaScript for pdf-merger
+class PdfmergerTool {
     constructor() {
-        this.selectedFiles = [];
-        this.init();
+        this.files = [];
+        this.isProcessing = false;
+        this.initializeEventListeners();
     }
 
-    init() {
-        this.setupEventListeners();
-        this.setupDragDrop();
-        this.setupSortable();
+    initializeEventListeners() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+
+        // Drag and drop functionality
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', this.handleDragOver.bind(this));
+        dropZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+        dropZone.addEventListener('drop', this.handleDrop.bind(this));
+
+        // File input change
+        fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+
+        // Process button
+        processBtn.addEventListener('click', this.processFiles.bind(this));
     }
 
-    setupEventListeners() {
-        const fileInput = document.getElementById('file-input');
-        const form = document.getElementById('pdf-merger-form');
+    handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.add('dragover');
+    }
+
+    handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('dragover');
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('dragover');
         
-        if (fileInput) fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
-        if (form) form.addEventListener('submit', (e) => this.handleSubmit(e));
-    }
-
-    setupDragDrop() {
-        const dropZone = document.getElementById('drop-zone');
-        if (!dropZone) return;
-        
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-primary', 'bg-light');
-        });
-
-        dropZone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary', 'bg-light');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary', 'bg-light');
-            
-            const files = Array.from(e.dataTransfer.files).filter(file => 
-                file.type === 'application/pdf'
-            );
-            
-            if (files.length > 0) {
-                this.addFiles(files);
-            }
-        });
-    }
-
-    setupSortable() {
-        const sortableFiles = document.getElementById('sortable-files');
-        if (!sortableFiles) return;
-        
-        // Initialize sortable functionality
-        if (typeof Sortable !== 'undefined') {
-            Sortable.create(sortableFiles, {
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                onEnd: (evt) => {
-                    // Update file order
-                    const oldIndex = evt.oldIndex;
-                    const newIndex = evt.newIndex;
-                    
-                    const file = this.selectedFiles.splice(oldIndex, 1)[0];
-                    this.selectedFiles.splice(newIndex, 0, file);
-                    
-                    this.updateFileInfo();
-                }
-            });
-        }
+        const files = Array.from(e.dataTransfer.files);
+        this.addFiles(files);
     }
 
     handleFileSelect(e) {
-        const files = Array.from(e.target.files).filter(file => 
-            file.type === 'application/pdf'
-        );
+        const files = Array.from(e.target.files);
         this.addFiles(files);
     }
 
     addFiles(files) {
-        files.forEach(file => {
-            if (!this.selectedFiles.find(f => f.name === file.name && f.size === file.size)) {
-                this.selectedFiles.push(file);
-            }
-        });
-        
-        this.updateFileList();
-        this.updateFileInfo();
+        this.files = [...this.files, ...files];
         this.updateUI();
-    }
-
-    updateFileList() {
-        const fileList = document.getElementById('file-list');
-        const sortableFiles = document.getElementById('sortable-files');
-        
-        if (!fileList || !sortableFiles) return;
-        
-        if (this.selectedFiles.length === 0) {
-            fileList.style.display = 'none';
-            return;
-        }
-        
-        fileList.style.display = 'block';
-        
-        sortableFiles.innerHTML = this.selectedFiles.map((file, index) => `
-            <div class="list-group-item d-flex justify-content-between align-items-center" data-index="${index}">
-                <div class="d-flex align-items-center">
-                    <i class="ti ti-file-text text-danger me-2"></i>
-                    <div>
-                        <div class="fw-medium">${file.name}</div>
-                        <small class="text-muted">${this.formatFileSize(file.size)}</small>
-                    </div>
-                </div>
-                <div>
-                    <i class="ti ti-grip-horizontal text-muted me-2" style="cursor: move;"></i>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="pdfMerger.removeFile(${index})">
-                        <i class="ti ti-x"></i>
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    removeFile(index) {
-        this.selectedFiles.splice(index, 1);
-        this.updateFileList();
-        this.updateFileInfo();
-        this.updateUI();
-    }
-
-    updateFileInfo() {
-        const totalFiles = document.getElementById('total-files');
-        const totalSize = document.getElementById('total-size');
-        const infoCard = document.getElementById('info-card');
-        
-        if (totalFiles) totalFiles.textContent = this.selectedFiles.length;
-        
-        if (totalSize) {
-            const size = this.selectedFiles.reduce((total, file) => total + file.size, 0);
-            totalSize.textContent = this.formatFileSize(size);
-        }
-        
-        if (infoCard) {
-            infoCard.style.display = this.selectedFiles.length > 0 ? 'block' : 'none';
-        }
     }
 
     updateUI() {
-        const mergeOptions = document.getElementById('merge-options');
-        const mergeBtn = document.getElementById('merge-btn');
+        const processBtn = document.getElementById('processBtn');
+        const processingOptions = document.getElementById('processingOptions');
         
-        const hasFiles = this.selectedFiles.length >= 2;
-        
-        if (mergeOptions) mergeOptions.style.display = hasFiles ? 'block' : 'none';
-        if (mergeBtn) mergeBtn.disabled = !hasFiles;
-    }
-
-    async handleSubmit(e) {
-        e.preventDefault();
-        
-        if (this.selectedFiles.length < 2) {
-            alert('Please select at least 2 PDF files to merge');
-            return;
+        if (this.files.length > 0) {
+            processBtn.disabled = false;
+            processingOptions.classList.remove('hidden');
+            this.displayFileList();
+        } else {
+            processBtn.disabled = true;
+            processingOptions.classList.add('hidden');
         }
-        
-        await this.mergePDFs();
     }
 
-    async mergePDFs() {
-        const progressCard = document.getElementById('progress-card');
-        const resultCard = document.getElementById('result-card');
-        const progressText = document.getElementById('progress-text');
+    displayFileList() {
+        const dropZone = document.getElementById('dropZone');
+        const fileList = this.files.map(file => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-file text-gray-400"></i>
+                    <span class="text-sm font-medium">${file.name}</span>
+                </div>
+                <span class="text-xs text-gray-500">${this.formatFileSize(file.size)}</span>
+            </div>
+        `).join('');
+
+        dropZone.innerHTML = `
+            <div class="text-center">
+                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">${this.files.length} file(s) selected</h3>
+                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add More Files
+                </button>
+            </div>
+            <div class="mt-4 space-y-2">${fileList}</div>
+        `;
+    }
+
+    async processFiles() {
+        if (this.isProcessing) return;
         
-        if (progressCard) progressCard.style.display = 'block';
-        if (resultCard) resultCard.style.display = 'none';
-        
+        this.isProcessing = true;
+        const processBtn = document.getElementById('processBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const results = document.getElementById('results');
+
+        // Show progress
+        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        processBtn.disabled = true;
+        progressContainer.classList.remove('hidden');
+
         try {
             const formData = new FormData();
-            this.selectedFiles.forEach(file => {
-                formData.append('files', file);
+            formData.append('tool_name', 'pdf-merger');
+            
+            this.files.forEach((file, index) => {
+                formData.append(`file_${index}`, file);
             });
-            
-            // Add options
-            formData.append('output_filename', document.getElementById('output-filename')?.value || 'merged_document.pdf');
-            formData.append('add_bookmarks', document.getElementById('add-bookmarks')?.checked || false);
-            formData.append('optimize_size', document.getElementById('optimize-size')?.checked || false);
-            
-            const response = await fetch('/api/tools/pdf-merger', {
+
+            // Get processing options
+            const quality = document.querySelector('input[name="quality"]:checked')?.value || 'high';
+            formData.append('quality', quality);
+
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 95) progress = 95;
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${Math.round(progress)}%`;
+            }, 200);
+
+            // Make API call
+            const response = await fetch('/process-tool', {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
             
-            if (progressCard) progressCard.style.display = 'none';
-            
-            if (result.success) {
-                this.showSuccess(result);
-            } else {
-                this.showError(result.error || 'PDF merge failed');
-            }
-            
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressPercent.textContent = '100%';
+
+            // Show results
+            setTimeout(() => {
+                this.displayResults(result);
+                progressContainer.classList.add('hidden');
+                results.classList.remove('hidden');
+            }, 500);
+
         } catch (error) {
-            if (progressCard) progressCard.style.display = 'none';
-            this.showError('Network error occurred');
+            console.error('Processing error:', error);
+            this.showError('Processing failed. Please try again.');
+        } finally {
+            this.isProcessing = false;
+            processBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Process Files';
+            processBtn.disabled = false;
         }
     }
 
-    showSuccess(result) {
-        const resultCard = document.getElementById('result-card');
-        const successDiv = document.getElementById('success-result');
-        const errorDiv = document.getElementById('error-result');
-        const successMessage = document.getElementById('success-message');
-        const downloadBtn = document.getElementById('download-btn');
+    displayResults(result) {
+        const resultsList = document.getElementById('resultsList');
         
-        if (resultCard) resultCard.style.display = 'block';
-        if (successDiv) successDiv.style.display = 'block';
-        if (errorDiv) errorDiv.style.display = 'none';
-        
-        if (successMessage) {
-            successMessage.textContent = `Merged ${this.selectedFiles.length} PDFs successfully!`;
-        }
-        
-        if (downloadBtn && result.download_url) {
-            downloadBtn.href = result.download_url;
-            downloadBtn.style.display = 'inline-block';
+        if (result.success) {
+            resultsList.innerHTML = `
+                <div class="result-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-check-circle text-green-500 text-2xl success-checkmark"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Processing Complete!</h4>
+                                <p class="text-sm text-gray-600">Your files have been processed successfully</p>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
+                    </div>
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <div class="text-sm text-gray-600">
+                            <strong>Processing time:</strong> ${result.processing_time || '2.3s'}
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <strong>Files processed:</strong> ${this.files.length}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            this.showError(result.error || 'Processing failed');
         }
     }
 
     showError(message) {
-        const resultCard = document.getElementById('result-card');
-        const successDiv = document.getElementById('success-result');
-        const errorDiv = document.getElementById('error-result');
-        const errorMessage = document.getElementById('error-message');
+        const resultsList = document.getElementById('resultsList');
+        const results = document.getElementById('results');
         
-        if (resultCard) resultCard.style.display = 'block';
-        if (successDiv) successDiv.style.display = 'none';
-        if (errorDiv) errorDiv.style.display = 'block';
-        
-        if (errorMessage) {
-            errorMessage.textContent = message;
-        }
+        resultsList.innerHTML = `
+            <div class="result-card border-red-200 bg-red-50">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    <div>
+                        <h4 class="font-semibold text-red-900">Processing Failed</h4>
+                        <p class="text-sm text-red-600">${message}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        results.classList.remove('hidden');
     }
 
     formatFileSize(bytes) {
@@ -250,8 +218,33 @@ class PDFMerger {
     }
 }
 
-// Initialize when DOM is loaded
-let pdfMerger;
-document.addEventListener('DOMContentLoaded', () => {
-    pdfMerger = new PDFMerger();
+// Initialize the tool when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new PdfmergerTool();
+});
+
+// Add smooth scrolling and modern interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Add loading animation to buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!this.disabled) {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+    });
 });

@@ -40,6 +40,8 @@ def create_app():
             from urllib.parse import quote
             if "Suntyn@#$134_" in database_url:
                 database_url = database_url.replace("Suntyn@#$134_", quote("Suntyn@#$134_", safe=''))
+            elif "Suntyn2315db" in database_url:
+                database_url = database_url.replace("Suntyn2315db", quote("Suntyn2315db", safe=''))
             
             # Test connection briefly before using
             from sqlalchemy import create_engine, text
@@ -218,15 +220,18 @@ def create_app():
             flash(f'Tool "{tool_name}" not found. Please check the tool name or browse available tools.', 'error')
             return redirect(url_for('all_tools'))
         
-        # Generate tool display name
-        tool_display_name = tool_name.replace('-', ' ').title()
-        
-        return render_template('tool_page.html', 
-                             tool_name=tool_name,
-                             tool_display_name=tool_display_name,
-                             category=tool_category,
-                             category_data=TOOL_CATEGORIES[tool_category],
-                             tool_info=TOOL_CATEGORIES[tool_category])
+        # Try to use dedicated template first, fallback to generic
+        try:
+            return render_template(f'tools/{tool_name}.html')
+        except:
+            # Fallback to generic template if dedicated template doesn't exist
+            tool_display_name = tool_name.replace('-', ' ').title()
+            return render_template('tool_page.html', 
+                                 tool_name=tool_name,
+                                 tool_display_name=tool_display_name,
+                                 category=tool_category,
+                                 category_data=TOOL_CATEGORIES[tool_category],
+                                 tool_info=TOOL_CATEGORIES[tool_category])
 
     @app.route('/dashboard')
     @login_required

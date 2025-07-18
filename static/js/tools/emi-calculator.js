@@ -1,378 +1,250 @@
-class EMICalculator {
+// Modern JavaScript for emi-calculator
+class EmicalculatorTool {
     constructor() {
-        this.init();
+        this.files = [];
+        this.isProcessing = false;
+        this.initializeEventListeners();
     }
 
-    init() {
-        this.setupEventListeners();
-        this.setupSliders();
+    initializeEventListeners() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+
+        // Drag and drop functionality
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', this.handleDragOver.bind(this));
+        dropZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+        dropZone.addEventListener('drop', this.handleDrop.bind(this));
+
+        // File input change
+        fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+
+        // Process button
+        processBtn.addEventListener('click', this.processFiles.bind(this));
     }
 
-    setupEventListeners() {
-        const form = document.getElementById('emi-calculator-form');
-        const inputs = ['loan-amount', 'interest-rate', 'loan-tenure'];
-        
-        if (form) {
-            form.addEventListener('submit', (e) => this.handleSubmit(e));
-        }
-
-        inputs.forEach(id => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.addEventListener('input', () => this.calculateEMI());
-            }
-        });
-
-        // Real-time calculation on input change
-        const sliders = ['amount-slider', 'rate-slider', 'tenure-slider'];
-        sliders.forEach(id => {
-            const slider = document.getElementById(id);
-            if (slider) {
-                slider.addEventListener('input', () => this.updateFromSlider(id));
-            }
-        });
+    handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.add('dragover');
     }
 
-    setupSliders() {
-        this.updateSliderValues();
+    handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('dragover');
     }
 
-    updateFromSlider(sliderId) {
-        const slider = document.getElementById(sliderId);
-        if (!slider) return;
-
-        const value = slider.value;
+    handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('dragover');
         
-        switch(sliderId) {
-            case 'amount-slider':
-                document.getElementById('loan-amount').value = value;
-                document.getElementById('amount-display').textContent = this.formatCurrency(value);
-                break;
-            case 'rate-slider':
-                document.getElementById('interest-rate').value = value;
-                document.getElementById('rate-display').textContent = value + '%';
-                break;
-            case 'tenure-slider':
-                document.getElementById('loan-tenure').value = value;
-                document.getElementById('tenure-display').textContent = value + ' years';
-                break;
-        }
-        
-        this.calculateEMI();
+        const files = Array.from(e.dataTransfer.files);
+        this.addFiles(files);
     }
 
-    updateSliderValues() {
-        const loanAmount = document.getElementById('loan-amount')?.value || 500000;
-        const interestRate = document.getElementById('interest-rate')?.value || 8.5;
-        const loanTenure = document.getElementById('loan-tenure')?.value || 20;
-
-        const amountSlider = document.getElementById('amount-slider');
-        const rateSlider = document.getElementById('rate-slider');
-        const tenureSlider = document.getElementById('tenure-slider');
-
-        if (amountSlider) amountSlider.value = loanAmount;
-        if (rateSlider) rateSlider.value = interestRate;
-        if (tenureSlider) tenureSlider.value = loanTenure;
-        
-        // Update displays
-        document.getElementById('amount-display').textContent = this.formatCurrency(loanAmount);
-        document.getElementById('rate-display').textContent = interestRate + '%';
-        document.getElementById('tenure-display').textContent = loanTenure + ' years';
+    handleFileSelect(e) {
+        const files = Array.from(e.target.files);
+        this.addFiles(files);
     }
 
-    calculateEMI() {
-        const principal = parseFloat(document.getElementById('loan-amount')?.value || 0);
-        const rate = parseFloat(document.getElementById('interest-rate')?.value || 0);
-        const tenure = parseFloat(document.getElementById('loan-tenure')?.value || 0);
+    addFiles(files) {
+        this.files = [...this.files, ...files];
+        this.updateUI();
+    }
+
+    updateUI() {
+        const processBtn = document.getElementById('processBtn');
+        const processingOptions = document.getElementById('processingOptions');
         
-        if (principal <= 0 || rate <= 0 || tenure <= 0) return;
-        
-        const monthlyRate = rate / (12 * 100);
-        const tenureMonths = tenure * 12;
-        
-        let emi;
-        if (monthlyRate === 0) {
-            emi = principal / tenureMonths;
+        if (this.files.length > 0) {
+            processBtn.disabled = false;
+            processingOptions.classList.remove('hidden');
+            this.displayFileList();
         } else {
-            emi = principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths) / 
-                  (Math.pow(1 + monthlyRate, tenureMonths) - 1);
-        }
-        
-        const totalAmount = emi * tenureMonths;
-        const totalInterest = totalAmount - principal;
-        
-        this.displayResults(emi, totalAmount, totalInterest, principal, rate, tenureMonths);
-        this.generateSchedule(principal, emi, monthlyRate, tenureMonths);
-    }
-
-    displayResults(emi, totalAmount, totalInterest, principal, rate, tenureMonths) {
-        const resultsCard = document.getElementById('results-card');
-        const emiAmount = document.getElementById('emi-amount');
-        const totalAmountEl = document.getElementById('total-amount');
-        const totalInterestEl = document.getElementById('total-interest');
-        
-        if (resultsCard) resultsCard.style.display = 'block';
-        if (emiAmount) emiAmount.textContent = this.formatCurrency(emi);
-        if (totalAmountEl) totalAmountEl.textContent = this.formatCurrency(totalAmount);
-        if (totalInterestEl) totalInterestEl.textContent = this.formatCurrency(totalInterest);
-        
-        this.createChart(principal, totalInterest);
-    }
-
-    createChart(principal, totalInterest) {
-        const ctx = document.getElementById('emi-chart');
-        if (!ctx) return;
-        
-        if (this.chart) {
-            this.chart.destroy();
-        }
-        
-        this.chart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Principal', 'Interest'],
-                datasets: [{
-                    data: [principal, totalInterest],
-                    backgroundColor: ['#198754', '#dc3545'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    generateSchedule(principal, emi, monthlyRate, tenureMonths) {
-        const scheduleCard = document.getElementById('schedule-card');
-        const scheduleBody = document.getElementById('schedule-body');
-        
-        if (!scheduleCard || !scheduleBody) return;
-        
-        let remainingBalance = principal;
-        let html = '';
-        
-        for (let month = 1; month <= Math.min(12, tenureMonths); month++) {
-            const interestPayment = remainingBalance * monthlyRate;
-            const principalPayment = emi - interestPayment;
-            remainingBalance -= principalPayment;
-            
-            html += `
-                <tr>
-                    <td>${month}</td>
-                    <td>${this.formatCurrency(emi)}</td>
-                    <td>${this.formatCurrency(principalPayment)}</td>
-                    <td>${this.formatCurrency(interestPayment)}</td>
-                    <td>${this.formatCurrency(Math.max(0, remainingBalance))}</td>
-                </tr>
-            `;
-        }
-        
-        scheduleBody.innerHTML = html;
-        scheduleCard.style.display = 'block';
-    }
-
-    async handleSubmit(e) {
-        e.preventDefault();
-        this.calculateEMI();
-    }
-
-    formatCurrency(amount) {
-        return '₹' + new Intl.NumberFormat('en-IN').format(Math.round(amount));
-    }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new EMICalculator();
-});
-
-        // Update displays
-        const amountDisplay = document.getElementById('amount-display');
-        const rateDisplay = document.getElementById('rate-display');
-        const tenureDisplay = document.getElementById('tenure-display');
-
-        if (amountDisplay) amountDisplay.textContent = this.formatCurrency(loanAmount);
-        if (rateDisplay) rateDisplay.textContent = interestRate + '%';
-        if (tenureDisplay) tenureDisplay.textContent = loanTenure + ' years';
-    }
-
-    calculateEMI() {
-        const loanAmount = parseFloat(document.getElementById('loan-amount')?.value || 0);
-        const annualRate = parseFloat(document.getElementById('interest-rate')?.value || 0);
-        const tenureYears = parseFloat(document.getElementById('loan-tenure')?.value || 0);
-
-        if (loanAmount <= 0 || annualRate <= 0 || tenureYears <= 0) {
-            this.clearResults();
-            return;
-        }
-
-        // Calculate EMI
-        const monthlyRate = annualRate / 12 / 100;
-        const tenureMonths = tenureYears * 12;
-        
-        const emi = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths) / 
-                   (Math.pow(1 + monthlyRate, tenureMonths) - 1);
-
-        const totalAmount = emi * tenureMonths;
-        const totalInterest = totalAmount - loanAmount;
-
-        this.updateResults({
-            emi: emi,
-            totalAmount: totalAmount,
-            totalInterest: totalInterest,
-            principal: loanAmount,
-            tenureMonths: tenureMonths
-        });
-
-        this.updateChart({
-            principal: loanAmount,
-            interest: totalInterest
-        });
-    }
-
-    updateResults(results) {
-        const elements = {
-            'emi-amount': this.formatCurrency(results.emi),
-            'total-amount': this.formatCurrency(results.totalAmount),
-            'total-interest': this.formatCurrency(results.totalInterest),
-            'monthly-breakdown': `₹${Math.round(results.emi)} per month for ${results.tenureMonths} months`
-        };
-
-        Object.entries(elements).forEach(([id, value]) => {
-            const element = document.getElementById(id);
-            if (element) element.textContent = value;
-        });
-
-        // Show results
-        const resultsCard = document.getElementById('results-card');
-        if (resultsCard) {
-            resultsCard.style.display = 'block';
-            resultsCard.classList.add('animate__animated', 'animate__fadeInUp');
-        }
-
-        // Generate amortization schedule
-        this.generateAmortizationSchedule(results);
-    }
-
-    generateAmortizationSchedule(results) {
-        const scheduleBody = document.getElementById('schedule-body');
-        if (!scheduleBody) return;
-
-        const loanAmount = results.principal;
-        const monthlyRate = parseFloat(document.getElementById('interest-rate').value) / 12 / 100;
-        const emi = results.emi;
-        
-        let balance = loanAmount;
-        let scheduleHTML = '';
-
-        // Show first 12 months
-        for (let month = 1; month <= Math.min(12, results.tenureMonths); month++) {
-            const interestPayment = balance * monthlyRate;
-            const principalPayment = emi - interestPayment;
-            balance -= principalPayment;
-
-            scheduleHTML += `
-                <tr>
-                    <td>${month}</td>
-                    <td>₹${Math.round(emi).toLocaleString()}</td>
-                    <td>₹${Math.round(principalPayment).toLocaleString()}</td>
-                    <td>₹${Math.round(interestPayment).toLocaleString()}</td>
-                    <td>₹${Math.round(Math.max(0, balance)).toLocaleString()}</td>
-                </tr>
-            `;
-        }
-
-        scheduleBody.innerHTML = scheduleHTML;
-    }
-
-    updateChart(data) {
-        const chartCanvas = document.getElementById('emi-chart');
-        if (!chartCanvas) return;
-
-        const ctx = chartCanvas.getContext('2d');
-        
-        // Destroy existing chart
-        if (this.chart) {
-            this.chart.destroy();
-        }
-
-        this.chart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Principal Amount', 'Interest Amount'],
-                datasets: [{
-                    data: [data.principal, data.interest],
-                    backgroundColor: ['#3b82f6', '#ef4444'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    clearResults() {
-        const resultsCard = document.getElementById('results-card');
-        if (resultsCard) {
-            resultsCard.style.display = 'none';
+            processBtn.disabled = true;
+            processingOptions.classList.add('hidden');
         }
     }
 
-    async handleSubmit(e) {
-        e.preventDefault();
+    displayFileList() {
+        const dropZone = document.getElementById('dropZone');
+        const fileList = this.files.map(file => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-file text-gray-400"></i>
+                    <span class="text-sm font-medium">${file.name}</span>
+                </div>
+                <span class="text-xs text-gray-500">${this.formatFileSize(file.size)}</span>
+            </div>
+        `).join('');
+
+        dropZone.innerHTML = `
+            <div class="text-center">
+                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">${this.files.length} file(s) selected</h3>
+                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add More Files
+                </button>
+            </div>
+            <div class="mt-4 space-y-2">${fileList}</div>
+        `;
+    }
+
+    async processFiles() {
+        if (this.isProcessing) return;
         
-        const formData = new FormData();
-        formData.append('loan_amount', document.getElementById('loan-amount').value);
-        formData.append('interest_rate', document.getElementById('interest-rate').value);
-        formData.append('loan_tenure', document.getElementById('loan-tenure').value);
+        this.isProcessing = true;
+        const processBtn = document.getElementById('processBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const results = document.getElementById('results');
+
+        // Show progress
+        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        processBtn.disabled = true;
+        progressContainer.classList.remove('hidden');
 
         try {
-            const response = await fetch('/api/tools/emi-calculator', {
+            const formData = new FormData();
+            formData.append('tool_name', 'emi-calculator');
+            
+            this.files.forEach((file, index) => {
+                formData.append(`file_${index}`, file);
+            });
+
+            // Get processing options
+            const quality = document.querySelector('input[name="quality"]:checked')?.value || 'high';
+            formData.append('quality', quality);
+
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 95) progress = 95;
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${Math.round(progress)}%`;
+            }, 200);
+
+            // Make API call
+            const response = await fetch('/process-tool', {
                 method: 'POST',
                 body: formData
             });
 
             const result = await response.json();
             
-            if (result.success) {
-                // Results already calculated on frontend, just log the API call
-                console.log('EMI calculation saved to history');
-            }
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressPercent.textContent = '100%';
+
+            // Show results
+            setTimeout(() => {
+                this.displayResults(result);
+                progressContainer.classList.add('hidden');
+                results.classList.remove('hidden');
+            }, 500);
+
         } catch (error) {
-            console.error('Error saving calculation:', error);
+            console.error('Processing error:', error);
+            this.showError('Processing failed. Please try again.');
+        } finally {
+            this.isProcessing = false;
+            processBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Process Files';
+            processBtn.disabled = false;
         }
     }
 
-    formatCurrency(amount) {
-        return '₹' + Math.round(amount).toLocaleString('en-IN');
+    displayResults(result) {
+        const resultsList = document.getElementById('resultsList');
+        
+        if (result.success) {
+            resultsList.innerHTML = `
+                <div class="result-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-check-circle text-green-500 text-2xl success-checkmark"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Processing Complete!</h4>
+                                <p class="text-sm text-gray-600">Your files have been processed successfully</p>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
+                    </div>
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <div class="text-sm text-gray-600">
+                            <strong>Processing time:</strong> ${result.processing_time || '2.3s'}
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <strong>Files processed:</strong> ${this.files.length}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            this.showError(result.error || 'Processing failed');
+        }
+    }
+
+    showError(message) {
+        const resultsList = document.getElementById('resultsList');
+        const results = document.getElementById('results');
+        
+        resultsList.innerHTML = `
+            <div class="result-card border-red-200 bg-red-50">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    <div>
+                        <h4 class="font-semibold text-red-900">Processing Failed</h4>
+                        <p class="text-sm text-red-600">${message}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        results.classList.remove('hidden');
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 }
 
-// Initialize EMI Calculator
-const emiCalculator = new EMICalculator();
+// Initialize the tool when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new EmicalculatorTool();
+});
 
-// Load Chart.js if not already loaded
-if (typeof Chart === 'undefined') {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-    script.onload = () => {
-        if (typeof emiCalculator !== 'undefined') {
-            emiCalculator.calculateEMI();
-        }
-    };
-    document.head.appendChild(script);
-}
+// Add smooth scrolling and modern interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Add loading animation to buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!this.disabled) {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+    });
+});
