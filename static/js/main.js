@@ -259,7 +259,7 @@ async function handleToolSubmission(form) {
     const toolName = form.dataset.tool || window.location.pathname.split('/').pop();
     const submitBtn = form.querySelector('button[type="submit"]');
     const resultDiv = document.getElementById('tool-result') || createResultDiv();
-    
+
     if (!toolName) {
         showError('Tool name not specified');
         return;
@@ -273,7 +273,7 @@ async function handleToolSubmission(form) {
     try {
         const formData = new FormData(form);
         formData.append('tool_name', toolName);
-        
+
         const response = await fetch('/process-tool', {
             method: 'POST',
             body: formData
@@ -319,7 +319,7 @@ function showProfessionalSuccess(result) {
                         <p class="text-muted mb-0">${result.message || 'Your request has been processed successfully'}</p>
                     </div>
                 </div>
-                
+
                 ${result.processing_time ? `
                     <div class="d-flex align-items-center text-muted mb-3">
                         <i class="ti ti-clock me-2"></i>
@@ -570,7 +570,7 @@ function initializeFileUploads() {
             updateFileDisplay(this);
         });
     });
-    
+
     console.log('✅ Built-in drag-drop initialized (no external dependencies)');
 
 // Update file display
@@ -940,7 +940,7 @@ SuntynAI.prototype.initializePerformanceMonitoring = function() {
 SuntynAI.prototype.initializePWA = function() {
     // PWA features disabled for better performance
     console.log('PWA features disabled for better performance');
-    
+
     // Handle PWA install prompt (optional)
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -976,6 +976,7 @@ SuntynAI.prototype.createFloatingIcons = function() {
     }
 }
 
+// Floating animation for hero icons using CSS
 SuntynAI.prototype.initializeCSSAnimations = function() {
     // Intersection Observer for CSS animations
     const observerOptions = {
@@ -1001,6 +1002,12 @@ SuntynAI.prototype.initializeCSSAnimations = function() {
     // Observe category headers
     document.querySelectorAll('.category-header').forEach(header => {
         observer.observe(header);
+    });
+
+    //Floating animation for hero icons using CSS
+    const floatingIcons = document.querySelectorAll('.floating-icon');
+    floatingIcons.forEach((icon, index) => {
+        icon.style.animation = `float 3s ease-in-out infinite ${index * 0.2}s`;
     });
 }
 
