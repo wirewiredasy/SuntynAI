@@ -2,8 +2,8 @@ import os
 from datetime import timedelta
 
 class Config:
-    SECRET_KEY = os.environ.get('SESSION_SECRET', 'dev-secret-key')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///suntyn_ai.db')
+    SECRET_KEY = os.environ.get('SESSION_SECRET')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_recycle": 300,
