@@ -578,23 +578,54 @@
 
     <!-- Deferred Non-Critical Scripts -->
     <script>
-        // Load heavy libraries only when needed
+        // Secure library loading with error handling
         window.addEventListener('load', function() {
             const scripts = [
-                { src: 'https://cdn.socket.io/4.0.0/socket.io.min.js', condition: () => document.querySelector('[data-websocket]') },
-                { src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js', condition: () => document.querySelector('.sortable') },
-                { src: 'https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js', condition: () => true },
-                { src: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js', condition: () => document.querySelector('[data-qr]') },
-                { src: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', condition: () => document.querySelector('[data-pdf]') }
+                { 
+                    src: 'https://cdn.socket.io/4.0.0/socket.io.min.js', 
+                    condition: () => document.querySelector('[data-websocket]'),
+                    integrity: 'sha384-DkkOIcnYGAHPmFCzZdRAq2R5vBJtNZeHLBUCJhB5n3h8K9hBYLKthtkkKMIKFjLy'
+                },
+                { 
+                    src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js', 
+                    condition: () => document.querySelector('.sortable') 
+                },
+                { 
+                    src: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js', 
+                    condition: () => document.querySelector('canvas[id$="Chart"]') 
+                },
+                { 
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js', 
+                    condition: () => document.querySelector('.hero-content, .tool-card'),
+                    integrity: 'sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug=='
+                },
+                { 
+                    src: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js', 
+                    condition: () => document.querySelector('[data-qr]') 
+                },
+                { 
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 
+                    condition: () => document.querySelector('[data-pdf]') 
+                }
             ];
 
-            scripts.forEach(({ src, condition }) => {
+            scripts.forEach(({ src, condition, integrity }) => {
                 if (condition()) {
                     requestIdleCallback(() => {
                         const script = document.createElement('script');
                         script.src = src;
                         script.async = true;
                         script.defer = true;
+                        script.crossOrigin = 'anonymous';
+                        if (integrity) {
+                            script.integrity = integrity;
+                        }
+                        script.onerror = function() {
+                            console.warn(`Failed to load script: ${src}`);
+                        };
+                        script.onload = function() {
+                            console.log(`✅ Loaded: ${src.split('/').pop()}`);
+                        };
                         document.head.appendChild(script);
                     });
                 }

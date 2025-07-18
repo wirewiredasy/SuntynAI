@@ -234,30 +234,78 @@ class PerformanceOptimizer {
     // Measure and log performance metrics
     measurePerformance() {
         if ('performance' in window && 'getEntriesByType' in performance) {
-            const navigation = performance.getEntriesByType('navigation')[0];
-            const paint = performance.getEntriesByType('paint');
+            try {
+                const navigation = performance.getEntriesByType('navigation')[0];
+                const paint = performance.getEntriesByType('paint');
 
-            const metrics = {
-                'DNS Lookup': Math.round(navigation.domainLookupEnd - navigation.domainLookupStart),
-                'TCP Connection': Math.round(navigation.connectEnd - navigation.connectStart),
-                'Server Response': Math.round(navigation.responseEnd - navigation.responseStart),
-                'DOM Processing': Math.round(navigation.domContentLoadedEventEnd - navigation.responseEnd),
-                'Resource Loading': Math.round(navigation.loadEventEnd - navigation.domContentLoadedEventEnd),
-                'Total Load Time': Math.round(navigation.loadEventEnd - navigation.fetchStart)
-            };
+                if (!navigation) {
+                    console.warn('Navigation timing not available');
+                    return;
+                }
 
-            paint.forEach(entry => {
-                metrics[entry.name] = Math.round(entry.startTime);
-            });
+                const metrics = {
+                    'DNS Lookup': Math.round(navigation.domainLookupEnd - navigation.domainLookupStart) || 0,
+                    'TCP Connection': Math.round(navigation.connectEnd - navigation.connectStart) || 0,
+                    'Server Response': Math.round(navigation.responseEnd - navigation.responseStart) || 0,
+                    'DOM Processing': Math.round(navigation.domContentLoadedEventEnd - navigation.responseEnd) || 0,
+                    'Resource Loading': Math.round(navigation.loadEventEnd - navigation.domContentLoadedEventEnd) || 0,
+                    'Total Load Time': Math.round(navigation.loadEventEnd - navigation.fetchStart) || 0
+                };
 
-            console.table(metrics);
-            
-            // Report slow performance
-            if (metrics['Total Load Time'] > 3000) {
-                console.warn('🐌 Slow page load detected:', metrics['Total Load Time'], 'ms');
-                this.reportSlowPerformance(metrics);
+                if (paint && paint.length > 0) {
+                    paint.forEach(entry => {
+                        if (entry && entry.name && entry.startTime) {
+                            metrics[entry.name] = Math.round(entry.startTime);
+                        }
+                    });
+                }
+
+                console.table(metrics);
+                
+                // Show performance indicator
+                this.showPerformanceIndicator(metrics['Total Load Time']);
+                
+                // Report slow performance
+                if (metrics['Total Load Time'] > 3000) {
+                    console.warn('🐌 Slow page load detected:', metrics['Total Load Time'], 'ms');
+                    this.reportSlowPerformance(metrics);
+                }
+
+                // Suggest optimizations
+                if (metrics['Total Load Time'] > 5000) {
+                    console.log('💡 Performance suggestions:', [
+                        'Enable browser caching',
+                        'Optimize images',
+                        'Minify CSS/JS',
+                        'Use a CDN'
+                    ]);
+                }
+            } catch (error) {
+                console.warn('Performance measurement failed:', error);
             }
         }
+    }
+
+    showPerformanceIndicator(loadTime) {
+        const indicator = document.createElement('div');
+        indicator.className = 'performance-indicator';
+        indicator.textContent = `Load: ${loadTime}ms`;
+        
+        if (loadTime > 3000) {
+            indicator.style.backgroundColor = '#dc3545';
+        } else if (loadTime > 1000) {
+            indicator.style.backgroundColor = '#ffc107';
+        } else {
+            indicator.style.backgroundColor = '#28a745';
+        }
+        
+        document.body.appendChild(indicator);
+        indicator.classList.add('show');
+        
+        setTimeout(() => {
+            indicator.classList.remove('show');
+            setTimeout(() => indicator.remove(), 300);
+        }, 3000);
     }
 
     reportSlowPerformance(metrics) {

@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize only critical components immediately
     initializeToolSearch();
     initializeToolForms();
-    
+
     // Log initial load time
     const domLoadTime = performance.now() - startTime;
     console.log(`DOM ready in: ${domLoadTime.toFixed(2)}ms`);
-    
+
     // Use intersection observer for lazy initialization
     initializeLazyComponents();
 });
@@ -58,38 +58,107 @@ function initializeLazyComponents() {
 
 // Optimized Chart.js initialization
 function initializeCharts() {
-    if (window.chartsInitialized) return;
-    
-    try {
-        if (typeof Chart !== 'undefined') {
-            // Only cleanup if charts exist
-            if (Chart.registry?.instances) {
-                Object.values(Chart.registry.instances).forEach(instance => {
-                    if (instance?.destroy) {
-                        try { instance.destroy(); } catch (e) {}
+        // Only proceed if Chart.js is loaded
+        if (typeof Chart === 'undefined') {
+            console.warn('Chart.js not loaded, skipping chart initialization');
+            return;
+        }
+
+        // Safely destroy existing charts
+        if (window.chartInstances && Array.isArray(window.chartInstances)) {
+            window.chartInstances.forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    try {
+                        chart.destroy();
+                    } catch (error) {
+                        console.warn('Error destroying chart:', error);
+                    }
+                }
+            });
+        }
+
+        window.chartInstances = [];
+
+        // Initialize dashboard charts if they exist
+        const usageChartCanvas = document.getElementById('usageChart');
+        const performanceChartCanvas = document.getElementById('performanceChart');
+
+        if (usageChartCanvas && usageChartCanvas.getContext) {
+            try {
+                const usageChart = new Chart(usageChartCanvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['PDF Tools', 'Image Tools', 'Video Tools', 'Finance Tools', 'Others'],
+                        datasets: [{
+                            data: [30, 25, 20, 15, 10],
+                            backgroundColor: [
+                                '#dc3545', '#007bff', '#28a745', '#ffc107', '#6c757d'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
                     }
                 });
+                window.chartInstances.push(usageChart);
+            } catch (error) {
+                console.warn('Failed to create usage chart:', error);
             }
-            window.chartsInitialized = true;
-            console.log('✅ Charts initialized successfully');
         }
-    } catch (error) {
-        console.warn('⚠️ Chart.js initialization skipped');
+
+        if (performanceChartCanvas && performanceChartCanvas.getContext) {
+            try {
+                const performanceChart = new Chart(performanceChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Tools Used',
+                            data: [12, 19, 15, 25, 22, 18, 20],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                window.chartInstances.push(performanceChart);
+            } catch (error) {
+                console.warn('Failed to create performance chart:', error);
+            }
+        }
+
+        console.log('✅ Charts initialized successfully');
     }
-}
 
 // Optimized animations with performance checks
 function initializeAnimations() {
     if (window.animationsInitialized) return;
-    
+
     try {
         // Check if animations are needed and supported
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (prefersReducedMotion) return;
-        
+
         const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
         if (animationElements.length === 0) return;
-        
+
         // Load GSAP only when needed
         if (typeof gsap !== 'undefined') {
             gsap.from('.floating-icon', {
@@ -105,7 +174,7 @@ function initializeAnimations() {
                 el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
             });
         }
-        
+
         window.animationsInitialized = true;
         console.log('✅ Animations initialized successfully');
     } catch (error) {
@@ -669,19 +738,19 @@ class SuntynAI {
         // Modern animation system with Lenis + GSAP
         if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
             gsap.registerPlugin(ScrollTrigger);
-            
+
             // Wait for smooth scroll to initialize
             setTimeout(() => {
                 // Hero section timeline animation
                 const heroTl = gsap.timeline();
-                
+
                 if (document.querySelector('.hero-title')) {
                     heroTl.fromTo('.hero-title', 
                         { y: 100, opacity: 0 },
                         { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
                     );
                 }
-                
+
                 if (document.querySelector('.hero-subtitle')) {
                     heroTl.fromTo('.hero-subtitle',
                         { y: 50, opacity: 0 },
@@ -689,7 +758,7 @@ class SuntynAI {
                         "-=0.6"
                     );
                 }
-                
+
                 if (document.querySelector('.hero-buttons')) {
                     heroTl.fromTo('.hero-buttons',
                         { y: 30, opacity: 0 },
@@ -778,7 +847,7 @@ class SuntynAI {
                     console.warn('Performance monitoring error:', error);
                 }
             };
-            
+
             if (document.readyState === 'complete') {
                 measurePerformance();
             } else {
@@ -793,7 +862,7 @@ class SuntynAI {
                 if (window.gsap) {
                     window.gsap.killTweensOf('*');
                 }
-                
+
                 // Clean up charts safely
                 if (typeof Chart !== 'undefined' && Chart.registry) {
                     const instances = Object.values(Chart.registry.instances || {});
@@ -818,7 +887,7 @@ class SuntynAI {
                 })
                 .then(registration => {
                     console.log('✅ Service Worker registered successfully');
-                    
+
                     // Check for updates
                     registration.addEventListener('updatefound', () => {
                         console.log('Service Worker update found');
@@ -846,7 +915,7 @@ class SuntynAI {
         const heroSection = document.querySelector('.hero-section');
         if (heroSection && !document.querySelector('.floating-icon')) {
             const icons = ['🚀', '💡', '⚡', '🎯', '🔧', '📊'];
-            
+
             icons.forEach((icon, index) => {
                 const iconEl = document.createElement('div');
                 iconEl.className = 'floating-icon';

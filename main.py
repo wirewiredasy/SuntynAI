@@ -31,3 +31,40 @@ def create_app():
     ]
     app.config['COMPRESS_LEVEL'] = 6
     app.config['COMPRESS_MIN_SIZE'] = 500
+
+    # Security headers
+    @app.after_request
+    def add_security_headers(response):
+        # Content Security Policy
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
+            "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com "
+            "https://auth.util.repl.co; "
+            "style-src 'self' 'unsafe-inline' "
+            "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+            "img-src 'self' data: https:; "
+            "font-src 'self' https://cdn.jsdelivr.net; "
+            "connect-src 'self' https:; "
+            "frame-src 'self' https://auth.util.repl.co; "
+            "object-src 'none'; "
+            "base-uri 'self';"
+        )
+        
+        # Other security headers
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        response.headers['Permissions-Policy'] = (
+            'geolocation=(), microphone=(), camera=(), '
+            'payment=(), usb=(), magnetometer=(), gyroscope=()'
+        )
+        
+        # Performance headers
+        if request.endpoint and 'static' in request.endpoint:
+            response.headers['Cache-Control'] = 'public, max-age=31536000'
+        else:
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            
+        return response
