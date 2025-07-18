@@ -18,10 +18,16 @@ class WebSocketClient {
         // Enable WebSocket for real-time features
         console.log('🔌 WebSocket client initialized');
         
-        if (typeof io !== 'undefined') {
-            this.connect();
-        } else {
-            console.warn('Socket.IO not available, real-time features disabled');
+        try {
+            if (typeof io !== 'undefined') {
+                this.connect();
+            } else {
+                console.warn('Socket.IO not available, real-time features disabled');
+                this.connected = false;
+                this.updateConnectionStatus(false);
+            }
+        } catch (error) {
+            console.warn('WebSocket initialization failed:', error);
             this.connected = false;
             this.updateConnectionStatus(false);
         }

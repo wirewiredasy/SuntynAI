@@ -32,7 +32,7 @@ def create_app():
         # Import our professional database config
         from database_config import get_database_url
         database_url = get_database_url()
-        
+
         if "postgresql" in database_url:
             # Use new Supabase with optimized IPv4 connection
             app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -69,7 +69,7 @@ def create_app():
         }
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    
+
     # Upload configuration
     app.config["UPLOAD_FOLDER"] = 'uploads'
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
@@ -213,15 +213,15 @@ def create_app():
             if tool_name in data['tools']:
                 tool_category = category
                 break
-        
+
         if not tool_category:
             flash(f'Tool "{tool_name}" not found. Please check the tool name or browse available tools.', 'error')
             return redirect(url_for('all_tools'))
-        
+
         # Check if dedicated template exists
         import os
         template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}.html')
-        
+
         if os.path.exists(template_path):
             return render_template(f'tools/{tool_name}.html', 
                                  tool_name=tool_name,
@@ -239,10 +239,39 @@ def create_app():
     @app.route('/dashboard')
     @login_required
     def dashboard():
-        from models import UserActivity, ToolHistory
-        recent_activity = UserActivity.query.filter_by(user_id=current_user.id).order_by(UserActivity.timestamp.desc()).limit(10).all()
-        tool_history = ToolHistory.query.filter_by(user_id=current_user.id).order_by(ToolHistory.created_at.desc()).limit(5).all()
-        return render_template('dashboard.html', recent_activity=recent_activity, tool_history=tool_history)
+        try:
+            # Initialize empty lists as fallback
+            recent_activity = []
+            tool_history = []
+
+            try:
+                # Get recent activity with error handling
+                from models import UserActivity
+                recent_activity = UserActivity.query.filter_by(user_id=current_user.id)\
+                                                   .order_by(UserActivity.timestamp.desc())\
+                                                   .limit(10).all()
+            except Exception as e:
+                logging.warning(f"Could not fetch recent activity: {str(e)}")
+                recent_activity = []
+
+            try:
+                # Get tool history with error handling
+                from models import ToolHistory
+                tool_history = ToolHistory.query.filter_by(user_id=current_user.id)\
+                                               .order_by(ToolHistory.created_at.desc())\
+                                               .limit(15).all()
+            except Exception as e:
+                logging.warning(f"Could not fetch tool history: {str(e)}")
+                tool_history = []
+
+            return render_template('dashboard.html', 
+                                 recent_activity=recent_activity or [],
+                                 tool_history=tool_history or [],
+                                 current_user=current_user)
+        except Exception as e:
+            logging.error(f"Critical dashboard error: {str(e)}")
+            flash('Dashboard temporarily unavailable. Please try again.', 'error')
+            return redirect(url_for('index'))
 
     # Authentication routes
     @app.route('/register', methods=['GET', 'POST'])
@@ -251,34 +280,34 @@ def create_app():
             try:
                 from models import User
                 data = request.get_json() if request.is_json else request.form
-                
+
                 username = data.get('username')
                 email = data.get('email')
                 password = data.get('password')
-                
+
                 if not all([username, email, password]):
                     return jsonify({'success': False, 'error': 'All fields are required'}), 400
-                
+
                 # Check if user exists
                 if User.query.filter_by(username=username).first():
                     return jsonify({'success': False, 'error': 'Username already exists'}), 400
                 if User.query.filter_by(email=email).first():
                     return jsonify({'success': False, 'error': 'Email already exists'}), 400
-                
+
                 # Create new user
                 user = User(username=username, email=email)
                 user.password_hash = generate_password_hash(password)
-                
+
                 db.session.add(user)
                 db.session.commit()
-                
+
                 login_user(user)
                 return jsonify({'success': True, 'redirect': url_for('dashboard')})
-                
+
             except Exception as e:
                 logging.error(f"Registration error: {str(e)}")
                 return jsonify({'success': False, 'error': 'Registration failed'}), 500
-        
+
         return render_template('auth/register.html')
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -287,25 +316,25 @@ def create_app():
             try:
                 from models import User
                 data = request.get_json() if request.is_json else request.form
-                
+
                 username = data.get('username')
                 password = data.get('password')
-                
+
                 if not all([username, password]):
                     return jsonify({'success': False, 'error': 'Username and password are required'}), 400
-                
+
                 user = User.query.filter_by(username=username).first()
-                
+
                 if user and check_password_hash(user.password_hash, password):
                     login_user(user, remember=data.get('remember', False))
                     return jsonify({'success': True, 'redirect': url_for('dashboard')})
                 else:
                     return jsonify({'success': False, 'error': 'Invalid username or password'}), 401
-                    
+
             except Exception as e:
                 logging.error(f"Login error: {str(e)}")
                 return jsonify({'success': False, 'error': 'Login failed'}), 500
-        
+
         return render_template('auth/login.html')
 
     @app.route('/logout')
@@ -326,7 +355,7 @@ def create_app():
             # Import universal tool processor
             from tools.universal_processor import UniversalToolProcessor
             processor = UniversalToolProcessor()
-            
+
             # Process the tool
             start_time = datetime.now()
             result = processor.process_tool(tool_name, request.files, request.form)
@@ -340,7 +369,7 @@ def create_app():
             if current_user.is_authenticated:
                 try:
                     from models import UserActivity, ToolHistory
-                    
+
                     # Log user activity
                     activity = UserActivity(
                         user_id=current_user.id,
@@ -348,7 +377,7 @@ def create_app():
                         success=result.get('success', False)
                     )
                     db.session.add(activity)
-                    
+
                     # Log tool history if successful
                     if result.get('success'):
                         file_obj = request.files.get('file') or request.files.get('files')
@@ -356,7 +385,7 @@ def create_app():
                             filename = file_obj.filename
                         else:
                             filename = None
-                            
+
                         history = ToolHistory(
                             user_id=current_user.id,
                             tool_name=tool_name,
@@ -365,7 +394,7 @@ def create_app():
                             file_path=result.get('download_url', '').replace('/uploads/', '') if result.get('download_url') else None
                         )
                         db.session.add(history)
-                    
+
                     db.session.commit()
                 except Exception as db_error:
                     logging.warning(f"Failed to log tool history: {str(db_error)}")
@@ -419,7 +448,7 @@ def create_app():
     @app.route('/cookie-policy')
     def cookie_policy():
         return render_template('legal/cookie_policy.html')
-    
+
     @app.route('/privacy')
     def privacy():
         return render_template('privacy.html')

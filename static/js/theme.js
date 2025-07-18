@@ -166,6 +166,17 @@ const themeManager = new ThemeManager();
 // Export for global access
 window.themeManager = themeManager;
 
+// Global toggle function
+function toggleTheme() {
+    themeManager.toggleTheme();
+}
+
+// Initialize on DOM content loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure theme is applied immediately
+    themeManager.applyTheme(themeManager.getCurrentTheme());
+});
+
 // Real-time theme synchronization
 document.addEventListener('DOMContentLoaded', function() {
     // Theme persistence for forms
