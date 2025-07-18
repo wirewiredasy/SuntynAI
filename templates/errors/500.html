@@ -130,7 +130,7 @@
                 </div>
                 <div class="col-md-6">
                     <small class="text-muted">Timestamp:</small>
-                    <div class="fw-bold" id="incident-time">{{ moment().strftime('%Y-%m-%d %H:%M:%S UTC') if moment else 'N/A' }}</div>
+                    <div class="fw-bold" id="incident-time">{{ moment().format('YYYY-MM-DD HH:mm:ss UTC') }}</div>
                 </div>
             </div>
             <div class="mt-3">

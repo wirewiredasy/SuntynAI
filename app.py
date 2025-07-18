@@ -302,13 +302,6 @@ def create_app():
             result = processor.process_tool(tool_name, request.files, request.form)
             processing_time = (datetime.now() - start_time).total_seconds()
 
-            # Ensure result has required fields
-            if not isinstance(result, dict):
-                result = {'success': True, 'message': f'{tool_name} processed successfully'}
-            
-            if 'success' not in result:
-                result['success'] = True
-
             # Log activity and history if user is logged in
             if current_user.is_authenticated:
                 try:
@@ -338,8 +331,7 @@ def create_app():
                     logging.warning(f"Failed to log tool history: {str(db_error)}")
 
             # Add processing time to result
-            result['processing_time'] = f"{processing_time:.3f}s"
-            result['timestamp'] = datetime.now().isoformat()
+            result['processing_time'] = f"{processing_time:.2f}s"
             return jsonify(result)
 
         except ImportError as import_error:
@@ -468,8 +460,7 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
-        from datetime import datetime
-        return render_template('errors/500.html', moment=datetime.utcnow), 500
+        return render_template('errors/500.html'), 500
 
     @app.errorhandler(403)
     def forbidden_error(error):

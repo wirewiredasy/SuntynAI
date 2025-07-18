@@ -805,8 +805,7 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.3s ease;
 }
 
-.```python
-stat-bubble:nth-child(1) { animation-delay: 0s; }
+.stat-bubble:nth-child(1) { animation-delay: 0s; }
 .stat-bubble:nth-child(2) { animation-delay: 0.5s; }
 .stat-bubble:nth-child(3) { animation-delay: 1s; }
 
@@ -1216,28 +1215,28 @@ stat-bubble:nth-child(1) { animation-delay: 0s; }
     .hero-title-3d {
         font-size: 3.5rem;
     }
-
+    
     .hero-visual-3d {
         height: 500px;
         margin-top: 3rem;
     }
-
+    
     .tool-cube {
         width: 60px;
         height: 60px;
     }
-
+    
     .cube-face {
         width: 60px;
         height: 60px;
         font-size: 1.5rem;
     }
-
+    
     .core-sphere {
         width: 120px;
         height: 120px;
     }
-
+    
     .core-inner {
         width: 80px;
         height: 80px;
@@ -1249,24 +1248,24 @@ stat-bubble:nth-child(1) { animation-delay: 0s; }
     .hero-title-3d {
         font-size: 2.8rem;
     }
-
+    
     .subtitle-3d .typing-text {
         font-size: 1.1rem;
     }
-
+    
     .action-buttons-3d {
         flex-direction: column;
         align-items: stretch;
     }
-
+    
     .floating-stats {
         justify-content: center;
     }
-
+    
     .hero-visual-3d {
         height: 400px;
     }
-
+    
     .tool-info-panel {
         position: relative;
         bottom: auto;
@@ -1281,21 +1280,21 @@ stat-bubble:nth-child(1) { animation-delay: 0s; }
     .hero-title-3d {
         font-size: 2.2rem;
     }
-
+    
     .badge-3d {
         padding: 0.8rem 1.5rem;
         font-size: 0.85rem;
     }
-
+    
     .floating-stats {
         gap: 1rem;
     }
-
+    
     .stat-bubble {
         min-width: 80px;
         padding: 1rem 0.8rem;
     }
-
+    
     .stat-number {
         font-size: 1.5rem;
     }
@@ -1558,39 +1557,39 @@ stat-bubble:nth-child(1) { animation-delay: 0s; }
     .hero-title {
         font-size: 2.5rem;
     }
-
+    
     .title-line-2 {
         font-size: 3rem;
     }
-
+    
     .hero-subtitle {
         font-size: 1rem;
     }
-
+    
     .hero-actions {
         flex-direction: column;
         align-items: stretch;
     }
-
+    
     .hero-stats {
         grid-template-columns: repeat(2, 1fr);
     }
-
+    
     .trust-indicators {
         flex-direction: column;
         gap: 1rem;
     }
-
+    
     .tool-showcase-3d {
         width: 350px;
         height: 350px;
     }
-
+    
     .tool-orbit {
         width: 200px;
         height: 200px;
     }
-
+    
     .feature-cards-preview {
         position: relative;
         bottom: auto;
@@ -2375,17 +2374,17 @@ stat-bubble:nth-child(1) { animation-delay: 0s; }
     .brand-name {
         font-size: 1.3rem;
     }
-
+    
     .search-container {
         width: 100%;
         margin: 1rem 0;
     }
-
+    
     .nav-link-custom {
         padding: 1rem;
         margin: 0.25rem 0;
     }
-
+    
     .auth-btn {
         width: 100%;
         justify-content: center;
@@ -2397,7 +2396,7 @@ stat-bubble:nth-child(1) { animation-delay: 0s; }
     .brand-tagline {
         display: none;
     }
-
+    
     .user-name {
         display: none;
     }
@@ -2781,41 +2780,6 @@ footer .border-secondary {
     }
 }
 
-/* Tool Cards Animation */
-.tool-card {
-    transition: all 0.3s ease;
-}
-
-.tool-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-/* Floating animations */
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-@keyframes fadeInUp {
-    from { 
-        opacity: 0; 
-        transform: translateY(20px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
-}
-
-.floating-icon {
-    animation: float 3s ease-in-out infinite;
-}
-
-.hero-animation {
-    animation: fadeInUp 0.6s ease-out;
-}
-
 /* Tool Card Enhanced Animations */
 .tool-card {
     opacity: 0;
@@ -2971,11 +2935,11 @@ html {
         animation: none !important;
         transition: opacity 0.3s ease !important;
     }
-
+    
     .tool-card:hover {
         transform: none !important;
     }
-
+    
     html {
         scroll-behavior: auto;
     }
@@ -3118,20 +3082,20 @@ html.lenis {
         min-height: 60vh;
         padding: 2rem 1rem;
     }
-
+    
     .card {
         margin-bottom: 1rem;
     }
-
+    
     .btn {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
-
+    
     .table-responsive {
         border-radius: 8px;
     }
-
+    
     .drag-drop-zone {
         padding: 2rem 1rem;
     }
@@ -3149,16 +3113,16 @@ html.lenis {
     .hero-section {
         min-height: 50vh;
     }
-
+    
     .hero-section h1 {
         font-size: 2rem;
     }
-
+    
     .btn-group {
         flex-direction: column;
         gap: 0.5rem;
     }
-
+    
     .stats-row {
         flex-direction: column;
         gap: 1rem;
