@@ -27,36 +27,26 @@ def create_app():
     app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-    # Database configuration with fallback handling
-    database_url = os.environ.get("DATABASE_URL")
-    
-    # First try SQLite to ensure the app runs properly
+    # Database configuration with proper Supabase handling
     try:
-        if database_url and "supabase" in database_url:
-            # Try Supabase connection with proper encoding
-            if database_url.startswith("postgres://"):
-                database_url = database_url.replace("postgres://", "postgresql://", 1)
-            
-            from urllib.parse import quote
-            if "Suntyn@#$134_" in database_url:
-                database_url = database_url.replace("Suntyn@#$134_", quote("Suntyn@#$134_", safe=''))
-            elif "Suntyn2315db" in database_url:
-                database_url = database_url.replace("Suntyn2315db", quote("Suntyn2315db", safe=''))
-            
-            # Test connection briefly before using
-            from sqlalchemy import create_engine, text
-            test_engine = create_engine(database_url, pool_pre_ping=True)
-            with test_engine.connect() as conn:
-                conn.execute(text("SELECT 1"))
-            test_engine.dispose()
-            
+        # Import our professional database config
+        from database_config import get_database_url
+        database_url = get_database_url()
+        
+        if "postgresql" in database_url and "supabase" in database_url:
+            # Use Supabase with optimized settings
             app.config["SQLALCHEMY_DATABASE_URI"] = database_url
             app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-                "pool_recycle": 300,
+                "pool_size": 5,
+                "max_overflow": 10,
+                "pool_recycle": 3600,
                 "pool_pre_ping": True,
                 "connect_args": {
-                    "connect_timeout": 10,
-                    "application_name": "Suntyn_AI_Platform"
+                    "sslmode": "prefer",
+                    "connect_timeout": 60,
+                    "application_name": "Suntyn_AI_Platform",
+                    "keepalives_idle": 600,
+                    "keepalives_interval": 30
                 }
             }
             logging.info("Using Supabase PostgreSQL database")

@@ -22,31 +22,19 @@ logger = logging.getLogger(__name__)
 def get_database_url():
     """Get database URL with proper error handling"""
     try:
-        # Priority 1: Check for Render's automatic DATABASE_URL
-        if os.getenv("DATABASE_URL"):
-            logger.info("Using Render PostgreSQL database")
-            return os.getenv("DATABASE_URL")
-
-        # Priority 2: Check for custom DB_SOURCE configuration
+        # Priority 1: Check for custom DB_SOURCE configuration first
         db_source = os.getenv("DB_SOURCE", "").lower()
 
         if db_source == "supabase":
-            database_url = os.getenv("DATABASE_SUPABASE_URL")
-            if not database_url:
-                raise ValueError("DATABASE_SUPABASE_URL environment variable is required")
-
-            # Fix URL encoding for special characters in password
-            if "Suntyn@#$134_" in database_url:
-                logger.info("Encoding special characters in password")
-                # Extract and encode the password properly
-                password = "Suntyn@#$134_"
-                encoded_password = quote_plus(password)
-                # Replace the password part in URL
-                database_url = database_url.replace(password, encoded_password)
-                logger.info("Password encoded successfully")
-
+            # Use the corrected Supabase URL
+            database_url = "postgresql://postgres:Suntyn%40%23%24134_%40db.zypudpxacebcurnttfdi.supabase.co:5432/postgres"
             logger.info("Using Supabase PostgreSQL database")
             return database_url
+
+        # Priority 2: Check for Render's automatic DATABASE_URL
+        elif os.getenv("DATABASE_URL"):
+            logger.info("Using Render PostgreSQL database")
+            return os.getenv("DATABASE_URL")
 
         elif db_source == "neon":
             database_url = os.getenv("DATABASE_NEON_URL")
@@ -102,7 +90,7 @@ class DatabaseConfig:
                     # Replace the password part in URL
                     database_url = database_url.replace(password, encoded_password)
                     logger.info("Password encoded successfully")
-                
+
                 logger.info("Using Supabase PostgreSQL database")
                 return database_url
 
@@ -189,7 +177,7 @@ class DatabaseConfig:
         for i, strategy in enumerate(strategies, 1):
             try:
                 logger.info(f"Trying Supabase connection strategy {i}")
-                
+
                 self.engine = create_engine(
                     database_url,
                     pool_size=3,
@@ -211,7 +199,7 @@ class DatabaseConfig:
                     autoflush=False,
                     bind=self.engine
                 )
-                
+
                 return True
 
             except Exception as e:
@@ -259,7 +247,7 @@ class DatabaseConfig:
         try:
             sqlite_url = "sqlite:///suntyn_ai_fallback.db"
             logger.info("Initializing SQLite fallback database")
-            
+
             self.engine = create_engine(
                 sqlite_url,
                 pool_pre_ping=True,
