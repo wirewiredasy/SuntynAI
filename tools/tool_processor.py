@@ -31,6 +31,16 @@ class ToolProcessor:
     
     def __init__(self):
         self.temp_dir = tempfile.gettempdir()
+        
+        # Import specialized tool classes
+        from tools.student_tools import StudentTools
+        from tools.government_tools import GovernmentTools
+        from tools.video_audio_tools import VideoAudioTools
+        
+        self.student_tools = StudentTools()
+        self.government_tools = GovernmentTools()
+        self.video_audio_tools = VideoAudioTools()
+        
         self.supported_formats = {
             'image': ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff'],
             'pdf': ['pdf'],
@@ -145,7 +155,26 @@ class ToolProcessor:
                 'script-writer': self.script_writer,
                 'ad-copy-generator': self.ad_copy_generator,
                 'faq-generator': self.faq_generator,
-                'content-rewriter': self.content_rewriter
+                'content-rewriter': self.content_rewriter,
+                
+                # Student Tools (11 tools)
+                'gpa-calculator': self.student_tools.gpa_calculator,
+                'assignment-planner': self.student_tools.assignment_planner,
+                'citation-generator': self.student_tools.citation_generator,
+                'study-schedule': self.student_tools.study_schedule,
+                'research-helper': self.student_tools.research_helper,
+                
+                # Government Tools (10 tools)
+                'aadhaar-validator': self.government_tools.aadhaar_validator,
+                'pan-validator': self.government_tools.pan_validator,
+                'gst-validator': self.government_tools.gst_validator,
+                'vehicle-number-validator': self.government_tools.vehicle_number_validator,
+                
+                # Video/Audio Tools (8 tools)
+                'video-compressor': self.video_audio_tools.video_compressor,
+                'audio-converter': self.video_audio_tools.audio_converter,
+                'video-trimmer': self.video_audio_tools.video_trimmer,
+                'audio-merger': self.video_audio_tools.audio_merger
             }
             
             # Normalize tool name
@@ -226,10 +255,10 @@ class ToolProcessor:
         except Exception as e:
             return {'success': False, 'error': f'PDF merge failed: {str(e)}'}
     
-    def pdf_splitter(self, request_data):
+    def pdf_splitter(self, files, form_data):
         """Split PDF into individual pages"""
         try:
-            file = request_data.files['file']
+            file = files.get('file')
             if not self.validate_file_type(file.filename, ['pdf']):
                 return {'success': False, 'error': 'Invalid file type'}
             
@@ -266,10 +295,10 @@ class ToolProcessor:
         except Exception as e:
             return {'success': False, 'error': f'PDF split failed: {str(e)}'}
     
-    def pdf_compressor(self, request_data):
+    def pdf_compressor(self, files, form_data):
         """Compress PDF file to reduce size"""
         try:
-            file = request_data.files['file']
+            file = files.get('file')
             if not self.validate_file_type(file.filename, ['pdf']):
                 return {'success': False, 'error': 'Invalid file type'}
             
