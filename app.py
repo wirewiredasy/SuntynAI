@@ -27,19 +27,41 @@ def create_app():
     app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-    # Simple database configuration for Replit
+    # Database configuration with fallback handling
     database_url = os.environ.get("DATABASE_URL")
-    if database_url:
-        # Fix postgresql URLs for SQLAlchemy
-        if database_url.startswith("postgres://"):
-            database_url = database_url.replace("postgres://", "postgresql://", 1)
-        app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-            "pool_recycle": 300,
-            "pool_pre_ping": True,
-        }
-    else:
-        # Fallback to SQLite for development
+    
+    # First try SQLite to ensure the app runs properly
+    try:
+        if database_url and "supabase" in database_url:
+            # Try Supabase connection with proper encoding
+            if database_url.startswith("postgres://"):
+                database_url = database_url.replace("postgres://", "postgresql://", 1)
+            
+            from urllib.parse import quote
+            if "Suntyn@#$134_" in database_url:
+                database_url = database_url.replace("Suntyn@#$134_", quote("Suntyn@#$134_", safe=''))
+            
+            # Test connection briefly before using
+            from sqlalchemy import create_engine, text
+            test_engine = create_engine(database_url, pool_pre_ping=True)
+            with test_engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            test_engine.dispose()
+            
+            app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+            app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+                "pool_recycle": 300,
+                "pool_pre_ping": True,
+                "connect_args": {
+                    "connect_timeout": 10,
+                    "application_name": "Suntyn_AI_Platform"
+                }
+            }
+            logging.info("Using Supabase PostgreSQL database")
+        else:
+            raise Exception("No valid database URL or connection test failed")
+    except Exception as e:
+        logging.warning(f"Database connection failed, using SQLite: {str(e)}")
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///suntyn_ai.db"
         app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
             "pool_recycle": 300,
