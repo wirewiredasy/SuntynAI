@@ -3,220 +3,275 @@
 {% block title %}Suntyn AI - 85+ Professional AI Tools Platform{% endblock %}
 
 {% block content %}
-<!-- Next-Gen Interactive 3D Hero Section -->
-<div class="hero-3d-container position-relative overflow-hidden">
-    <!-- Dynamic Background -->
-    <div class="dynamic-bg">
-        <canvas id="hero-canvas" class="position-absolute top-0 start-0 w-100 h-100"></canvas>
-        <div class="gradient-overlay"></div>
+<!-- Ultra-Modern AI Hero Section -->
+<section class="hero-ai-modern" id="hero-section">
+    <!-- Animated Background with Neural Network -->
+    <div class="neural-bg">
+        <canvas id="neural-canvas"></canvas>
+        <div class="gradient-mesh"></div>
     </div>
-    
-    <div class="container position-relative" style="z-index: 10;">
-        <div class="row align-items-center min-vh-100 py-5">
-            <div class="col-lg-5">
-                <div class="hero-content-3d">
-                    <!-- Floating Badge -->
-                    <div class="floating-badge mb-4">
-                        <div class="badge-3d">
-                            <span class="badge-icon">✨</span>
-                            <span class="badge-text">85+ AI-Powered Tools</span>
-                            <div class="badge-pulse"></div>
+
+    <div class="container-fluid px-0">
+        <div class="row g-0 min-vh-100 align-items-center">
+            <!-- Left Content Column -->
+            <div class="col-lg-6 col-xl-5">
+                <div class="hero-content-wrapper px-4 px-lg-5">
+                    <!-- AI Badge -->
+                    <div class="ai-badge-wrapper">
+                        <div class="ai-badge">
+                            <div class="badge-glow"></div>
+                            <span class="badge-dot"></span>
+                            <span class="badge-text">AI-Powered • 85+ Tools</span>
+                            <div class="badge-particles">
+                                <div class="particle"></div>
+                                <div class="particle"></div>
+                                <div class="particle"></div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- 3D Title -->
-                    <h1 class="hero-title-3d">
-                        <span class="title-word" data-text="Transform">Transform</span>
-                        <span class="title-word gradient-3d" data-text="Your">Your</span>
-                        <span class="title-word" data-text="Digital">Digital</span>
-                        <span class="title-word highlight-3d" data-text="Workflow">Workflow</span>
+
+                    <!-- Main Heading with Glitch Effect -->
+                    <h1 class="hero-heading">
+                        <span class="word-animate" data-delay="0">The</span>
+                        <span class="word-animate gradient-text" data-delay="100">Ultimate</span>
+                        <br>
+                        <span class="word-animate glitch-text" data-delay="200">AI Toolkit</span>
+                        <br>
+                        <span class="word-animate highlight-text" data-delay="300">for Professionals</span>
                     </h1>
-                    
-                    <!-- Interactive Subtitle -->
-                    <div class="subtitle-3d">
-                        <p class="typing-text">
-                            Harness the power of AI with our comprehensive suite of professional tools.
-                            <span class="highlight-bubble">PDF processing</span>, 
-                            <span class="highlight-bubble">image editing</span>, 
-                            <span class="highlight-bubble">financial calculations</span> - 
-                            all in one powerful platform.
+
+                    <!-- Typing Animation Subtitle -->
+                    <div class="hero-subtitle">
+                        <p class="typing-container">
+                            <span class="typing-cursor">|</span>
+                            <span class="typed-text"></span>
+                        </p>
+                        <p class="hero-description">
+                            Transform your workflow with 85+ professional AI tools. 
+                            Process PDFs, edit images, calculate finances, and more - 
+                            all powered by cutting-edge artificial intelligence.
                         </p>
                     </div>
-                    
-                    <!-- 3D Action Buttons -->
-                    <div class="action-buttons-3d">
-                        <a href="#tools-section" class="btn-3d btn-primary-3d">
+
+                    <!-- Interactive CTA Buttons -->
+                    <div class="hero-actions">
+                        <a href="#tools-demo" class="btn-ai-primary" data-demo="start">
+                            <span class="btn-bg"></span>
                             <span class="btn-content">
-                                <i class="btn-icon">🚀</i>
-                                <span class="btn-text">Start Creating</span>
+                                <i class="ti ti-rocket"></i>
+                                <span>Try Demo</span>
+                                <span class="btn-arrow">→</span>
                             </span>
-                            <div class="btn-particles"></div>
+                            <div class="btn-ripple"></div>
                         </a>
+
                         {% if not current_user.is_authenticated %}
-                        <a href="{{ url_for('register') }}" class="btn-3d btn-secondary-3d">
+                        <a href="{{ url_for('register') }}" class="btn-ai-secondary">
                             <span class="btn-content">
-                                <i class="btn-icon">✨</i>
-                                <span class="btn-text">Join Free</span>
+                                <i class="ti ti-user-plus"></i>
+                                <span>Start Free</span>
                             </span>
-                            <div class="btn-glow"></div>
                         </a>
                         {% endif %}
                     </div>
-                    
-                    <!-- Floating Stats -->
-                    <div class="floating-stats">
-                        <div class="stat-bubble" data-count="85">
-                            <div class="stat-number">85+</div>
-                            <div class="stat-label">Tools</div>
-                        </div>
-                        <div class="stat-bubble" data-count="8">
-                            <div class="stat-number">8</div>
-                            <div class="stat-label">Categories</div>
-                        </div>
-                        <div class="stat-bubble" data-count="10000">
-                            <div class="stat-number">10K+</div>
-                            <div class="stat-label">Users</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-7">
-                <div class="hero-visual-3d">
-                    <!-- Main 3D Scene -->
-                    <div class="scene-3d" id="tool-scene">
-                        <!-- Central AI Core -->
-                        <div class="ai-core">
-                            <div class="core-sphere">
-                                <div class="core-inner">
-                                    <div class="ai-symbol">🧠</div>
-                                </div>
-                                <div class="core-rings">
-                                    <div class="ring ring-1"></div>
-                                    <div class="ring ring-2"></div>
-                                    <div class="ring ring-3"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Floating Tool Cubes -->
-                        <div class="tool-cubes">
-                            <div class="tool-cube cube-pdf" data-tool="PDF Tools">
-                                <div class="cube-face cube-front">📄</div>
-                                <div class="cube-face cube-back">📋</div>
-                                <div class="cube-face cube-right">📊</div>
-                                <div class="cube-face cube-left">📝</div>
-                                <div class="cube-face cube-top">🔗</div>
-                                <div class="cube-face cube-bottom">⚡</div>
-                            </div>
-                            
-                            <div class="tool-cube cube-image" data-tool="Image Editor">
-                                <div class="cube-face cube-front">🖼️</div>
-                                <div class="cube-face cube-back">🎨</div>
-                                <div class="cube-face cube-right">📸</div>
-                                <div class="cube-face cube-left">✨</div>
-                                <div class="cube-face cube-top">🌈</div>
-                                <div class="cube-face cube-bottom">🔧</div>
-                            </div>
-                            
-                            <div class="tool-cube cube-finance" data-tool="Financial Tools">
-                                <div class="cube-face cube-front">💰</div>
-                                <div class="cube-face cube-back">📈</div>
-                                <div class="cube-face cube-right">💳</div>
-                                <div class="cube-face cube-left">🏦</div>
-                                <div class="cube-face cube-top">📊</div>
-                                <div class="cube-face cube-bottom">💎</div>
-                            </div>
-                            
-                            <div class="tool-cube cube-ai" data-tool="AI Content">
-                                <div class="cube-face cube-front">🤖</div>
-                                <div class="cube-face cube-back">💭</div>
-                                <div class="cube-face cube-right">✍️</div>
-                                <div class="cube-face cube-left">🎯</div>
-                                <div class="cube-face cube-top">🔮</div>
-                                <div class="cube-face cube-bottom">⚡</div>
-                            </div>
-                            
-                            <div class="tool-cube cube-utility" data-tool="Utilities">
-                                <div class="cube-face cube-front">🔧</div>
-                                <div class="cube-face cube-back">🔨</div>
-                                <div class="cube-face cube-right">⚙️</div>
-                                <div class="cube-face cube-left">🛠️</div>
-                                <div class="cube-face cube-top">🔩</div>
-                                <div class="cube-face cube-bottom">⚡</div>
-                            </div>
-                            
-                            <div class="tool-cube cube-convert" data-tool="Converters">
-                                <div class="cube-face cube-front">🔄</div>
-                                <div class="cube-face cube-back">↔️</div>
-                                <div class="cube-face cube-right">🔀</div>
-                                <div class="cube-face cube-left">⇄</div>
-                                <div class="cube-face cube-top">🔃</div>
-                                <div class="cube-face cube-bottom">⚡</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Energy Connections -->
-                        <div class="energy-lines">
-                            <svg class="connection-svg" viewBox="0 0 600 600">
-                                <defs>
-                                    <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                                        <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:0.8" />
-                                        <stop offset="100%" style="stop-color:#ffff00;stop-opacity:1" />
-                                    </linearGradient>
-                                </defs>
-                                <path class="energy-path path-1" d="M300,300 Q150,150 100,100" />
-                                <path class="energy-path path-2" d="M300,300 Q450,150 500,100" />
-                                <path class="energy-path path-3" d="M300,300 Q150,450 100,500" />
-                                <path class="energy-path path-4" d="M300,300 Q450,450 500,500" />
-                                <path class="energy-path path-5" d="M300,300 Q300,150 300,100" />
-                                <path class="energy-path path-6" d="M300,300 Q300,450 300,500" />
-                            </svg>
-                        </div>
-                        
-                        <!-- Floating Data Particles -->
-                        <div class="data-particles">
-                            <div class="particle binary">01</div>
-                            <div class="particle binary">10</div>
-                            <div class="particle binary">11</div>
-                            <div class="particle symbol">∞</div>
-                            <div class="particle symbol">∑</div>
-                            <div class="particle symbol">π</div>
-                        </div>
-                        
-                        <!-- Tool Info Panel -->
-                        <div class="tool-info-panel" id="tool-info">
-                            <div class="panel-content">
-                                <h3 class="panel-title">Hover over tools to explore</h3>
-                                <p class="panel-description">Interactive 3D showcase of our AI-powered tools</p>
-                                <div class="panel-features">
-                                    <span class="feature-tag">Real-time</span>
-                                    <span class="feature-tag">Secure</span>
-                                    <span class="feature-tag">Fast</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Advanced Scroll Indicator -->
-    <div class="scroll-indicator-3d">
-        <div class="scroll-animation">
-            <div class="scroll-dots">
-                <div class="dot active"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <div class="scroll-text">Scroll to explore tools</div>
-        </div>
-    </div>
-</div>
 
-<!-- Search Section -->
+                    <!-- Real-time Stats Counter -->
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="85">0</div>
+                            <div class="stat-label">AI Tools</div>
+                            <div class="stat-pulse"></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="8">0</div>
+                            <div class="stat-label">Categories</div>
+                            <div class="stat-pulse"></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="25000">0</div>
+                            <div class="stat-label">Happy Users</div>
+                            <div class="stat-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Visual Column -->
+            <div class="col-lg-6 col-xl-7">
+                <div class="hero-visual-container">
+                    <!-- Interactive Demo Window -->
+                    <div class="demo-window" id="interactive-demo">
+                        <!-- Window Header -->
+                        <div class="window-header">
+                            <div class="window-controls">
+                                <span class="control-dot close"></span>
+                                <span class="control-dot minimize"></span>
+                                <span class="control-dot maximize"></span>
+                            </div>
+                            <div class="window-title">
+                                <span class="title-text">Suntyn AI Workspace</span>
+                                <span class="status-indicator">● Live</span>
+                            </div>
+                        </div>
+
+                        <!-- Demo Content Area -->
+                        <div class="demo-content">
+                            <!-- Tool Selector Tabs -->
+                            <div class="tool-tabs">
+                                <button class="tool-tab active" data-tool="pdf">
+                                    <i class="ti ti-file-text"></i>
+                                    <span>PDF Tools</span>
+                                </button>
+                                <button class="tool-tab" data-tool="image">
+                                    <i class="ti ti-photo"></i>
+                                    <span>Image Edit</span>
+                                </button>
+                                <button class="tool-tab" data-tool="finance">
+                                    <i class="ti ti-calculator"></i>
+                                    <span>Finance</span>
+                                </button>
+                                <button class="tool-tab" data-tool="ai">
+                                    <i class="ti ti-brain"></i>
+                                    <span>AI Writer</span>
+                                </button>
+                            </div>
+
+                            <!-- Dynamic Demo Content -->
+                            <div class="demo-workspace">
+                                <!-- PDF Tool Demo -->
+                                <div class="tool-demo active" id="demo-pdf">
+                                    <div class="demo-files">
+                                        <div class="file-item">
+                                            <i class="ti ti-file-type-pdf"></i>
+                                            <span>Report_Q4.pdf</span>
+                                            <div class="file-progress">
+                                                <div class="progress-bar"></div>
+                                            </div>
+                                        </div>
+                                        <div class="file-item">
+                                            <i class="ti ti-file-type-pdf"></i>
+                                            <span>Invoice_2024.pdf</span>
+                                            <div class="file-progress">
+                                                <div class="progress-bar"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="demo-action">
+                                        <button class="action-btn processing">
+                                            <span class="spinner"></span>
+                                            Merging PDFs...
+                                        </button>
+                                    </div>
+                                    <div class="demo-output">
+                                        <div class="output-file">
+                                            <i class="ti ti-download"></i>
+                                            <span>Merged_Document.pdf</span>
+                                            <span class="file-size">2.4 MB</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Image Tool Demo -->
+                                <div class="tool-demo" id="demo-image">
+                                    <div class="image-preview">
+                                        <div class="image-before">
+                                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzMzMzMzMyIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CZWZvcmU8L3RleHQ+PC9zdmc+" alt="Before">
+                                            <div class="image-label">Original (2.5MB)</div>
+                                        </div>
+                                        <div class="transform-arrow">→</div>
+                                        <div class="image-after">
+                                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0ZjQ2ZTUiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM3YzNhZWQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BZnRlcjwvdGV4dD48L3N2Zz4=" alt="After">
+                                            <div class="image-label">Compressed (850KB)</div>
+                                        </div>
+                                    </div>
+                                    <div class="compression-stats">
+                                        <div class="stat">66% Size Reduction</div>
+                                    </div>
+                                </div>
+
+                                <!-- Finance Tool Demo -->
+                                <div class="tool-demo" id="demo-finance">
+                                    <div class="calculator-interface">
+                                        <div class="calc-input">
+                                            <label>Loan Amount</label>
+                                            <div class="input-group">
+                                                <span>₹</span>
+                                                <input type="text" value="5,00,000" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="calc-result">
+                                            <div class="emi-amount">₹9,567</div>
+                                            <div class="emi-label">Monthly EMI</div>
+                                        </div>
+                                        <div class="chart-mini">
+                                            <canvas id="mini-chart" width="200" height="100"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Tool Demo -->
+                                <div class="tool-demo" id="demo-ai">
+                                    <div class="ai-interface">
+                                        <div class="ai-input">
+                                            <div class="typing-animation">
+                                                <span>Writing professional email...</span>
+                                                <div class="ai-dots">
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ai-output">
+                                            <div class="generated-text">
+                                                Dear Team,<br><br>
+                                                I hope this email finds you well. 
+                                                I wanted to follow up on our recent project discussion...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Tool Icons -->
+                        <div class="floating-tools">
+                            <div class="tool-icon" style="--delay: 0s">
+                                <i class="ti ti-file-zip"></i>
+                            </div>
+                            <div class="tool-icon" style="--delay: 0.5s">
+                                <i class="ti ti-qrcode"></i>
+                            </div>
+                            <div class="tool-icon" style="--delay: 1s">
+                                <i class="ti ti-palette"></i>
+                            </div>
+                            <div class="tool-icon" style="--delay: 1.5s">
+                                <i class="ti ti-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Background Geometric Shapes -->
+                    <div class="geometric-bg">
+                        <div class="shape shape-1"></div>
+                        <div class="shape shape-2"></div>
+                        <div class="shape shape-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-text">Scroll to explore</div>
+        <div class="scroll-arrow">
+            <i class="ti ti-arrow-down"></i>
+        </div>
+    </div>
+</section>
+
+<!-- Tools Section -->
 <div class="container mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">

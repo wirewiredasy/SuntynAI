@@ -23,9 +23,18 @@ function initializeCharts() {
         // Check if Chart.js is loaded
         if (typeof Chart !== 'undefined') {
             // Destroy existing chart instances safely
-            if (Chart.instances) {
+            if (Chart.instances && typeof Chart.instances.forEach === 'function') {
+                Chart.instances.forEach(instance => {
+                    if (instance && typeof instance.destroy === 'function') {
+                        instance.destroy();
+                    }
+                });
+            } else if (Chart.instances && typeof Chart.instances === 'object') {
                 Object.keys(Chart.instances).forEach(key => {
-                    Chart.instances[key].destroy();
+                    const instance = Chart.instances[key];
+                    if (instance && typeof instance.destroy === 'function') {
+                        instance.destroy();
+                    }
                 });
             }
             console.log('✅ Charts initialized successfully');
