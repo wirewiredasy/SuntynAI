@@ -1,0 +1,222 @@
+
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - Suntyn AI{% endblock %}
+
+{% block extra_css %}
+<style>
+.error-page {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+}
+
+.error-content {
+    text-align: center;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 1rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.search-suggestion {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.popular-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.tool-suggestion {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.tool-suggestion:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.tool-suggestion i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@media (max-width: 768px) {
+    .error-code { font-size: 6rem; }
+    .error-title { font-size: 2rem; }
+    .error-actions { flex-direction: column; align-items: center; }
+    .popular-tools { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-content">
+        <div class="error-code">404</div>
+        
+        <h1 class="error-title">Page Not Found</h1>
+        
+        <p class="error-description">
+            Oops! The page you're looking for doesn't exist. It might have been moved, deleted, 
+            or you entered the wrong URL. Don't worry, let's get you back on track.
+        </p>
+        
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                <i class="ti ti-home me-2"></i>Go Home
+            </a>
+            
+            <a href="{{ url_for('all_tools') }}" class="btn btn-outline-primary btn-lg">
+                <i class="ti ti-tools me-2"></i>Browse Tools
+            </a>
+            
+            <button class="btn btn-secondary btn-lg" onclick="history.back()">
+                <i class="ti ti-arrow-left me-2"></i>Go Back
+            </button>
+        </div>
+        
+        <!-- Search Suggestion -->
+        <div class="search-suggestion">
+            <h4 class="text-primary mb-3">
+                <i class="ti ti-search me-2"></i>Search for Tools
+            </h4>
+            <p class="mb-3">Try searching for the tool you need:</p>
+            
+            <div class="search-container mx-auto" style="max-width: 400px;">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" 
+                           placeholder="Search 85+ tools..." 
+                           id="error-search"
+                           onkeypress="handleErrorSearch(event)">
+                    <button class="btn btn-primary" onclick="performErrorSearch()">
+                        <i class="ti ti-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Popular Tools -->
+        <div class="mt-4">
+            <h4 class="text-primary mb-3">
+                <i class="ti ti-star me-2"></i>Popular Tools
+            </h4>
+            <div class="popular-tools">
+                <a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="tool-suggestion">
+                    <i class="ti ti-file-text"></i>
+                    <h6>PDF Merger</h6>
+                    <small class="text-muted">Combine PDF files</small>
+                </a>
+                
+                <a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="tool-suggestion">
+                    <i class="ti ti-photo"></i>
+                    <h6>Image Compressor</h6>
+                    <small class="text-muted">Reduce image size</small>
+                </a>
+                
+                <a href="{{ url_for('tool_page', tool_name='qr-generator') }}" class="tool-suggestion">
+                    <i class="ti ti-qrcode"></i>
+                    <h6>QR Generator</h6>
+                    <small class="text-muted">Create QR codes</small>
+                </a>
+                
+                <a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="tool-suggestion">
+                    <i class="ti ti-calculator"></i>
+                    <h6>EMI Calculator</h6>
+                    <small class="text-muted">Calculate loan EMI</small>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="mt-4">
+            <p class="text-muted">
+                Still can't find what you're looking for? 
+                <a href="{{ url_for('contact') }}" class="text-primary">Contact our support team</a> 
+                or check our <a href="{{ url_for('faq') }}" class="text-primary">FAQ section</a>.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function handleErrorSearch(event) {
+    if (event.key === 'Enter') {
+        performErrorSearch();
+    }
+}
+
+function performErrorSearch() {
+    const query = document.getElementById('error-search').value.trim();
+    if (query) {
+        // Redirect to home page with search query
+        window.location.href = `{{ url_for('index') }}?search=${encodeURIComponent(query)}`;
+    }
+}
+
+// Track 404 errors for analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', {
+        page_title: '404 Error',
+        page_location: window.location.href,
+        send_to: 'GA_MEASUREMENT_ID'
+    });
+}
+</script>
+{% endblock %}

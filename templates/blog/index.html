@@ -1,0 +1,249 @@
+
+{% extends "base.html" %}
+
+{% block title %}Blog - Coming Soon | Suntyn AI{% endblock %}
+{% block description %}Stay tuned for insights, tutorials, and updates about AI tools, productivity tips, and technology trends from the Suntyn AI team.{% endblock %}
+
+{% block extra_css %}
+<style>
+.coming-soon-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+}
+
+.coming-soon-content {
+    text-align: center;
+    max-width: 600px;
+    padding: 3rem 2rem;
+}
+
+.blog-icon {
+    font-size: 5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.coming-soon-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.coming-soon-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+}
+
+.newsletter-signup {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.feature-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.preview-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.preview-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.preview-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .coming-soon-title { font-size: 2rem; }
+    .coming-soon-subtitle { font-size: 1rem; }
+    .feature-preview { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="coming-soon-container">
+    <div class="coming-soon-content">
+        <div class="blog-icon">
+            <i class="ti ti-article"></i>
+        </div>
+        
+        <h1 class="coming-soon-title">Blog Coming Soon</h1>
+        
+        <p class="coming-soon-subtitle">
+            We're crafting amazing content about AI tools, productivity tips, 
+            tutorials, and technology insights. Stay tuned for valuable articles 
+            that will help you make the most of our platform.
+        </p>
+        
+        <!-- Newsletter Signup -->
+        <div class="newsletter-signup">
+            <h4 class="text-primary mb-3">
+                <i class="ti ti-bell me-2"></i>Get Notified
+            </h4>
+            <p class="mb-3">Be the first to read our articles when we launch!</p>
+            
+            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control form-control-lg" 
+                           placeholder="Enter your email address" 
+                           required>
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="ti ti-send me-1"></i>Notify Me
+                    </button>
+                </div>
+                <small class="text-muted">
+                    <i class="ti ti-shield-check me-1"></i>
+                    We respect your privacy. No spam, unsubscribe anytime.
+                </small>
+            </form>
+        </div>
+        
+        <!-- What to Expect -->
+        <div class="feature-preview">
+            <div class="preview-card">
+                <i class="ti ti-lightbulb"></i>
+                <h5>Tool Tutorials</h5>
+                <p class="text-muted">
+                    Step-by-step guides on how to use our 85+ tools effectively
+                </p>
+            </div>
+            
+            <div class="preview-card">
+                <i class="ti ti-trending-up"></i>
+                <h5>Productivity Tips</h5>
+                <p class="text-muted">
+                    Proven strategies to boost your workflow and efficiency
+                </p>
+            </div>
+            
+            <div class="preview-card">
+                <i class="ti ti-brain"></i>
+                <h5>AI Insights</h5>
+                <p class="text-muted">
+                    Latest trends and developments in artificial intelligence
+                </p>
+            </div>
+            
+            <div class="preview-card">
+                <i class="ti ti-code"></i>
+                <h5>Developer Resources</h5>
+                <p class="text-muted">
+                    Technical guides and API documentation for developers
+                </p>
+            </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="mt-5">
+            <p class="text-muted mb-3">
+                In the meantime, explore our tools and discover how they can help you
+            </p>
+            
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{{ url_for('all_tools') }}" class="btn btn-primary btn-lg">
+                    <i class="ti ti-tools me-2"></i>Explore Tools
+                </a>
+                
+                <a href="{{ url_for('faq') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="ti ti-help me-2"></i>Read FAQ
+                </a>
+            </div>
+        </div>
+        
+        <!-- Social Media -->
+        <div class="mt-4">
+            <p class="text-muted mb-3">Follow us for updates:</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="https://twitter.com/suntynai" class="social-btn twitter" target="_blank">
+                    <i class="ti ti-brand-twitter"></i>
+                </a>
+                <a href="https://linkedin.com/company/suntynai" class="social-btn linkedin" target="_blank">
+                    <i class="ti ti-brand-linkedin"></i>
+                </a>
+                <a href="https://github.com/suntynai" class="social-btn github" target="_blank">
+                    <i class="ti ti-brand-github"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function subscribeNewsletter(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const email = form.querySelector('input[type="email"]').value;
+    
+    // Simulate subscription (replace with actual API call)
+    const button = form.querySelector('button');
+    const originalText = button.innerHTML;
+    
+    button.innerHTML = '<i class="ti ti-loader me-1"></i>Subscribing...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        button.innerHTML = '<i class="ti ti-check me-1"></i>Subscribed!';
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-success');
+        
+        // Show success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'alert alert-success mt-3';
+        successMessage.innerHTML = `
+            <i class="ti ti-check me-2"></i>
+            Thank you! We'll notify you when our blog launches.
+        `;
+        
+        form.appendChild(successMessage);
+        
+        // Reset form after 3 seconds
+        setTimeout(() => {
+            form.reset();
+            button.innerHTML = originalText;
+            button.disabled = false;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-primary');
+            successMessage.remove();
+        }, 3000);
+        
+    }, 2000);
+}
+
+// Add some interactive animations
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.preview-card');
+    
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.2}s`;
+        card.classList.add('animate__animated', 'animate__fadeInUp');
+    });
+});
+</script>
+{% endblock %}

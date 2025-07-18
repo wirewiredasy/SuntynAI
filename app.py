@@ -367,6 +367,97 @@ def create_app():
         return render_template('dashboard.html')
 
     # Health check route
+    # Additional pages
+    @app.route('/privacy-policy')
+    def privacy_policy():
+        return render_template('legal/privacy_policy.html')
+
+    @app.route('/terms-of-service')
+    def terms_of_service():
+        return render_template('legal/terms_of_service.html')
+
+    @app.route('/cookie-policy')
+    def cookie_policy():
+        return render_template('legal/cookie_policy.html')
+
+    @app.route('/blog')
+    def blog():
+        return render_template('blog/index.html')
+
+    @app.route('/careers')
+    def careers():
+        return render_template('company/careers.html')
+
+    @app.route('/press')
+    def press():
+        return render_template('company/press.html')
+
+    @app.route('/partnerships')
+    def partnerships():
+        return render_template('company/partnerships.html')
+
+    @app.route('/investors')
+    def investors():
+        return render_template('company/investors.html')
+
+    @app.route('/affiliate')
+    def affiliate():
+        return render_template('company/affiliate.html')
+
+    @app.route('/support')
+    def support():
+        return render_template('support/index.html')
+
+    @app.route('/security')
+    def security():
+        return render_template('legal/security.html')
+
+    @app.route('/compliance')
+    def compliance():
+        return render_template('legal/compliance.html')
+
+    @app.route('/dmca')
+    def dmca():
+        return render_template('legal/dmca.html')
+
+    @app.route('/api-docs')
+    def api_docs():
+        return render_template('docs/api.html')
+
+    @app.route('/tutorials')
+    def tutorials():
+        return render_template('docs/tutorials.html')
+
+    @app.route('/changelog')
+    def changelog():
+        return render_template('docs/changelog.html')
+
+    @app.route('/status')
+    def status():
+        return render_template('status/index.html')
+
+    @app.route('/feature-requests')
+    def feature_requests():
+        return render_template('community/feature_requests.html')
+
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return render_template('errors/404.html'), 404
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        db.session.rollback()
+        return render_template('errors/500.html'), 500
+
+    @app.errorhandler(403)
+    def forbidden_error(error):
+        return render_template('errors/403.html'), 403
+
+    @app.errorhandler(429)
+    def rate_limit_error(error):
+        return render_template('errors/429.html'), 429
+
     @app.route('/health')
     def health_check():
         try:
