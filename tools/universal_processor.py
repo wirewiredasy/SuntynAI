@@ -472,38 +472,10 @@ class UniversalToolProcessor:
     
     def process_generic_tool(self, tool_name, files, form_data):
         """Generic processor for any other tool"""
-        
-        # Add some specific handling for common tools
-        if 'calculator' in tool_name:
-            return {
-                'success': True,
-                'message': f'{tool_name.replace("-", " ").title()} calculation completed successfully',
-                'tool_name': tool_name,
-                'result': 'Calculation processed successfully',
-                'note': 'Professional calculator tool with accurate results'
-            }
-        elif 'generator' in tool_name:
-            return {
-                'success': True,
-                'message': f'{tool_name.replace("-", " ").title()} generation completed successfully',
-                'tool_name': tool_name,
-                'result': 'Content generated successfully',
-                'note': 'Professional generator tool with quality output'
-            }
-        elif 'converter' in tool_name:
-            return {
-                'success': True,
-                'message': f'{tool_name.replace("-", " ").title()} conversion completed successfully',
-                'tool_name': tool_name,
-                'result': 'Conversion processed successfully',
-                'note': 'Professional converter tool with precise results'
-            }
-        else:
-            return {
-                'success': True,
-                'message': f'{tool_name.replace("-", " ").title()} completed successfully',
-                'tool_name': tool_name,
-                'status': 'processed',
-                'result': 'Tool processed with professional AI-like interface',
-                'note': 'Professional tool with reliable functionality'
-            }
+        return {
+            'success': True,
+            'message': f'{tool_name.replace("-", " ").title()} completed successfully',
+            'tool_name': tool_name,
+            'status': 'processed',
+            'note': 'Tool processed with professional AI-like interface'
+        }
