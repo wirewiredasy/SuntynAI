@@ -121,11 +121,26 @@ class LazyLoader {
 
     async loadAnimations() {
         try {
+            // Skip animations on low-end devices or if user prefers reduced motion
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const isLowEnd = navigator.hardwareConcurrency <= 2;
+            
+            if (prefersReducedMotion || isLowEnd) {
+                console.log('✅ Animations skipped (reduced motion/low-end device)');
+                return;
+            }
+            
             console.log('✨ Loading animations...');
             
             if (typeof gsap === 'undefined') {
+                // Load GSAP only when really needed
+                const animationElements = document.querySelectorAll('.floating-icon, .hero-animation, [data-animate]');
+                if (animationElements.length === 0) {
+                    console.log('✅ No animation elements found, skipping GSAP');
+                    return;
+                }
+                
                 await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js');
-                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js');
             }
             
             // Initialize animations
@@ -135,8 +150,24 @@ class LazyLoader {
             
             console.log('✅ Animations loaded');
         } catch (error) {
-            console.warn('⚠️ Animations loading failed:', error);
+            console.warn('⚠️ Animations loading failed, using CSS fallback');
+            this.initializeCSSAnimationFallback();
         }
+    }
+
+    initializeCSSAnimationFallback() {
+        // Simple CSS-based animations as fallback
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .floating-icon, .hero-animation {
+                animation: fadeInUp 0.6s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     async loadHero3D() {

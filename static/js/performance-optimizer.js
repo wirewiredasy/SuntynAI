@@ -8,14 +8,92 @@ class PerformanceOptimizer {
     constructor() {
         this.cache = new Map();
         this.compressionSupported = this.checkCompressionSupport();
+        this.isLowEndDevice = this.detectLowEndDevice();
         this.init();
     }
 
     init() {
+        // Prioritize critical optimizations
         this.setupImageLazyLoading();
+        this.optimizeScrollPerformance();
         this.setupResourceCaching();
         this.optimizeAnimations();
         this.setupMemoryCleanup();
+        this.optimizeJavaScriptExecution();
+    }
+
+    detectLowEndDevice() {
+        return (
+            navigator.hardwareConcurrency <= 2 ||
+            navigator.deviceMemory <= 2 ||
+            /Android.*(SM-|SAMSUNG-|GT-|SCH-)/i.test(navigator.userAgent)
+        );
+    }
+
+    optimizeScrollPerformance() {
+        // Passive event listeners for better scroll performance
+        let ticking = false;
+        
+        const optimizedScrollHandler = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    // Throttled scroll operations
+                    this.updateScrollElements();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', optimizedScrollHandler, { passive: true });
+        
+        // Optimize scroll for low-end devices
+        if (this.isLowEndDevice) {
+            document.documentElement.style.scrollBehavior = 'auto';
+        }
+    }
+
+    updateScrollElements() {
+        // Update scroll-dependent elements efficiently
+        const scrollTop = window.pageYOffset;
+        const scrollToTopBtn = document.querySelector('.scroll-to-top-btn');
+        
+        if (scrollToTopBtn) {
+            if (scrollTop > 300) {
+                scrollToTopBtn.style.opacity = '1';
+                scrollToTopBtn.style.pointerEvents = 'auto';
+            } else {
+                scrollToTopBtn.style.opacity = '0';
+                scrollToTopBtn.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+    optimizeJavaScriptExecution() {
+        // Defer non-critical JavaScript
+        const deferredTasks = [];
+        
+        window.addDeferredTask = (task) => {
+            deferredTasks.push(task);
+        };
+
+        // Execute deferred tasks when browser is idle
+        const executeDeferredTasks = () => {
+            if (deferredTasks.length > 0) {
+                const task = deferredTasks.shift();
+                try {
+                    task();
+                } catch (error) {
+                    console.warn('Deferred task failed:', error);
+                }
+                
+                if (deferredTasks.length > 0) {
+                    requestIdleCallback(executeDeferredTasks);
+                }
+            }
+        };
+
+        requestIdleCallback(executeDeferredTasks);
     }
 
     setupImageLazyLoading() {

@@ -7,10 +7,26 @@ class SmoothScrollManager {
         this.lenis = null;
         this.isInitialized = false;
         this.scrollToTopButton = null;
+        this.isLowEndDevice = this.detectLowEndDevice();
         this.init();
     }
 
+    detectLowEndDevice() {
+        return (
+            navigator.hardwareConcurrency <= 2 ||
+            navigator.deviceMemory <= 2 ||
+            /Android.*(SM-|SAMSUNG-|GT-|SCH-)/i.test(navigator.userAgent)
+        );
+    }
+
     init() {
+        // Skip smooth scroll on low-end devices for better performance
+        if (this.isLowEndDevice) {
+            console.log('🚀 Using native scroll (low-end device optimization)');
+            this.initNativeScroll();
+            return;
+        }
+
         // Wait for DOM to be ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.initializeScroll());
@@ -19,37 +35,59 @@ class SmoothScrollManager {
         }
     }
 
+    initNativeScroll() {
+        // Use native smooth scroll with optimizations
+        document.documentElement.style.scrollBehavior = 'smooth';
+        
+        // Add optimized scroll-to-top functionality
+        this.initScrollToTop();
+        this.isInitialized = true;
+        
+        // Throttled scroll handler for performance
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                this.updateScrollElements();
+            }, 16); // ~60fps
+        }, { passive: true });
+    }
+
     initializeScroll() {
-        // Check if Lenis is available
+        // Check if Lenis is available and needed
         if (typeof Lenis === 'undefined') {
-            console.warn('Lenis is not loaded, falling back to native smooth scroll');
-            this.initFallbackScroll();
+            console.warn('Lenis is not loaded, using native smooth scroll');
+            this.initNativeScroll();
             return;
         }
 
         try {
-            // Initialize Lenis smooth scroll
+            // Initialize Lenis with performance optimizations
             this.lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                duration: 0.8, // Reduced for better performance
+                easing: (t) => 1 - Math.pow(1 - t, 3), // Simpler easing
                 direction: 'vertical',
                 gestureDirection: 'vertical',
                 smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: false,
-                touchMultiplier: 2,
+                mouseMultiplier: 0.8, // Reduced sensitivity
+                smoothTouch: false, // Disabled for better mobile performance
+                touchMultiplier: 1.5,
                 infinite: false,
             });
 
-            // Listen for scroll events
-            this.lenis.on('scroll', (e) => {
-                this.onScroll(e);
+            // Throttled scroll events
+            let scrollTicking = false;
+            this.lenis.on('scroll', () => {
+                if (!scrollTicking) {
+                    requestAnimationFrame(() => {
+                        this.updateScrollElements();
+                        scrollTicking = false;
+                    });
+                    scrollTicking = true;
+                }
             });
 
-            // Integrate with GSAP ScrollTrigger
-            this.setupGSAPIntegration();
-
-            // Start the animation loop
+            // Start the animation loop with performance monitoring
             this.raf();
 
             // Handle resize

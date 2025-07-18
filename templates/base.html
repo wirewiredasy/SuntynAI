@@ -33,21 +33,21 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
     <!-- Critical CSS first -->
-    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/bootstrap-custom.css') }}" rel="stylesheet">
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-modern.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/performance.css') }}">
+
     <!-- Non-critical CSS with media query trick for faster loading -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css" media="print" onload="this.media='all'">
-    
+
     <!-- Lazy load animation and hero CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="{{ url_for('static', filename='css/hero-modern.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
-    
+
     <!-- Lenis Smooth Scroll - load only if needed -->
     <link href="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.34/dist/lenis.css" rel="stylesheet" media="print" onload="this.media='all'">
-    
+
     <!-- Fallback for old browsers -->
     <noscript>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -568,14 +568,14 @@
 
     <!-- Critical Scripts First -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    
+
     <!-- Lazy Loading System -->
     <script src="{{ url_for('static', filename='js/lazy-loader.js') }}" defer></script>
-    
+
     <!-- Core Application Scripts -->
     <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
-    
+
     <!-- Deferred Non-Critical Scripts -->
     <script>
         // Load heavy libraries only when needed
@@ -681,11 +681,11 @@
         // Performance monitoring
         (function() {
             let startTime = performance.now();
-            
+
             window.addEventListener('load', function() {
                 const loadTime = performance.now() - startTime;
                 console.log(`🚀 Page fully loaded in ${Math.round(loadTime)}ms`);
-                
+
                 // Report performance to analytics if needed
                 if (loadTime > 3000) {
                     console.warn('⚠️ Page load time is slow:', Math.round(loadTime), 'ms');
@@ -701,7 +701,7 @@
                     })
                     .then(function(registration) {
                         console.log('✅ Service Worker registered');
-                        
+
                         // Check for updates
                         registration.addEventListener('updatefound', () => {
                             console.log('🔄 Service Worker update available');

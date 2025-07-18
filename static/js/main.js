@@ -1,74 +1,115 @@
-// Main JavaScript for Suntyn AI
+// Main JavaScript for Suntyn AI - Optimized for Performance
 console.log('🚀 Initializing Suntyn AI...');
 
-// Initialize application with lazy loading
+// Performance monitoring
+const startTime = performance.now();
+
+// Critical path optimization - only load essential components immediately
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Suntyn AI initialized successfully');
 
-    // Initialize critical components first
+    // Initialize only critical components immediately
     initializeToolSearch();
     initializeToolForms();
     
-    // Lazy load heavy components
-    requestIdleCallback(() => {
-        initializeFileUploads();
-        initializeCharts();
-    });
+    // Log initial load time
+    const domLoadTime = performance.now() - startTime;
+    console.log(`DOM ready in: ${domLoadTime.toFixed(2)}ms`);
     
-    // Defer animations until page is interactive
-    setTimeout(() => {
-        if (document.readyState === 'complete') {
-            initializeAnimations();
-        }
-    }, 100);
-
-    // Log page load time
-    const loadTime = performance.now();
-    console.log(`Page load time: ${loadTime.toFixed(2)}ms`);
+    // Use intersection observer for lazy initialization
+    initializeLazyComponents();
 });
 
-// Fix Chart.js initialization with proper error handling
+// Optimized lazy component initialization
+function initializeLazyComponents() {
+    const lazyComponents = [
+        { selector: '.chart-container', init: initializeCharts },
+        { selector: '.file-upload-zone', init: initializeFileUploads },
+        { selector: '.animation-trigger', init: initializeAnimations }
+    ];
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const component = lazyComponents.find(comp => 
+                    entry.target.matches(comp.selector)
+                );
+                if (component) {
+                    requestIdleCallback(() => component.init());
+                    observer.unobserve(entry.target);
+                }
+            }
+        });
+    }, { rootMargin: '100px' });
+
+    lazyComponents.forEach(comp => {
+        document.querySelectorAll(comp.selector).forEach(el => {
+            observer.observe(el);
+        });
+    });
+
+    // Fallback initialization after 2 seconds
+    setTimeout(() => {
+        initializeFileUploads();
+        initializeCharts();
+        initializeAnimations();
+    }, 2000);
+}
+
+// Optimized Chart.js initialization
 function initializeCharts() {
+    if (window.chartsInitialized) return;
+    
     try {
         if (typeof Chart !== 'undefined') {
-            // Safe chart cleanup
-            if (Chart.registry && Chart.registry.instances) {
-                const instances = Object.values(Chart.registry.instances);
-                instances.forEach(instance => {
-                    if (instance && typeof instance.destroy === 'function') {
-                        try {
-                            instance.destroy();
-                        } catch (e) {
-                            console.warn('Chart cleanup warning:', e.message);
-                        }
+            // Only cleanup if charts exist
+            if (Chart.registry?.instances) {
+                Object.values(Chart.registry.instances).forEach(instance => {
+                    if (instance?.destroy) {
+                        try { instance.destroy(); } catch (e) {}
                     }
                 });
             }
+            window.chartsInitialized = true;
             console.log('✅ Charts initialized successfully');
         }
     } catch (error) {
-        console.warn('⚠️ Chart.js initialization skipped:', error.message);
+        console.warn('⚠️ Chart.js initialization skipped');
     }
 }
 
-// Fix animations
+// Optimized animations with performance checks
 function initializeAnimations() {
+    if (window.animationsInitialized) return;
+    
     try {
-        // Check for animation elements before initializing
+        // Check if animations are needed and supported
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) return;
+        
         const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
-        if (animationElements.length > 0 && typeof gsap !== 'undefined') {
-            // Initialize GSAP animations safely
+        if (animationElements.length === 0) return;
+        
+        // Load GSAP only when needed
+        if (typeof gsap !== 'undefined') {
             gsap.from('.floating-icon', {
-                duration: 2,
-                y: 20,
+                duration: 1,
+                y: 10,
                 opacity: 0,
-                stagger: 0.2,
+                stagger: 0.1,
                 ease: "power2.out"
             });
-            console.log('✅ Animations initialized successfully');
+        } else {
+            // Fallback CSS animations
+            animationElements.forEach((el, i) => {
+                el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
+            });
         }
+        
+        window.animationsInitialized = true;
+        console.log('✅ Animations initialized successfully');
     } catch (error) {
-        console.warn('⚠️ Animation library not available:', error.message);
+        console.warn('⚠️ Animation initialization failed');
     }
 }
 
