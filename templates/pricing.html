@@ -6,54 +6,81 @@
 {% block content %}
 <div class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Choose Your Plan</h1>
-        <p class="lead">Professional tools for every need</p>
+        <h1 class="display-4 fw-bold">🎉 All Tools Are Free!</h1>
+        <p class="lead">85+ Professional AI Tools - Completely Free Forever</p>
     </div>
     
     <div class="row justify-content-center">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <h5 class="card-title">Free</h5>
-                    <h2 class="text-primary">$0<small class="text-muted">/month</small></h2>
-                    <ul class="list-unstyled">
-                        <li>✅ 10 tools per day</li>
-                        <li>✅ Basic support</li>
-                        <li>✅ Standard quality</li>
+        <div class="col-md-8">
+            <div class="card border-success shadow-lg">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="ti ti-gift text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="text-success mb-3">100% Free Access</h2>
+                    <h1 class="text-primary mb-4">₹0 <small class="text-muted">Forever</small></h1>
+                    <ul class="list-unstyled text-start mx-auto" style="max-width: 400px;">
+                        <li class="mb-2">✅ All 85+ tools unlimited access</li>
+                        <li class="mb-2">✅ PDF, Image, Finance, AI tools</li>
+                        <li class="mb-2">✅ No registration required</li>
+                        <li class="mb-2">✅ No limits, no restrictions</li>
+                        <li class="mb-2">✅ High quality processing</li>
+                        <li class="mb-2">✅ Fast and secure</li>
+                        <li class="mb-2">✅ Mobile responsive</li>
+                        <li class="mb-2">✅ Regular updates</li>
                     </ul>
-                    <a href="{{ url_for('register') }}" class="btn btn-outline-primary">Get Started</a>
+                    <div class="mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-success btn-lg me-3">
+                            <i class="ti ti-tools me-2"></i>Start Using Tools
+                        </a>
+                        <a href="{{ url_for('all_tools') }}" class="btn btn-outline-success btn-lg">
+                            <i class="ti ti-apps me-2"></i>View All Tools
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-primary shadow">
-                <div class="card-body text-center p-4">
-                    <h5 class="card-title">Pro</h5>
-                    <h2 class="text-primary">$9<small class="text-muted">/month</small></h2>
-                    <ul class="list-unstyled">
-                        <li>✅ Unlimited tools</li>
-                        <li>✅ Priority support</li>
-                        <li>✅ High quality</li>
-                        <li>✅ API access</li>
-                    </ul>
-                    <a href="#" class="btn btn-primary">Choose Pro</a>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-12 text-center">
+            <h3 class="mb-4">Why Choose Suntyn AI?</h3>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="ti ti-flash text-warning mb-3" style="font-size: 2rem;"></i>
+                            <h5>Lightning Fast</h5>
+                            <p class="text-muted">Process files in seconds</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <h5 class="card-title">Enterprise</h5>
-                    <h2 class="text-primary">Custom</h2>
-                    <ul class="list-unstyled">
-                        <li>✅ Everything in Pro</li>
-                        <li>✅ Custom integrations</li>
-                        <li>✅ Dedicated support</li>
-                        <li>✅ SLA guarantee</li>
-                    </ul>
-                    <a href="{{ url_for('contact') }}" class="btn btn-outline-primary">Contact Us</a>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="ti ti-shield-check text-success mb-3" style="font-size: 2rem;"></i>
+                            <h5>100% Secure</h5>
+                            <p class="text-muted">Your data is safe with us</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="ti ti-device-mobile text-info mb-3" style="font-size: 2rem;"></i>
+                            <h5>Mobile Ready</h5>
+                            <p class="text-muted">Works on all devices</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="ti ti-brain text-purple mb-3" style="font-size: 2rem;"></i>
+                            <h5>AI Powered</h5>
+                            <p class="text-muted">Smart tool processing</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
