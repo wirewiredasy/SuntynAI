@@ -1,180 +1,476 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Url Shortener - Suntyn AI</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="/static/css/tools/url-shortener.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #f59e0b;
-            --secondary-color: #ef4444;
-            --accent-color: #10b981;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-6xl mx-auto">
-            <!-- Header -->
-            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                            <i class="fas fa-magic text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-4xl font-bold text-gray-900">Url Shortener</h1>
-                            <p class="text-gray-600 mt-2">Professional AI-powered utility tools tool</p>
-                        </div>
-                    </div>
-                    <div class="hidden md:flex space-x-4">
-                        <button class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-opacity-90 transition-all">
-                            <i class="fas fa-star mr-2"></i>Free Forever
-                        </button>
-                        <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all">
-                            <i class="fas fa-share-alt mr-2"></i>Share
-                        </button>
-                    </div>
+
+{% extends "base.html" %}
+
+{% block title %}URL Shortener - Suntyn AI{% endblock %}
+
+{% block content %}
+<div class="url-shortener-container">
+    <!-- Header -->
+    <div class="url-shortener-header bg-gradient-primary text-white">
+        <div class="container">
+            <div class="row align-items-center py-5">
+                <div class="col-md-8">
+                    <h1 class="h1 mb-3 fw-bold">
+                        <i class="ti ti-link me-3"></i>URL Shortener
+                    </h1>
+                    <p class="lead mb-0">Create short, memorable links in seconds. Track clicks and manage your URLs efficiently.</p>
                 </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Tool Interface -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-xl p-8">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Upload & Process</h2>
-                        
-                        <!-- File Upload Area -->
-                        <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-primary transition-colors cursor-pointer">
-                            <div class="upload-icon">
-                                <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Drop files here or click to browse</h3>
-                            <p class="text-gray-500 mb-4">Support for multiple file formats</p>
-                            <button class="px-8 py-3 bg-primary text-white rounded-xl hover:bg-opacity-90 transition-all">
-                                <i class="fas fa-plus mr-2"></i>Choose Files
-                            </button>
-                            <input type="file" id="fileInput" multiple hidden>
-                        </div>
-
-                        <!-- Processing Options -->
-                        <div id="processingOptions" class="mt-8 hidden">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Processing Options</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="option-card">
-                                    <label class="flex items-center space-x-3 p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
-                                        <input type="radio" name="quality" value="high" class="text-primary" checked>
-                                        <div>
-                                            <div class="font-medium">High Quality</div>
-                                            <div class="text-sm text-gray-500">Best results, longer processing</div>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="option-card">
-                                    <label class="flex items-center space-x-3 p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
-                                        <input type="radio" name="quality" value="fast" class="text-primary">
-                                        <div>
-                                            <div class="font-medium">Fast Processing</div>
-                                            <div class="text-sm text-gray-500">Quick results, good quality</div>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Process Button -->
-                        <div class="mt-8 text-center">
-                            <button id="processBtn" class="px-12 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-all transform hover:scale-105 disabled:opacity-50" disabled>
-                                <i class="fas fa-play mr-2"></i>Process Files
-                            </button>
-                        </div>
-
-                        <!-- Progress Bar -->
-                        <div id="progressContainer" class="mt-6 hidden">
-                            <div class="flex justify-between text-sm text-gray-600 mb-2">
-                                <span>Processing...</span>
-                                <span id="progressPercent">0%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div id="progressBar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Results -->
-                        <div id="results" class="mt-8 hidden">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Results</h3>
-                            <div id="resultsList" class="space-y-4"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div class="space-y-6">
-                    <!-- Features -->
-                    <div class="bg-white rounded-2xl shadow-xl p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Features</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <span class="text-gray-700">AI-powered processing</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <span class="text-gray-700">Batch processing</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <span class="text-gray-700">Multiple formats</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <span class="text-gray-700">Privacy protected</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Stats -->
-                    <div class="bg-white rounded-2xl shadow-xl p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Usage Stats</h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Files Processed</span>
-                                <span class="font-semibold text-primary">1.2M+</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Happy Users</span>
-                                <span class="font-semibold text-primary">50K+</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Success Rate</span>
-                                <span class="font-semibold text-primary">99.9%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Related Tools -->
-                    <div class="bg-white rounded-2xl shadow-xl p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Related Tools</h3>
-                        <div class="space-y-3">
-                            <a href="#" class="block p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                                <div class="font-medium text-gray-900">PDF Merger</div>
-                                <div class="text-sm text-gray-600">Combine multiple PDFs</div>
-                            </a>
-                            <a href="#" class="block p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                                <div class="font-medium text-gray-900">Image Compressor</div>
-                                <div class="text-sm text-gray-600">Reduce image size</div>
-                            </a>
-                        </div>
+                <div class="col-md-4 text-end">
+                    <div class="feature-badges">
+                        <span class="badge bg-light text-dark px-3 py-2 me-2">
+                            <i class="ti ti-zap me-1"></i>Instant
+                        </span>
+                        <span class="badge bg-light text-dark px-3 py-2">
+                            <i class="ti ti-shield-check me-1"></i>Secure
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/static/js/tools/url-shortener.js"></script>
-</body>
-</html>
+    <!-- Main Tool Interface -->
+    <div class="url-shortener-main py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="shortener-card">
+                        <div class="card-body p-5">
+                            <!-- URL Input Section -->
+                            <div class="url-input-section mb-4">
+                                <h3 class="h4 mb-3 text-center">
+                                    <i class="ti ti-world text-primary me-2"></i>
+                                    Shorten Your Long URL
+                                </h3>
+                                
+                                <div class="input-group input-group-lg mb-3">
+                                    <span class="input-group-text bg-light">
+                                        <i class="ti ti-link text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" id="longUrl" 
+                                           placeholder="Paste your long URL here..." 
+                                           style="border-left: none;">
+                                </div>
+                                
+                                <!-- Custom Short URL Option -->
+                                <div class="custom-url-section mb-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="customUrl">
+                                        <label class="form-check-label fw-semibold" for="customUrl">
+                                            Create custom short URL
+                                        </label>
+                                    </div>
+                                    
+                                    <div id="customUrlInput" style="display: none;">
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary text-white">
+                                                suntyn.ai/
+                                            </span>
+                                            <input type="text" class="form-control" id="customPath" 
+                                                   placeholder="custom-name" maxlength="20">
+                                        </div>
+                                        <small class="text-muted">Only letters, numbers, and hyphens allowed</small>
+                                    </div>
+                                </div>
+
+                                <!-- Shorten Button -->
+                                <div class="text-center">
+                                    <button class="btn btn-primary btn-lg px-5 py-3" id="shortenBtn">
+                                        <i class="ti ti-wand me-2"></i>Shorten URL
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Results Section -->
+                            <div id="resultsSection" style="display: none;">
+                                <hr class="my-4">
+                                <div class="results-header text-center mb-4">
+                                    <h4 class="text-success">
+                                        <i class="ti ti-check-circle me-2"></i>URL Shortened Successfully!
+                                    </h4>
+                                </div>
+                                
+                                <div class="result-display">
+                                    <div class="short-url-box mb-3">
+                                        <label class="form-label fw-semibold">Your Short URL:</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-lg" 
+                                                   id="shortUrlResult" readonly>
+                                            <button class="btn btn-outline-primary" onclick="copyShortUrl()">
+                                                <i class="ti ti-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="original-url-box mb-4">
+                                        <label class="form-label fw-semibold text-muted">Original URL:</label>
+                                        <div class="bg-light p-3 rounded">
+                                            <small id="originalUrlDisplay" class="text-muted"></small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="action-buttons text-center">
+                                        <button class="btn btn-success me-2" onclick="openShortUrl()">
+                                            <i class="ti ti-external-link me-1"></i>Visit Link
+                                        </button>
+                                        <button class="btn btn-outline-primary me-2" onclick="shareUrl()">
+                                            <i class="ti ti-share me-1"></i>Share
+                                        </button>
+                                        <button class="btn btn-outline-secondary" onclick="createAnother()">
+                                            <i class="ti ti-plus me-1"></i>Create Another
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="features-section bg-light py-5">
+        <div class="container">
+            <h3 class="text-center mb-5">Why Choose Our URL Shortener?</h3>
+            <div class="row">
+                <div class="col-md-3 text-center mb-4">
+                    <div class="feature-item">
+                        <div class="feature-icon mb-3">
+                            <i class="ti ti-rocket text-primary"></i>
+                        </div>
+                        <h5>Lightning Fast</h5>
+                        <p class="text-muted">Generate short URLs instantly</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="feature-item">
+                        <div class="feature-icon mb-3">
+                            <i class="ti ti-shield-check text-success"></i>
+                        </div>
+                        <h5>Safe & Secure</h5>
+                        <p class="text-muted">All links are virus-scanned</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="feature-item">
+                        <div class="feature-icon mb-3">
+                            <i class="ti ti-chart-line text-warning"></i>
+                        </div>
+                        <h5>Click Analytics</h5>
+                        <p class="text-muted">Track your link performance</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="feature-item">
+                        <div class="feature-icon mb-3">
+                            <i class="ti ti-edit text-info"></i>
+                        </div>
+                        <h5>Custom URLs</h5>
+                        <p class="text-muted">Create branded short links</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.url-shortener-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.shortener-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    border: none;
+    overflow: hidden;
+}
+
+.shortener-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.feature-badges .badge {
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 25px;
+}
+
+.input-group-lg .form-control {
+    font-size: 18px;
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+
+.input-group-lg .input-group-text {
+    padding: 15px 20px;
+    border-radius: 12px 0 0 12px;
+    border-right: none;
+}
+
+.btn-lg {
+    font-size: 18px;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.short-url-box .form-control {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #495057;
+}
+
+.feature-item {
+    transition: transform 0.3s ease;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.feature-icon i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.custom-url-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+@media (max-width: 768px) {
+    .shortener-card .card-body {
+        padding: 30px 20px;
+    }
+    
+    .action-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+    }
+    
+    .feature-badges {
+        text-align: center;
+        margin-top: 20px;
+    }
+}
+
+/* Animation for success */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#resultsSection {
+    animation: slideIn 0.5s ease;
+}
+</style>
+
+<script>
+// URL Shortener JavaScript
+let shortUrlData = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Custom URL checkbox handler
+    document.getElementById('customUrl').addEventListener('change', function() {
+        const customInput = document.getElementById('customUrlInput');
+        if (this.checked) {
+            customInput.style.display = 'block';
+        } else {
+            customInput.style.display = 'none';
+        }
+    });
+
+    // Shorten button handler
+    document.getElementById('shortenBtn').addEventListener('click', shortenUrl);
+    
+    // Enter key handler
+    document.getElementById('longUrl').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            shortenUrl();
+        }
+    });
+});
+
+async function shortenUrl() {
+    const longUrl = document.getElementById('longUrl').value.trim();
+    const customPath = document.getElementById('customPath').value.trim();
+    const useCustom = document.getElementById('customUrl').checked;
+    
+    if (!longUrl) {
+        alert('Please enter a URL to shorten');
+        return;
+    }
+    
+    if (!isValidUrl(longUrl)) {
+        alert('Please enter a valid URL (including http:// or https://)');
+        return;
+    }
+    
+    const btn = document.getElementById('shortenBtn');
+    const originalText = btn.innerHTML;
+    
+    // Show loading state
+    btn.innerHTML = '<i class="ti ti-loader fa-spin me-2"></i>Shortening...';
+    btn.disabled = true;
+    
+    try {
+        // Simulate API call (replace with actual backend)
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Generate short URL
+        const shortPath = useCustom && customPath ? customPath : generateRandomPath();
+        const shortUrl = `https://suntyn.ai/${shortPath}`;
+        
+        shortUrlData = {
+            shortUrl: shortUrl,
+            originalUrl: longUrl,
+            clicks: 0,
+            created: new Date().toISOString()
+        };
+        
+        // Show results
+        displayResults(shortUrlData);
+        
+    } catch (error) {
+        console.error('Error shortening URL:', error);
+        alert('Failed to shorten URL. Please try again.');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+function displayResults(data) {
+    document.getElementById('shortUrlResult').value = data.shortUrl;
+    document.getElementById('originalUrlDisplay').textContent = data.originalUrl;
+    document.getElementById('resultsSection').style.display = 'block';
+    
+    // Scroll to results
+    document.getElementById('resultsSection').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'nearest'
+    });
+}
+
+function copyShortUrl() {
+    const shortUrlInput = document.getElementById('shortUrlResult');
+    shortUrlInput.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="ti ti-check"></i>';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-outline-primary');
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-outline-primary');
+    }, 2000);
+    
+    // Show toast notification
+    showToast('Short URL copied to clipboard!', 'success');
+}
+
+function openShortUrl() {
+    if (shortUrlData) {
+        window.open(shortUrlData.originalUrl, '_blank');
+    }
+}
+
+function shareUrl() {
+    if (navigator.share && shortUrlData) {
+        navigator.share({
+            title: 'Check out this link',
+            url: shortUrlData.shortUrl
+        });
+    } else {
+        copyShortUrl();
+    }
+}
+
+function createAnother() {
+    document.getElementById('longUrl').value = '';
+    document.getElementById('customPath').value = '';
+    document.getElementById('customUrl').checked = false;
+    document.getElementById('customUrlInput').style.display = 'none';
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('longUrl').focus();
+}
+
+function isValidUrl(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function generateRandomPath() {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+function showToast(message, type = 'info') {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="ti ti-check-circle me-2"></i>${message}
+        <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
+}
+</script>
+{% endblock %}

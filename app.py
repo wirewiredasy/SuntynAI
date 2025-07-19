@@ -145,9 +145,7 @@ def create_app():
             'icon': 'tools',
             'color': 'dark',
             'tools': [
-                'qr-code-generator', 'barcode-generator', 'password-generator', 'hash-generator',
-                'base64-encoder', 'url-shortener', 'color-picker', 'random-generator',
-                'json-formatter', 'uuid-generator', 'text-case-converter'
+                'qr-code-generator', 'barcode-generator', 'url-shortener'
             ]
         },
 

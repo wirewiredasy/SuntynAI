@@ -273,6 +273,55 @@ def process_uuid_generator(request):
         logging.error(f"UUID generator error: {str(e)}")
         return {'error': 'Failed to generate UUID'}
 
+def process_url_shortener(request):
+    """Process URL shortener tool"""
+    try:
+        long_url = request.form.get('long_url', '')
+        custom_path = request.form.get('custom_path', '')
+        
+        if not long_url:
+            return {'error': 'URL is required'}
+        
+        # Validate URL
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(long_url)
+            if not parsed.scheme or not parsed.netloc:
+                return {'error': 'Invalid URL format'}
+        except Exception:
+            return {'error': 'Invalid URL format'}
+        
+        # Generate short path
+        if custom_path:
+            # Validate custom path
+            import re
+            if not re.match(r'^[a-zA-Z0-9-_]+$', custom_path):
+                return {'error': 'Custom path can only contain letters, numbers, hyphens, and underscores'}
+            short_path = custom_path
+        else:
+            # Generate random path
+            import string
+            import secrets
+            chars = string.ascii_letters + string.digits
+            short_path = ''.join(secrets.choice(chars) for _ in range(6))
+        
+        short_url = f'https://suntyn.ai/{short_path}'
+        
+        return {
+            'success': True,
+            'results': {
+                'short_url': short_url,
+                'original_url': long_url,
+                'short_path': short_path,
+                'clicks': 0,
+                'created_at': uuid.uuid4().hex[:8]
+            }
+        }
+    
+    except Exception as e:
+        logging.error(f"URL shortener error: {str(e)}")
+        return {'error': 'Failed to shorten URL'}
+
 def process_json_formatter(request):
     """Process JSON formatter tool"""
     try:
