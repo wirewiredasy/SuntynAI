@@ -1,0 +1,52 @@
+
+{% extends "base.html" %}
+{% block title %}PDF to Image Converter{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-info text-white text-center">
+                    <h2><i class="ti ti-camera me-2"></i>PDF to Image Converter</h2>
+                    <p class="mb-0">Convert PDF pages to high-quality images</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="pdf" class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" class="form-control form-control-lg" id="pdf" name="pdf" accept=".pdf" required>
+                            <div class="invalid-feedback">Please select a PDF file.</div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="format" class="form-label fw-bold">Output Format</label>
+                                <select class="form-select" id="format" name="format">
+                                    <option value="png" selected>PNG</option>
+                                    <option value="jpg">JPG</option>
+                                    <option value="webp">WebP</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dpi" class="form-label fw-bold">Quality (DPI)</label>
+                                <select class="form-select" id="dpi" name="dpi">
+                                    <option value="150">150 DPI (Standard)</option>
+                                    <option value="300" selected>300 DPI (High)</option>
+                                    <option value="600">600 DPI (Ultra)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <i class="ti ti-download me-2"></i>Convert to Images
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

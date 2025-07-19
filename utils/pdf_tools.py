@@ -16,7 +16,7 @@ from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.utils import ImageReader
-from fpdf import FPDF
+from fpdf2 import FPDF
 import camelot
 import pandas as pd
 

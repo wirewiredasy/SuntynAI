@@ -1,0 +1,33 @@
+
+{% extends "base.html" %}
+{% block title %}PDF to Word Converter{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2><i class="ti ti-file-word me-2"></i>PDF to Word Converter</h2>
+                    <p class="mb-0">Convert your PDF documents to editable Word files</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="pdf" class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" class="form-control form-control-lg" id="pdf" name="pdf" accept=".pdf" required>
+                            <div class="invalid-feedback">Please select a PDF file.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="ti ti-download me-2"></i>Convert to Word
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
