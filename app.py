@@ -158,6 +158,12 @@ def create_app():
     def index():
         return render_template('index.html', categories=TOOL_CATEGORIES)
 
+    @app.route('/service-worker.js')
+    def service_worker():
+        """Serve service worker from static directory"""
+        from flask import send_from_directory
+        return send_from_directory('.', 'service-worker.js', mimetype='application/javascript')
+
     @app.route('/about')
     def about():
         return render_template('about.html')

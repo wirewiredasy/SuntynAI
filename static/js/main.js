@@ -226,68 +226,68 @@ function initializeAnimations() {
         const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
         if (animationElements.length === 0) return;
 
-        // Safe floating icon animations with element verification
-        const initFloatingIconAnimations = () => {
-            // Wait a bit for DOM to be ready and icons to be created
-            setTimeout(() => {
-                const floatingIcons = document.querySelectorAll('.floating-icon');
-                if (floatingIcons.length > 0 && typeof gsap !== 'undefined') {
-                    // Initial entrance animation
-                    gsap.from('.floating-icon', {
-                        duration: 1,
-                        y: 10,
-                        opacity: 0,
-                        stagger: 0.1,
-                        ease: "power2.out",
-                        onComplete: () => {
-                            // Start continuous floating animation after entrance
-                            gsap.to(".floating-icon", {
-                                y: -20,
-                                repeat: -1,
-                                yoyo: true,
-                                duration: 1.5,
-                                ease: "power2.inOut",
-                                stagger: 0.2
-                            });
-                        }
-                    });
-                    console.log('🌟 Floating icon animations initialized');
-                } else if (typeof gsap !== 'undefined') {
-                    // Elements might not exist, skip GSAP animation silently
-                    console.log('✨ GSAP loaded, floating icons not found - skipping animation');
-                }
-            }, 800);
+        // Safe GSAP animations for existing elements only
+        const initSafeGSAPAnimations = () => {
+            if (typeof gsap === 'undefined') return;
+            
+            // Only animate elements that actually exist
+            const heroAnimations = document.querySelectorAll('.hero-animation');
+            const toolCards = document.querySelectorAll('.tool-card');
+            
+            if (heroAnimations.length > 0) {
+                gsap.from('.hero-animation', {
+                    duration: 0.8,
+                    y: 30,
+                    opacity: 0,
+                    stagger: 0.2,
+                    ease: "power2.out"
+                });
+                console.log('🎬 Hero animations initialized');
+            }
+            
+            if (toolCards.length > 0) {
+                gsap.from('.tool-card', {
+                    duration: 0.6,
+                    y: 20,
+                    opacity: 0,
+                    stagger: 0.1,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: ".tool-card",
+                        start: "top 80%",
+                        toggleActions: "play none none none"
+                    }
+                });
+                console.log('🃏 Tool card animations initialized');
+            }
+            
+            console.log('✨ GSAP animations initialized');
         };
 
-        // Load GSAP animations with better performance
+        // Initialize GSAP animations efficiently
         if (typeof gsap !== 'undefined') {
-            // Use requestIdleCallback for non-blocking animation init
             requestIdleCallback(() => {
-                initFloatingIconAnimations();
-                console.log('✨ GSAP animations initialized');
+                initSafeGSAPAnimations();
             });
         } else {
-            // Reduced polling for better performance
-            let gsapCheckAttempts = 0;
-            const maxAttempts = 10;
-            
+            // Wait for GSAP to load
+            let attempts = 0;
             const checkGSAP = setInterval(() => {
-                gsapCheckAttempts++;
+                attempts++;
                 if (typeof gsap !== 'undefined') {
                     clearInterval(checkGSAP);
-                    requestIdleCallback(() => initFloatingIconAnimations());
-                    console.log('✨ GSAP loaded and animations initialized');
-                } else if (gsapCheckAttempts >= maxAttempts) {
+                    requestIdleCallback(() => initSafeGSAPAnimations());
+                } else if (attempts >= 10) {
                     clearInterval(checkGSAP);
-                    // Lightweight CSS fallback
-                    requestIdleCallback(() => {
-                        animationElements.forEach((el, i) => {
-                            el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
-                        });
+                    // CSS fallback for basic animations
+                    animationElements.forEach((el, i) => {
+                        if (el.classList.contains('hero-animation')) {
+                            el.style.animation = `fadeInUp 0.8s ease-out ${i * 0.2}s both`;
+                        }
                     });
                     console.log('✅ Using CSS animation fallback');
                 }
-            }, 200); // Reduced frequency
+            }, 300);
         }
 
         window.animationsInitialized = true;
