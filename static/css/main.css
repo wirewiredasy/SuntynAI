@@ -37,6 +37,13 @@ body {
     align-items: center;
 }
 
+/* Remove any floating cube elements */
+.hero-section .cube,
+.hero-section .floating-cube,
+.hero-section .demo-cube {
+    display: none !important;
+}
+
 .hero-background {
     position: absolute;
     top: 0;
