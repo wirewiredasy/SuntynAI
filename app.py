@@ -164,6 +164,10 @@ def create_app():
         from flask import send_from_directory
         return send_from_directory('.', 'service-worker.js', mimetype='application/javascript')
 
+    @app.route('/icon-test')
+    def icon_test():
+        return render_template('icon_test.html')
+
     @app.route('/about')
     def about():
         return render_template('about.html')
