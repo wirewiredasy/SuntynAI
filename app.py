@@ -374,7 +374,7 @@ def create_app():
     def process_tool_enhanced(tool_name):
         try:
             # Handle professional PDF tools with enhanced processing
-            if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-word', 'pdf-watermark']:
+            if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-word', 'pdf-watermark', 'pdf-password-remover', 'excel-to-pdf']:
                 
                 if tool_name == 'pdf-merger':
                     files = request.files.getlist('files')

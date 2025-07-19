@@ -1,250 +1,375 @@
-// Modern JavaScript for pdf-watermark
-class PdfwatermarkTool {
+class PDFWatermarkPro {
     constructor() {
-        this.files = [];
-        this.isProcessing = false;
-        this.initializeEventListeners();
+        this.pdfFile = null;
+        this.watermarkImage = null;
+        this.currentType = 'text';
+        this.settings = {
+            text: 'CONFIDENTIAL',
+            opacity: 50,
+            position: 'center',
+            rotation: -45,
+            fontSize: 36,
+            color: '#ff6b6b',
+            imageScale: 100
+        };
+        this.init();
     }
 
-    initializeEventListeners() {
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const processBtn = document.getElementById('processBtn');
+    init() {
+        this.setupEventListeners();
+        this.setupDragAndDrop();
+        this.updatePreview();
+    }
 
-        // Drag and drop functionality
-        dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', this.handleDragOver.bind(this));
-        dropZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
-        dropZone.addEventListener('drop', this.handleDrop.bind(this));
+    setupEventListeners() {
+        const pdfInput = document.getElementById('pdfInput');
+        const watermarkInput = document.getElementById('watermarkInput');
+        const pdfDropZone = document.getElementById('pdfDropZone');
+        const watermarkDropZone = document.getElementById('watermarkDropZone');
+        const addWatermarkButton = document.getElementById('addWatermarkButton');
+        const typeOptions = document.querySelectorAll('.type-option');
+        const positionOptions = document.querySelectorAll('.position-option');
 
-        // File input change
-        fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+        // File inputs
+        pdfInput.addEventListener('change', (e) => this.handlePDFSelect(e));
+        watermarkInput.addEventListener('change', (e) => this.handleWatermarkSelect(e));
+        
+        // Drop zones
+        pdfDropZone.addEventListener('click', () => pdfInput.click());
+        watermarkDropZone.addEventListener('click', () => watermarkInput.click());
+        
+        // Watermark type selection
+        typeOptions.forEach(option => {
+            option.addEventListener('click', () => this.selectWatermarkType(option.dataset.type));
+        });
+
+        // Position selection
+        positionOptions.forEach(option => {
+            option.addEventListener('click', () => this.selectPosition(option.dataset.position));
+        });
+
+        // Control inputs
+        document.getElementById('watermarkText').addEventListener('input', (e) => this.updateSetting('text', e.target.value));
+        document.getElementById('fontSize').addEventListener('input', (e) => this.updateSetting('fontSize', parseInt(e.target.value)));
+        document.getElementById('textColor').addEventListener('input', (e) => this.updateSetting('color', e.target.value));
+        document.getElementById('opacitySlider').addEventListener('input', (e) => this.updateSetting('opacity', parseInt(e.target.value)));
+        document.getElementById('rotationSlider').addEventListener('input', (e) => this.updateSetting('rotation', parseInt(e.target.value)));
+        document.getElementById('imageScale').addEventListener('input', (e) => this.updateSetting('imageScale', parseInt(e.target.value)));
 
         // Process button
-        processBtn.addEventListener('click', this.processFiles.bind(this));
+        addWatermarkButton.addEventListener('click', () => this.addWatermark());
     }
 
-    handleDragOver(e) {
+    setupDragAndDrop() {
+        const pdfDropZone = document.getElementById('pdfDropZone');
+        const watermarkDropZone = document.getElementById('watermarkDropZone');
+
+        // PDF drop zone
+        this.setupDropZone(pdfDropZone, (files) => {
+            const pdfFiles = files.filter(file => file.type === 'application/pdf');
+            if (pdfFiles.length > 0) {
+                this.processPDFFile(pdfFiles[0]);
+            }
+        });
+
+        // Watermark drop zone  
+        this.setupDropZone(watermarkDropZone, (files) => {
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            if (imageFiles.length > 0) {
+                this.processWatermarkFile(imageFiles[0]);
+            }
+        });
+    }
+
+    setupDropZone(dropZone, callback) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, this.preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = Array.from(dt.files);
+            callback(files);
+        }, false);
+    }
+
+    preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
-        e.currentTarget.classList.add('dragover');
     }
 
-    handleDragLeave(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('dragover');
-    }
-
-    handleDrop(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('dragover');
-        
-        const files = Array.from(e.dataTransfer.files);
-        this.addFiles(files);
-    }
-
-    handleFileSelect(e) {
-        const files = Array.from(e.target.files);
-        this.addFiles(files);
-    }
-
-    addFiles(files) {
-        this.files = [...this.files, ...files];
-        this.updateUI();
-    }
-
-    updateUI() {
-        const processBtn = document.getElementById('processBtn');
-        const processingOptions = document.getElementById('processingOptions');
-        
-        if (this.files.length > 0) {
-            processBtn.disabled = false;
-            processingOptions.classList.remove('hidden');
-            this.displayFileList();
-        } else {
-            processBtn.disabled = true;
-            processingOptions.classList.add('hidden');
+    handlePDFSelect(e) {
+        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        if (files.length > 0) {
+            this.processPDFFile(files[0]);
         }
     }
 
-    displayFileList() {
-        const dropZone = document.getElementById('dropZone');
-        const fileList = this.files.map(file => `
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-file text-gray-400"></i>
-                    <span class="text-sm font-medium">${file.name}</span>
-                </div>
-                <span class="text-xs text-gray-500">${this.formatFileSize(file.size)}</span>
-            </div>
-        `).join('');
-
-        dropZone.innerHTML = `
-            <div class="text-center">
-                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">${this.files.length} file(s) selected</h3>
-                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                    <i class="fas fa-plus mr-2"></i>Add More Files
-                </button>
-            </div>
-            <div class="mt-4 space-y-2">${fileList}</div>
-        `;
+    handleWatermarkSelect(e) {
+        const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+        if (files.length > 0) {
+            this.processWatermarkFile(files[0]);
+        }
     }
 
-    async processFiles() {
-        if (this.isProcessing) return;
-        
-        this.isProcessing = true;
-        const processBtn = document.getElementById('processBtn');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressPercent = document.getElementById('progressPercent');
-        const results = document.getElementById('results');
+    processPDFFile(file) {
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+            this.showNotification('PDF file too large. Maximum size is 50MB.', 'error');
+            return;
+        }
 
-        // Show progress
-        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-        processBtn.disabled = true;
-        progressContainer.classList.remove('hidden');
+        this.pdfFile = file;
+        this.showWatermarkOptions();
+        this.updateAddButton();
+    }
+
+    processWatermarkFile(file) {
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            this.showNotification('Image file too large. Maximum size is 10MB.', 'error');
+            return;
+        }
+
+        this.watermarkImage = file;
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.updateImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    showWatermarkOptions() {
+        const watermarkOptions = document.getElementById('watermarkOptions');
+        const watermarkDropZone = document.getElementById('watermarkDropZone');
+        
+        watermarkOptions.style.display = 'block';
+        
+        if (this.currentType === 'image') {
+            watermarkDropZone.style.display = 'block';
+        }
+    }
+
+    selectWatermarkType(type) {
+        const options = document.querySelectorAll('.type-option');
+        const textControls = document.getElementById('textControls');
+        const imageControls = document.getElementById('imageControls');
+        const watermarkDropZone = document.getElementById('watermarkDropZone');
+
+        options.forEach(opt => opt.classList.remove('active'));
+        document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+        this.currentType = type;
+
+        if (type === 'text') {
+            textControls.style.display = 'block';
+            imageControls.style.display = 'none';
+            watermarkDropZone.style.display = 'none';
+        } else {
+            textControls.style.display = 'none';
+            imageControls.style.display = 'block';
+            watermarkDropZone.style.display = 'block';
+        }
+
+        this.updatePreview();
+        this.updateAddButton();
+    }
+
+    selectPosition(position) {
+        const options = document.querySelectorAll('.position-option');
+        options.forEach(opt => opt.classList.remove('active'));
+        document.querySelector(`[data-position="${position}"]`).classList.add('active');
+
+        this.settings.position = position;
+        this.updatePreview();
+    }
+
+    updateSetting(key, value) {
+        this.settings[key] = value;
+        
+        // Update display values
+        if (key === 'fontSize') {
+            document.getElementById('fontSizeValue').textContent = value;
+        } else if (key === 'opacity') {
+            document.getElementById('opacityValue').textContent = value;
+        } else if (key === 'rotation') {
+            document.getElementById('rotationValue').textContent = value;
+        } else if (key === 'imageScale') {
+            document.getElementById('imageScaleValue').textContent = value;
+        }
+
+        this.updatePreview();
+    }
+
+    updatePreview() {
+        const preview = document.getElementById('watermarkPreview');
+        
+        if (this.currentType === 'text') {
+            preview.className = 'watermark-preview text-watermark-preview';
+            preview.textContent = this.settings.text;
+            preview.style.fontSize = this.settings.fontSize + 'px';
+            preview.style.color = this.settings.color;
+        } else {
+            preview.className = 'watermark-preview image-watermark-preview';
+            if (this.watermarkImage) {
+                preview.innerHTML = `<img src="${URL.createObjectURL(this.watermarkImage)}" 
+                                   style="max-width: ${this.settings.imageScale}px; max-height: ${this.settings.imageScale}px;">`;
+            }
+        }
+
+        // Apply common styles
+        preview.style.opacity = this.settings.opacity / 100;
+        preview.style.transform = `rotate(${this.settings.rotation}deg)`;
+        
+        // Position the preview
+        this.positionPreview(preview);
+    }
+
+    positionPreview(preview) {
+        const positions = {
+            'top-left': { top: '10px', left: '10px' },
+            'top-center': { top: '10px', left: '50%', transform: 'translateX(-50%)' },
+            'top-right': { top: '10px', right: '10px' },
+            'center-left': { top: '50%', left: '10px', transform: 'translateY(-50%)' },
+            'center': { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+            'center-right': { top: '50%', right: '10px', transform: 'translateY(-50%)' },
+            'bottom-left': { bottom: '10px', left: '10px' },
+            'bottom-center': { bottom: '10px', left: '50%', transform: 'translateX(-50%)' },
+            'bottom-right': { bottom: '10px', right: '10px' }
+        };
+
+        const pos = positions[this.settings.position] || positions.center;
+        Object.assign(preview.style, pos);
+    }
+
+    updateImagePreview(imageSrc) {
+        const preview = document.getElementById('watermarkPreview');
+        if (this.currentType === 'image') {
+            preview.innerHTML = `<img src="${imageSrc}" class="image-watermark-preview">`;
+            this.updatePreview();
+        }
+    }
+
+    updateAddButton() {
+        const addButton = document.getElementById('addWatermarkButton');
+        const canProcess = this.pdfFile && (
+            this.currentType === 'text' || 
+            (this.currentType === 'image' && this.watermarkImage)
+        );
+        
+        addButton.disabled = !canProcess;
+    }
+
+    async addWatermark() {
+        if (!this.pdfFile) {
+            this.showNotification('Please select a PDF file first', 'error');
+            return;
+        }
+
+        if (this.currentType === 'image' && !this.watermarkImage) {
+            this.showNotification('Please select a watermark image', 'error');
+            return;
+        }
+
+        const addButton = document.getElementById('addWatermarkButton');
+        const progressContainer = document.getElementById('progressContainer');
+
+        addButton.disabled = true;
+        progressContainer.style.display = 'block';
+
+        const formData = new FormData();
+        formData.append('file', this.pdfFile);
+        formData.append('watermark_type', this.currentType);
+
+        if (this.currentType === 'text') {
+            formData.append('watermark_text', this.settings.text);
+            formData.append('font_size', this.settings.fontSize);
+            formData.append('text_color', this.settings.color);
+        } else {
+            formData.append('watermark_image', this.watermarkImage);
+            formData.append('image_scale', this.settings.imageScale);
+        }
+
+        formData.append('opacity', this.settings.opacity);
+        formData.append('position', this.settings.position);
+        formData.append('rotation', this.settings.rotation);
 
         try {
-            const formData = new FormData();
-            formData.append('tool_name', 'pdf-watermark');
-            
-            this.files.forEach((file, index) => {
-                formData.append(`file_${index}`, file);
-            });
-
-            // Get processing options
-            const quality = document.querySelector('input[name="quality"]:checked')?.value || 'high';
-            formData.append('quality', quality);
-
-            // Simulate progress
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 95) progress = 95;
-                progressBar.style.width = `${progress}%`;
-                progressPercent.textContent = `${Math.round(progress)}%`;
-            }, 200);
-
-            // Make API call
-            const response = await fetch('/process-tool', {
+            const response = await fetch('/process_tool/pdf-watermark', {
                 method: 'POST',
                 body: formData
             });
 
             const result = await response.json();
-            
-            clearInterval(progressInterval);
-            progressBar.style.width = '100%';
-            progressPercent.textContent = '100%';
 
-            // Show results
-            setTimeout(() => {
-                this.displayResults(result);
-                progressContainer.classList.add('hidden');
-                results.classList.remove('hidden');
-            }, 500);
-
+            if (result.success) {
+                this.showResult(result);
+            } else {
+                this.showError(result.error || 'Watermark failed');
+            }
         } catch (error) {
-            console.error('Processing error:', error);
-            this.showError('Processing failed. Please try again.');
-        } finally {
-            this.isProcessing = false;
-            processBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Process Files';
-            processBtn.disabled = false;
+            this.showError('Network error: ' + error.message);
         }
     }
 
-    displayResults(result) {
-        const resultsList = document.getElementById('resultsList');
-        
-        if (result.success) {
-            resultsList.innerHTML = `
-                <div class="result-card">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-check-circle text-green-500 text-2xl success-checkmark"></i>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Processing Complete!</h4>
-                                <p class="text-sm text-gray-600">Your files have been processed successfully</p>
-                            </div>
-                        </div>
-                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                            <i class="fas fa-download mr-2"></i>Download
-                        </button>
-                    </div>
-                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <div class="text-sm text-gray-600">
-                            <strong>Processing time:</strong> ${result.processing_time || '2.3s'}
-                        </div>
-                        <div class="text-sm text-gray-600">
-                            <strong>Files processed:</strong> ${this.files.length}
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            this.showError(result.error || 'Processing failed');
-        }
+    showResult(data) {
+        const progressContainer = document.getElementById('progressContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const downloadButton = document.getElementById('downloadButton');
+
+        progressContainer.style.display = 'none';
+        resultContainer.style.display = 'block';
+
+        downloadButton.onclick = () => {
+            const link = document.createElement('a');
+            link.href = data.download_url;
+            link.download = data.filename || 'watermarked_pdf.pdf';
+            link.click();
+        };
+
+        this.showNotification('Watermark added successfully!', 'success');
     }
 
     showError(message) {
-        const resultsList = document.getElementById('resultsList');
-        const results = document.getElementById('results');
-        
-        resultsList.innerHTML = `
-            <div class="result-card border-red-200 bg-red-50">
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
-                    <div>
-                        <h4 class="font-semibold text-red-900">Processing Failed</h4>
-                        <p class="text-sm text-red-600">${message}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        results.classList.remove('hidden');
+        const progressContainer = document.getElementById('progressContainer');
+        const addButton = document.getElementById('addWatermarkButton');
+
+        progressContainer.style.display = 'none';
+        addButton.disabled = false;
+
+        this.showNotification(message, 'error');
     }
 
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
     }
 }
 
-// Initialize the tool when DOM is loaded
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    new PdfwatermarkTool();
-});
-
-// Add smooth scrolling and modern interactions
-document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-
-    // Add loading animation to buttons
-    document.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', function() {
-            if (!this.disabled) {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-            }
-        });
-    });
+    window.pdfWatermark = new PDFWatermarkPro();
 });

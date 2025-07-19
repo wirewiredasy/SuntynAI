@@ -1,250 +1,232 @@
-// Modern JavaScript for pdf-compressor
-class PdfcompressorTool {
+class PDFCompressorPro {
     constructor() {
-        this.files = [];
-        this.isProcessing = false;
-        this.initializeEventListeners();
+        this.pdfFile = null;
+        this.selectedLevel = 'medium';
+        this.socket = io();
+        this.init();
     }
 
-    initializeEventListeners() {
-        const dropZone = document.getElementById('dropZone');
+    init() {
+        this.setupEventListeners();
+        this.setupDragAndDrop();
+    }
+
+    setupEventListeners() {
         const fileInput = document.getElementById('fileInput');
-        const processBtn = document.getElementById('processBtn');
-
-        // Drag and drop functionality
+        const dropZone = document.getElementById('dropZone');
+        const compressButton = document.getElementById('compressButton');
+        const compressionOptions = document.querySelectorAll('.compression-option');
+        
+        fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
         dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', this.handleDragOver.bind(this));
-        dropZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
-        dropZone.addEventListener('drop', this.handleDrop.bind(this));
+        compressButton.addEventListener('click', () => this.compressPDF());
 
-        // File input change
-        fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+        compressionOptions.forEach(option => {
+            option.addEventListener('click', () => this.selectCompressionLevel(option.dataset.level));
+        });
 
-        // Process button
-        processBtn.addEventListener('click', this.processFiles.bind(this));
+        // Socket events
+        this.socket.on('compress_progress', (data) => this.updateProgress(data.progress));
+        this.socket.on('compress_complete', (data) => this.showResult(data));
+        this.socket.on('compress_error', (data) => this.showError(data.error));
     }
 
-    handleDragOver(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.add('dragover');
+    setupDragAndDrop() {
+        const dropZone = document.getElementById('dropZone');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, this.preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => this.handleDrop(e), false);
     }
 
-    handleDragLeave(e) {
+    preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
-        e.currentTarget.classList.remove('dragover');
     }
 
     handleDrop(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('dragover');
-        
-        const files = Array.from(e.dataTransfer.files);
-        this.addFiles(files);
-    }
-
-    handleFileSelect(e) {
-        const files = Array.from(e.target.files);
-        this.addFiles(files);
-    }
-
-    addFiles(files) {
-        this.files = [...this.files, ...files];
-        this.updateUI();
-    }
-
-    updateUI() {
-        const processBtn = document.getElementById('processBtn');
-        const processingOptions = document.getElementById('processingOptions');
-        
-        if (this.files.length > 0) {
-            processBtn.disabled = false;
-            processingOptions.classList.remove('hidden');
-            this.displayFileList();
-        } else {
-            processBtn.disabled = true;
-            processingOptions.classList.add('hidden');
+        const dt = e.dataTransfer;
+        const files = Array.from(dt.files).filter(file => file.type === 'application/pdf');
+        if (files.length > 0) {
+            this.processFile(files[0]);
         }
     }
 
-    displayFileList() {
-        const dropZone = document.getElementById('dropZone');
-        const fileList = this.files.map(file => `
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-file text-gray-400"></i>
-                    <span class="text-sm font-medium">${file.name}</span>
-                </div>
-                <span class="text-xs text-gray-500">${this.formatFileSize(file.size)}</span>
-            </div>
-        `).join('');
-
-        dropZone.innerHTML = `
-            <div class="text-center">
-                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">${this.files.length} file(s) selected</h3>
-                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                    <i class="fas fa-plus mr-2"></i>Add More Files
-                </button>
-            </div>
-            <div class="mt-4 space-y-2">${fileList}</div>
-        `;
+    handleFileSelect(e) {
+        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        if (files.length > 0) {
+            this.processFile(files[0]);
+        }
     }
 
-    async processFiles() {
-        if (this.isProcessing) return;
-        
-        this.isProcessing = true;
-        const processBtn = document.getElementById('processBtn');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressPercent = document.getElementById('progressPercent');
-        const results = document.getElementById('results');
+    processFile(file) {
+        if (file.size > 100 * 1024 * 1024) { // 100MB limit
+            this.showNotification('File too large. Maximum size is 100MB.', 'error');
+            return;
+        }
 
-        // Show progress
-        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-        processBtn.disabled = true;
-        progressContainer.classList.remove('hidden');
+        this.pdfFile = file;
+        this.showCompressionOptions();
+        this.updateFileSizeDisplay();
+    }
+
+    showCompressionOptions() {
+        const compressionSelector = document.getElementById('compressionSelector');
+        const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+        const compressButton = document.getElementById('compressButton');
+
+        compressionSelector.style.display = 'block';
+        fileSizeDisplay.style.display = 'block';
+        compressButton.disabled = false;
+    }
+
+    selectCompressionLevel(level) {
+        const options = document.querySelectorAll('.compression-option');
+        options.forEach(opt => opt.classList.remove('active'));
+        
+        const selectedOption = document.querySelector(`[data-level="${level}"]`);
+        selectedOption.classList.add('active');
+        
+        this.selectedLevel = level;
+        this.updateFileSizeDisplay();
+    }
+
+    updateFileSizeDisplay() {
+        if (!this.pdfFile) return;
+
+        const originalSize = this.pdfFile.size;
+        const originalSizeMB = (originalSize / (1024 * 1024)).toFixed(1);
+        
+        // Mock compression ratios
+        const compressionRatios = {
+            'low': 0.8,      // 20% reduction
+            'medium': 0.55,  // 45% reduction  
+            'high': 0.35,    // 65% reduction
+            'maximum': 0.2   // 80% reduction
+        };
+
+        const compressedSize = originalSize * compressionRatios[this.selectedLevel];
+        const compressedSizeMB = (compressedSize / (1024 * 1024)).toFixed(1);
+        const savings = Math.round((1 - compressionRatios[this.selectedLevel]) * 100);
+
+        document.getElementById('originalSize').textContent = originalSizeMB + ' MB';
+        document.getElementById('compressedSize').textContent = compressedSizeMB + ' MB';
+        document.getElementById('savingsBadge').textContent = savings + '% smaller';
+
+        // Update compressed bar width
+        const compressedBar = document.getElementById('compressedBar');
+        if (compressedBar) {
+            compressedBar.style.width = (compressionRatios[this.selectedLevel] * 100) + '%';
+        }
+    }
+
+    async compressPDF() {
+        if (!this.pdfFile) {
+            this.showNotification('Please select a PDF file first', 'error');
+            return;
+        }
+
+        const compressButton = document.getElementById('compressButton');
+        const progressContainer = document.getElementById('progressContainer');
+
+        compressButton.disabled = true;
+        progressContainer.style.display = 'block';
+
+        const formData = new FormData();
+        formData.append('file', this.pdfFile);
+        formData.append('compression_level', this.selectedLevel);
 
         try {
-            const formData = new FormData();
-            formData.append('tool_name', 'pdf-compressor');
-            
-            this.files.forEach((file, index) => {
-                formData.append(`file_${index}`, file);
-            });
-
-            // Get processing options
-            const quality = document.querySelector('input[name="quality"]:checked')?.value || 'high';
-            formData.append('quality', quality);
-
-            // Simulate progress
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 95) progress = 95;
-                progressBar.style.width = `${progress}%`;
-                progressPercent.textContent = `${Math.round(progress)}%`;
-            }, 200);
-
-            // Make API call
-            const response = await fetch('/process-tool', {
+            const response = await fetch('/process_tool/pdf-compressor', {
                 method: 'POST',
                 body: formData
             });
 
             const result = await response.json();
-            
-            clearInterval(progressInterval);
-            progressBar.style.width = '100%';
-            progressPercent.textContent = '100%';
 
-            // Show results
-            setTimeout(() => {
-                this.displayResults(result);
-                progressContainer.classList.add('hidden');
-                results.classList.remove('hidden');
-            }, 500);
-
+            if (result.success) {
+                this.showResult(result);
+            } else {
+                this.showError(result.error || 'Compression failed');
+            }
         } catch (error) {
-            console.error('Processing error:', error);
-            this.showError('Processing failed. Please try again.');
-        } finally {
-            this.isProcessing = false;
-            processBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Process Files';
-            processBtn.disabled = false;
+            this.showError('Network error: ' + error.message);
         }
     }
 
-    displayResults(result) {
-        const resultsList = document.getElementById('resultsList');
-        
-        if (result.success) {
-            resultsList.innerHTML = `
-                <div class="result-card">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-check-circle text-green-500 text-2xl success-checkmark"></i>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Processing Complete!</h4>
-                                <p class="text-sm text-gray-600">Your files have been processed successfully</p>
-                            </div>
-                        </div>
-                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                            <i class="fas fa-download mr-2"></i>Download
-                        </button>
-                    </div>
-                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <div class="text-sm text-gray-600">
-                            <strong>Processing time:</strong> ${result.processing_time || '2.3s'}
-                        </div>
-                        <div class="text-sm text-gray-600">
-                            <strong>Files processed:</strong> ${this.files.length}
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            this.showError(result.error || 'Processing failed');
-        }
+    updateProgress(progress) {
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        progressBar.style.width = progress + '%';
+        progressText.textContent = progress + '%';
+    }
+
+    showResult(data) {
+        const progressContainer = document.getElementById('progressContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const downloadButton = document.getElementById('downloadButton');
+
+        progressContainer.style.display = 'none';
+        resultContainer.style.display = 'block';
+
+        // Update final comparison
+        document.getElementById('finalOriginalSize').textContent = data.original_size || '5.2 MB';
+        document.getElementById('finalCompressedSize').textContent = data.compressed_size || '2.9 MB';
+        document.getElementById('finalSavings').textContent = data.savings_percent + '%' || '45%';
+
+        downloadButton.onclick = () => {
+            const link = document.createElement('a');
+            link.href = data.download_url;
+            link.download = data.filename || 'compressed_pdf.pdf';
+            link.click();
+        };
+
+        this.showNotification('PDF compressed successfully!', 'success');
     }
 
     showError(message) {
-        const resultsList = document.getElementById('resultsList');
-        const results = document.getElementById('results');
-        
-        resultsList.innerHTML = `
-            <div class="result-card border-red-200 bg-red-50">
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
-                    <div>
-                        <h4 class="font-semibold text-red-900">Processing Failed</h4>
-                        <p class="text-sm text-red-600">${message}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        results.classList.remove('hidden');
+        const progressContainer = document.getElementById('progressContainer');
+        const compressButton = document.getElementById('compressButton');
+
+        progressContainer.style.display = 'none';
+        compressButton.disabled = false;
+
+        this.showNotification(message, 'error');
     }
 
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
     }
 }
 
-// Initialize the tool when DOM is loaded
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    new PdfcompressorTool();
-});
-
-// Add smooth scrolling and modern interactions
-document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-
-    // Add loading animation to buttons
-    document.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', function() {
-            if (!this.disabled) {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-            }
-        });
-    });
+    window.pdfCompressor = new PDFCompressorPro();
 });
