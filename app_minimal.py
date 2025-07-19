@@ -61,7 +61,7 @@ def index():
         'grayscale-converter': {'name': 'Grayscale', 'icon': 'ti ti-contrast', 'desc': 'Convert to black & white', 'status': 'active', 'category': 'image'},
     }
 
-    return render_template('index.html', tools=tools_data)
+    return render_template('index_new.html', tools=tools_data)
 
 # Health check endpoint
 @app.route('/health')
