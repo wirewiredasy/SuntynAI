@@ -291,20 +291,23 @@
                             <li class="dropdown-header">
                                 <i class="ti ti-category me-1"></i>Tool Categories
                             </li>
-                            <li><a class="dropdown-item" href="{{ url_for('index') }}#pdf-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
                                 <i class="ti ti-file-text me-2"></i>PDF Tools
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('index') }}#image-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
                                 <i class="ti ti-photo me-2"></i>Image Tools
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('index') }}#finance-tools">
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
                                 <i class="ti ti-calculator me-2"></i>Finance Tools
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('index') }}#ai-tools">
-                                <i class="ti ti-brain me-2"></i>AI Tools
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-video me-2"></i>Video/Audio Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-shield-check me-2"></i>Government Tools
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-primary" href="{{ url_for('index') }}#all-tools">
+                            <li><a class="dropdown-item text-primary" href="{{ url_for('index') }}#tools-section">
                                 <i class="ti ti-apps me-2"></i>View All Tools
                             </a></li>
                         </ul>
@@ -443,11 +446,11 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3" style="color: var(--primary-color);">Quick Links</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('index') }}#pdf-tools" class="text-light">PDF Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#image-tools" class="text-light">Image Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#ai-tools" class="text-light">AI Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#finance-tools" class="text-light">Finance Tools</a></li>
-                        <li><a href="{{ url_for('all_tools') }}" class="text-warning">All Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">PDF Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">Image Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">Finance Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">Video Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-warning">All Tools</a></li>
                     </ul>
                 </div>
 
@@ -457,9 +460,9 @@
                     <ul class="list-unstyled footer-links">
                         <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light">PDF Merge</a></li>
                         <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light">Image Compress</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='qr-generator') }}" class="text-light">QR Generator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='qr-code-generator') }}" class="text-light">QR Generator</a></li>
                         <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light">EMI Calculator</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='text-summarizer') }}" class="text-light">Text Summary</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='password-generator') }}" class="text-light">Password Gen</a></li>
                     </ul>
                 </div>
 
@@ -467,11 +470,10 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3" style="color: var(--primary-color);">Company</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('about') }}" class="text-light">About</a></li>
-                        <li><a href="{{ url_for('contact') }}" class="text-light">Contact</a></li>
-                        <li><a href="{{ url_for('blog') }}" class="text-light">Blog</a></li>
-
-                        <li><a href="{{ url_for('faq') }}" class="text-light">FAQ</a></li>
+                        <li><a href="/about" class="text-light">About</a></li>
+                        <li><a href="/contact" class="text-light">Contact</a></li>
+                        <li><a href="/blog" class="text-light">Blog</a></li>
+                        <li><a href="/faq" class="text-light">FAQ</a></li>
                     </ul>
                 </div>
 
@@ -479,10 +481,10 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3" style="color: var(--primary-color);">Legal</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('privacy') }}" class="text-light">Privacy</a></li>
-                        <li><a href="{{ url_for('terms') }}" class="text-light">Terms</a></li>
-                        <li><a href="{{ url_for('cookies') }}" class="text-light">Cookies</a></li>
-                        <li><a href="{{ url_for('security') }}" class="text-light">Security</a></li>
+                        <li><a href="/privacy" class="text-light">Privacy</a></li>
+                        <li><a href="/terms" class="text-light">Terms</a></li>
+                        <li><a href="/cookies" class="text-light">Cookies</a></li>
+                        <li><a href="/security" class="text-light">Security</a></li>
                     </ul>
                 </div>
             </div>
