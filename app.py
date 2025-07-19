@@ -140,14 +140,7 @@ def create_app():
                 'passport-checker', 'driving-license-validator', 'voter-id-checker'
             ]
         },
-        'Student Tools': {
-            'icon': 'book-2',
-            'color': 'secondary',
-            'tools': [
-                'gpa-calculator', 'assignment-planner', 'citation-generator', 'study-schedule',
-                'research-helper', 'note-organizer', 'exam-scheduler', 'academic-calendar'
-            ]
-        },
+
         'Utility Tools': {
             'icon': 'tools',
             'color': 'dark',
@@ -157,15 +150,7 @@ def create_app():
                 'json-formatter', 'uuid-generator', 'text-case-converter'
             ]
         },
-        'AI Tools': {
-            'icon': 'brain',
-            'color': 'purple',
-            'tools': [
-                'text-summarizer', 'content-generator', 'resume-builder', 'letter-writer',
-                'code-generator', 'translation-tool', 'grammar-checker', 'paraphraser',
-                'business-name-generator'
-            ]
-        }
+
     }
 
     # Store categories in app config

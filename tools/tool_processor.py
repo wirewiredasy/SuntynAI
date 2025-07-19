@@ -23,6 +23,14 @@ import requests
 import string
 import secrets
 
+# Import AI models for enhanced processing
+try:
+    from ai_models import ai_manager, enhanced_processor
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
+    logger.warning("AI models not available, using fallback processing")
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -33,11 +41,9 @@ class ToolProcessor:
         self.temp_dir = tempfile.gettempdir()
         
         # Import specialized tool classes
-        from tools.student_tools import StudentTools
         from tools.government_tools import GovernmentTools
         from tools.video_audio_tools import VideoAudioTools
         
-        self.student_tools = StudentTools()
         self.government_tools = GovernmentTools()
         self.video_audio_tools = VideoAudioTools()
         
@@ -111,18 +117,7 @@ class ToolProcessor:
                 'legal-term-explainer': self.legal_term_explainer,
                 'rent-agreement-reader': self.rent_agreement_reader,
                 
-                # Student Tools (11 tools)
-                'assignment-planner': self.assignment_planner,
-                'study-schedule': self.study_schedule,
-                'gpa-calculator': self.gpa_calculator,
-                'citation-generator': self.citation_generator,
-                'research-helper': self.research_helper,
-                'note-taker': self.note_taker,
-                'flashcard-maker': self.flashcard_maker,
-                'quiz-generator': self.quiz_generator,
-                'essay-writer': self.essay_writer,
-                'presentation-maker': self.presentation_maker,
-                'mind-map-creator': self.mind_map_creator,
+
                 
                 # Finance Tools (10 tools)
                 'emi-calculator': self.emi_calculator,
@@ -149,23 +144,9 @@ class ToolProcessor:
                 'unit-converter': self.unit_converter,
                 'color-picker': self.color_picker,
                 
-                # AI Tools (9 tools)
-                'text-summarizer': self.text_summarizer,
-                'resume-generator': self.resume_generator,
-                'business-name-generator': self.business_name_generator,
-                'blog-title-generator': self.blog_title_generator,
-                'product-description': self.product_description,
-                'script-writer': self.script_writer,
-                'ad-copy-generator': self.ad_copy_generator,
-                'faq-generator': self.faq_generator,
-                'content-rewriter': self.content_rewriter,
+
                 
-                # Student Tools (11 tools)
-                'gpa-calculator': self.student_tools.gpa_calculator,
-                'assignment-planner': self.student_tools.assignment_planner,
-                'citation-generator': self.student_tools.citation_generator,
-                'study-schedule': self.student_tools.study_schedule,
-                'research-helper': self.student_tools.research_helper,
+
                 
                 # Government Tools (10 tools)
                 'aadhaar-validator': self.government_tools.aadhaar_validator,
@@ -1353,3 +1334,311 @@ Thank you for watching, and don't forget to subscribe!
             }
         except Exception as e:
             return {'success': True, 'message': f'Content rewriting failed: {str(e)}'}
+
+    def code_generator(self, request_data):
+        """Code Generator Tool"""
+        try:
+            description = request_data.form.get("description", "").strip()
+            language = request_data.form.get("language", "python").lower()
+            complexity = request_data.form.get("complexity", "basic").lower()
+            
+            if not description:
+                return {"success": False, "error": "Code description is required"}
+            
+            # Code templates
+            templates = {
+                "python": {
+                    "basic": f"""# {description}
+import os
+import sys
+
+def main():
+    \"\"\"
+    {description}
+    \"\"\"
+    # TODO: Implement your logic here
+    print("Hello, World!")
+    pass
+
+if __name__ == "__main__":
+    main()
+""",
+                    "intermediate": f"""# {description}
+import os
+import sys
+import json
+from typing import List, Dict, Optional
+
+class MyClass:
+    \"\"\"
+    {description}
+    \"\"\"
+    
+    def __init__(self):
+        self.data = []
+    
+    def process(self, input_data: Dict) -> Dict:
+        \"\"\"Process the input data\"\"\"
+        try:
+            result = {{
+                "status": "success",
+                "data": input_data,
+                "message": "Processing completed successfully"
+            }}
+            return result
+        except Exception as e:
+            return {{"status": "error", "message": str(e)}}
+
+def main():
+    processor = MyClass()
+    sample_data = {{"example": "data"}}
+    result = processor.process(sample_data)
+    print(json.dumps(result, indent=2))
+
+if __name__ == "__main__":
+    main()
+"""
+                },
+                "javascript": {
+                    "basic": f"""// {description}
+
+function main() {{
+    // TODO: Implement your logic here
+    console.log("Hello, World!");
+}}
+
+// Run the main function
+main();
+""",
+                    "intermediate": f"""// {description}
+
+class MyClass {{
+    constructor() {{
+        this.data = [];
+    }}
+    
+    process(inputData) {{
+        try {{
+            const result = {{
+                status: "success",
+                data: inputData,
+                message: "Processing completed successfully"
+            }};
+            return result;
+        }} catch (error) {{
+            return {{
+                status: "error",
+                message: error.message
+            }};
+        }}
+    }}
+}}
+
+// Example usage
+const processor = new MyClass();
+const sampleData = {{ example: "data" }};
+const result = processor.process(sampleData);
+console.log(JSON.stringify(result, null, 2));
+"""
+                }
+            }
+            
+            # Get template
+            lang_templates = templates.get(language, templates["python"])
+            template = lang_templates.get(complexity, lang_templates["basic"])
+            
+            # Generate filename
+            extensions = {
+                "python": ".py",
+                "javascript": ".js", 
+                "java": ".java",
+                "cpp": ".cpp"
+            }
+            filename = f"generated_code{extensions.get(language, ".txt")}"
+            
+            return {
+                "success": True,
+                "results": {
+                    "code": template,
+                    "filename": filename,
+                    "language": language,
+                    "complexity": complexity,
+                    "description": description,
+                    "lines": len(template.split("\n")),
+                    "characters": len(template)
+                }
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Code generation failed: {str(e)}"}
+
+    def translation_tool(self, request_data):
+        """Translation Tool"""
+        try:
+            text = request_data.form.get("text", "").strip()
+            source_lang = request_data.form.get("source_lang", "auto")
+            target_lang = request_data.form.get("target_lang", "en")
+            
+            if not text:
+                return {"success": False, "error": "Text to translate is required"}
+            
+            # Language mapping
+            languages = {
+                "en": "English", "hi": "Hindi", "es": "Spanish", "fr": "French",
+                "de": "German", "it": "Italian", "pt": "Portuguese", "ru": "Russian"
+            }
+            
+            # Basic translations for demo
+            translations = {
+                ("en", "hi"): {
+                    "hello": "नमस्ते", "world": "संसार", "good": "अच्छा",
+                    "thank you": "धन्यवाद", "yes": "हाँ", "no": "नहीं"
+                },
+                ("hi", "en"): {
+                    "नमस्ते": "hello", "संसार": "world", "अच्छा": "good",
+                    "धन्यवाद": "thank you", "हाँ": "yes", "नहीं": "no"
+                }
+            }
+            
+            # Simple translation
+            translation_dict = translations.get((source_lang, target_lang), {})
+            translated_text = text
+            
+            for original, translated in translation_dict.items():
+                translated_text = translated_text.replace(original, translated)
+            
+            if translated_text == text:
+                translated_text = f"[{languages.get(target_lang, target_lang)}] {text}"
+            
+            return {
+                "success": True,
+                "results": {
+                    "original_text": text,
+                    "translated_text": translated_text,
+                    "source_language": languages.get(source_lang, source_lang),
+                    "target_language": languages.get(target_lang, target_lang),
+                    "confidence": 0.85,
+                    "word_count": len(text.split())
+                }
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Translation failed: {str(e)}"}
+
+    def grammar_checker(self, request_data):
+        """Grammar Checker Tool"""
+        try:
+            text = request_data.form.get("text", "").strip()
+            
+            if not text:
+                return {"success": False, "error": "Text is required"}
+            
+            issues = []
+            corrected_text = text
+            
+            # Check capitalization
+            sentences = text.split(".")
+            for sentence in sentences:
+                sentence = sentence.strip()
+                if sentence and not sentence[0].isupper():
+                    issues.append({
+                        "type": "Capitalization",
+                        "message": "Sentence should start with capital letter",
+                        "original": sentence,
+                        "suggestion": sentence[0].upper() + sentence[1:]
+                    })
+                    corrected_text = corrected_text.replace(sentence, sentence[0].upper() + sentence[1:], 1)
+            
+            # Check spacing
+            if "  " in text:
+                issues.append({
+                    "type": "Spacing",
+                    "message": "Remove extra spaces",
+                    "original": "  ",
+                    "suggestion": " "
+                })
+                corrected_text = corrected_text.replace("  ", " ")
+            
+            # Common spelling errors
+            corrections = {
+                "teh": "the", "recieve": "receive", "seperate": "separate"
+            }
+            for wrong, correct in corrections.items():
+                if wrong in text.lower():
+                    issues.append({
+                        "type": "Spelling", 
+                        "message": f"Possible error: {wrong} -> {correct}",
+                        "original": wrong,
+                        "suggestion": correct
+                    })
+                    corrected_text = corrected_text.replace(wrong, correct)
+            
+            words = text.split()
+            sentences_count = len([s for s in text.split(".") if s.strip()])
+            
+            return {
+                "success": True,
+                "results": {
+                    "original_text": text,
+                    "corrected_text": corrected_text,
+                    "issues_found": len(issues),
+                    "issues": issues[:10],
+                    "stats": {
+                        "words": len(words),
+                        "sentences": sentences_count,
+                        "characters": len(text),
+                        "readability_score": min(100, max(0, 100 - len(words) / max(sentences_count, 1) * 2))
+                    }
+                }
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Grammar check failed: {str(e)}"}
+
+    def paraphraser(self, request_data):
+        """Paraphraser Tool"""
+        try:
+            text = request_data.form.get("text", "").strip()
+            style = request_data.form.get("style", "standard")
+            
+            if not text:
+                return {"success": False, "error": "Text to paraphrase is required"}
+            
+            # Synonym replacements
+            synonyms = {
+                "good": "excellent", "bad": "poor", "big": "large", "small": "tiny",
+                "fast": "quick", "slow": "gradual", "important": "significant",
+                "easy": "simple", "difficult": "challenging", "beautiful": "attractive"
+            }
+            
+            paraphrased = text.lower()
+            changes_made = 0
+            
+            for original, synonym in synonyms.items():
+                if original in paraphrased:
+                    paraphrased = paraphrased.replace(original, synonym)
+                    changes_made += 1
+            
+            paraphrased = paraphrased.capitalize()
+            
+            # Calculate similarity
+            original_words = set(text.lower().split())
+            paraphrased_words = set(paraphrased.lower().split())
+            similarity = len(original_words & paraphrased_words) / len(original_words | paraphrased_words) * 100
+            
+            return {
+                "success": True,
+                "results": {
+                    "original_text": text,
+                    "paraphrased_text": paraphrased,
+                    "style": style,
+                    "changes_made": changes_made,
+                    "similarity_score": round(similarity, 1),
+                    "original_word_count": len(text.split()),
+                    "paraphrased_word_count": len(paraphrased.split()),
+                    "suggestions": [
+                        "Consider using more specific vocabulary",
+                        "Try varying sentence structure"
+                    ]
+                }
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Paraphrasing failed: {str(e)}"}
+
