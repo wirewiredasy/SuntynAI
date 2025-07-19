@@ -27,7 +27,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Use intersection observer for lazy initialization
     initializeLazyComponents();
+    
+    // Initialize drag and drop manager
+    initializeDragDropManager();
 });
+
+// Initialize SortableJS for drag-drop functionality
+function initializeDragDropManager() {
+    console.log('🔄 Drag and drop manager initialized');
+    
+    // Check if SortableJS is available
+    if (typeof Sortable === 'undefined') {
+        console.warn('SortableJS not available, sortable features disabled');
+        return;
+    }
+    
+    // Initialize sortable lists
+    const sortableLists = document.querySelectorAll('.sortable-list, [data-sortable]');
+    sortableLists.forEach(list => {
+        try {
+            Sortable.create(list, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                onEnd: function(evt) {
+                    // Handle reorder event
+                    console.log('Item moved from index', evt.oldIndex, 'to', evt.newIndex);
+                }
+            });
+        } catch (error) {
+            console.warn('Failed to initialize sortable list:', error);
+        }
+    });
+}
 
 // Optimized lazy component initialization
 function initializeLazyComponents() {
@@ -72,6 +105,8 @@ function initializeCharts() {
             console.warn('Chart.js not loaded, skipping chart initialization');
             return;
         }
+        
+        console.log('✅ Charts initialized successfully');
 
         // Safely destroy existing charts
         if (window.chartInstances && Array.isArray(window.chartInstances)) {
@@ -594,13 +629,18 @@ function formatFileSize(bytes) {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
-                .then(() => {
+                .then((registration) => {
                     console.log('✅ PWA enabled');
+                    console.log('✅ Service Worker registered successfully');
                 })
-                .catch(() => {
-                    // Silently fail for better UX
+                .catch((error) => {
+                    console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
+                    console.info('Service Worker not available');
                 });
         });
+    } else {
+        console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
+        console.info('Service Worker not available');
     }
 
 function SuntynAI() {

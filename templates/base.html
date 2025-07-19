@@ -68,19 +68,15 @@
     <!-- Lenis Smooth Scroll - load only if needed -->
     <link href="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.34/dist/lenis.css" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <!-- GSAP for advanced animations - conditional loading -->
-    <script defer>
-        // Load GSAP only if needed and handle errors gracefully
-        if (document.querySelector('.gsap-animation') || document.querySelector('[data-gsap]')) {
-            const gsapScript = document.createElement('script');
-            gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
-            gsapScript.onerror = function() {
-                console.warn('GSAP failed to load, continuing without advanced animations');
-                window.gsap = { to: () => {}, from: () => {}, set: () => {} }; // Fallback
-            };
-            document.head.appendChild(gsapScript);
-        }
-    </script>
+    <!-- Essential JavaScript Libraries - Load Early -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer 
+            onerror="console.warn('External library error handled:', 'GSAP library failed to load'); window.gsap = { to: () => {}, from: () => {}, set: () => {}, timeline: () => ({ to: () => {}, from: () => {}, set: () => {} }) };"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" defer 
+            onerror="console.warn('External library error handled:', 'Chart.js library failed to load'); window.Chart = class { constructor() {} static register() {} static defaults = {} };"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer 
+            onerror="console.warn('External library error handled:', 'SortableJS library failed to load'); window.Sortable = { create: () => ({}) };"></script>
 
     <!-- Fallback for old browsers -->
     <noscript>
