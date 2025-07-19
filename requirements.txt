@@ -67,3 +67,6 @@ flask
 flask-sqlalchemy
 gunicorn
 psycopg2-binary
+pdfplumber
+pymupdf
+reportlab

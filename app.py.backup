@@ -527,7 +527,7 @@ def create_app():
                 'error': f'Tool processing failed: {str(e)}'
             }), 500
     
-    # Legacy route for backward compatibility  
+    # Legacy route for backward compatibility
     @app.route('/process-tool', methods=['POST'])
     def process_tool_legacy():
         tool_name = request.form.get('tool_name')

@@ -200,7 +200,7 @@ class PDFSplitterPro {
                 fileElement.innerHTML = `
                     <div class="result-file-icon">📄</div>
                     <div class="result-file-name">${file.filename}</div>
-                    <button class="download-individual" onclick="window.open('/uploads/${file.filename}', '_blank')">
+                    <button class="download-individual" onclick="downloadFile('${file.download_url}', '${file.filename}')">
                         📥 Download
                     </button>
                 `;
@@ -209,6 +209,29 @@ class PDFSplitterPro {
         }
         
         this.showToast('PDF split successfully!', 'success');
+        
+        // Auto-download first file after 2 seconds if only one file
+        if (result.output_files && result.output_files.length === 1) {
+            setTimeout(() => {
+                const file = result.output_files[0];
+                const link = document.createElement('a');
+                link.href = file.download_url;
+                link.download = file.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, 2000);
+        }
+    }
+    
+    // Global function for downloading files
+    downloadFile(url, filename) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     resetUI() {

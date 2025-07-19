@@ -184,7 +184,17 @@ class PDFCompressorPro {
         
         if (result.download_url) {
             this.downloadButton.href = result.download_url;
-            this.downloadButton.download = 'compressed_document.pdf';
+            this.downloadButton.download = result.filename || 'compressed_document.pdf';
+            
+            // Auto-download after 2 seconds
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = result.download_url;
+                link.download = result.filename || 'compressed_document.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, 2000);
         }
         
         this.showToast('PDF compressed successfully!', 'success');

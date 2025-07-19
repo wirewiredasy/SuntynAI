@@ -190,7 +190,42 @@ class PDFMergerPro {
         
         if (result.download_url) {
             this.downloadButton.href = result.download_url;
-            this.downloadButton.download = 'merged_document.pdf';
+            this.downloadButton.download = result.filename || 'merged_document.pdf';
+            
+            // Also create enhanced result display
+            const resultContainer = document.querySelector('.result-section .result-content');
+            if (resultContainer) {
+                resultContainer.innerHTML = `
+                    <div class="result-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>PDF Merged Successfully!</h3>
+                        <p>Your PDFs have been merged into a single document.</p>
+                        <div class="file-info mb-3">
+                            <p><strong>Files merged:</strong> ${result.file_count || this.files.length}</p>
+                            <p><strong>Output file:</strong> ${result.filename}</p>
+                        </div>
+                        <div class="download-buttons">
+                            <a href="${result.download_url}" class="download-btn" download="${result.filename}">
+                                <i class="fas fa-download"></i>
+                                Download Merged PDF
+                            </a>
+                            <button onclick="window.open('${result.download_url}', '_blank')" class="btn btn-outline-primary">
+                                <i class="fas fa-external-link-alt"></i> Open in New Tab
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Auto-download after 2 seconds
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = result.download_url;
+                link.download = result.filename || 'merged_document.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, 2000);
         }
         
         this.showToast('PDFs merged successfully!', 'success');
