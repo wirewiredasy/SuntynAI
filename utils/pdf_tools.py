@@ -26,9 +26,12 @@ from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.utils import ImageReader
 
 try:
-    from fpdf import FPDF
+    from fpdf2 import FPDF
 except ImportError:
-    FPDF = None
+    try:
+        from fpdf import FPDF
+    except ImportError:
+        FPDF = None
 
 try:
     import pandas as pd
