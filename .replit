@@ -10,7 +10,7 @@ deploymentTarget = "autoscale"
 run = ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
 
 [workflows]
-runButton = "Project"
+runButton = "Run PDF Toolkit"
 
 [[workflows.workflow]]
 name = "Project"
@@ -56,6 +56,15 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python app.py"
+
+[[workflows.workflow]]
+name = "Run PDF Toolkit"
+author = 45259224
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
 
 [[ports]]
 localPort = 5000

@@ -112,3 +112,36 @@
 }
 </style>
 {% endblock %}
+{% extends "base.html" %}
+
+{% block title %}PDF Merger - Merge Multiple PDFs{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2><i class="ti ti-files"></i> PDF Merger</h2>
+                    <p class="mb-0">Merge multiple PDF files into one document</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF Files</label>
+                            <input type="file" name="pdfs" class="form-control" multiple accept=".pdf" required>
+                            <div class="form-text">Select multiple PDF files to merge</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="ti ti-files"></i> Merge PDFs
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

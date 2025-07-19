@@ -11,7 +11,8 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 import fitz  # PyMuPDF
 from PIL import Image
-import pypdf2 as PyPDF2
+import PyPDF2
+from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.utils import ImageReader

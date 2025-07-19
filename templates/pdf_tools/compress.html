@@ -465,3 +465,44 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Reduce File Size{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h2><i class="ti ti-package"></i> PDF Compressor</h2>
+                    <p class="mb-0">Reduce PDF file size while maintaining quality</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Compression Level</label>
+                            <select name="level" class="form-select">
+                                <option value="low">Low Compression (Better Quality)</option>
+                                <option value="medium" selected>Medium Compression (Balanced)</option>
+                                <option value="high">High Compression (Smaller Size)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="ti ti-package"></i> Compress PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
