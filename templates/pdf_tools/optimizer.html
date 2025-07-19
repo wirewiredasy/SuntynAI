@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Optimizer{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-speed me-2"></i>
+                        PDF Optimizer
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Optimization Level</label>
+                            <select name="level" class="form-select">
+                                <option value="standard">Standard</option>
+                                <option value="aggressive">Aggressive</option>
+                                <option value="maximum">Maximum</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="ti ti-speed me-2"></i>Optimize PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

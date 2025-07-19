@@ -35,3 +35,10 @@ onnxruntime==1.16.3
 fpdf2==2.7.6
 Werkzeug==2.3.7
 SQLAlchemy==2.0.23
+camelot
+docx2pdf
+fitz
+fpdf
+pypdf
+fpdf
+pypdf

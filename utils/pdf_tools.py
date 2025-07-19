@@ -11,12 +11,25 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 import fitz  # PyMuPDF
 from PIL import Image
-import PyPDF2
-from PyPDF2 import PdfReader, PdfWriter
+try:
+    from PyPDF2 import PdfReader, PdfWriter
+except ImportError:
+    try:
+        from pypdf import PdfReader, PdfWriter
+    except ImportError:
+        PdfReader = PdfWriter = None
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.utils import ImageReader
-from fpdf2 import FPDF
+
+try:
+    from fpdf import FPDF
+except ImportError:
+    try:
+        from fpdf2 import FPDF
+    except ImportError:
+        FPDF = None
 import camelot
 import pandas as pd
 

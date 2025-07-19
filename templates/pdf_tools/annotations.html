@@ -1,0 +1,59 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Annotations{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-highlight me-2"></i>
+                        PDF Annotations
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if not show_result %}
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button type="submit" name="action" value="extract" class="btn btn-info me-2">
+                                <i class="ti ti-download me-2"></i>Extract Annotations
+                            </button>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h6>Add New Annotation:</h6>
+                        <div class="mb-3">
+                            <input type="text" name="annotation" class="form-control" placeholder="Annotation text">
+                        </div>
+                        <div class="mb-3">
+                            <input type="number" name="page" class="form-control" placeholder="Page number" min="1">
+                        </div>
+                        <button type="submit" name="action" value="add" class="btn btn-primary">
+                            <i class="ti ti-plus me-2"></i>Add Annotation
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <h5>Annotations Found:</h5>
+                        <ul>
+                        {% for annotation in annotations %}
+                            <li>{{ annotation }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

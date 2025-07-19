@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Comparison Tool{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-arrows-diff me-2"></i>
+                        Compare PDFs
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if not show_result %}
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">First PDF File</label>
+                            <input type="file" name="pdf1" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Second PDF File</label>
+                            <input type="file" name="pdf2" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning">
+                            <i class="ti ti-arrows-diff me-2"></i>Compare PDFs
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <h5>Differences Found:</h5>
+                        <ul>
+                        {% for diff in differences %}
+                            <li>{{ diff }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
