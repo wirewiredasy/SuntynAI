@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Watermark - Add Watermarks to PDF{% endblock %}
+
+{% block extra_css %}
+<style>
+.pdf-watermark-container {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.watermark-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 900px;
+}
+
+.upload-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.upload-box {
+    border: 3px dashed #FF6B6B;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(45deg, #fff5f5 0%, #ffe8e8 100%);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-box:hover {
+    border-color: #FF8E53;
+    background: linear-gradient(45deg, #ffe8e8 0%, #ffd6d6 100%);
+    transform: translateY(-2px);
+}
+
+.watermark-options {
+    background: #fff5f5;
+    border: 2px solid #ffb3b3;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.watermark-type-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.type-option {
+    flex: 1;
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.type-option:hover {
+    border-color: #FF6B6B;
+    background: #fff5f5;
+}
+
+.type-option.active {
+    border-color: #FF6B6B;
+    background: #FF6B6B;
+    color: white;
+}
+
+.opacity-slider {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #FF6B6B;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.position-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.position-option {
+    aspect-ratio: 1;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.position-option:hover {
+    border-color: #FF6B6B;
+    background: #fff5f5;
+}
+
+.position-option.active {
+    border-color: #FF6B6B;
+    background: #FF6B6B;
+    color: white;
+}
+
+.preview-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.pdf-preview {
+    width: 200px;
+    height: 280px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin: 1rem auto;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.watermark-preview {
+    position: absolute;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.text-watermark-preview {
+    font-size: 20px;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    white-space: nowrap;
+}
+
+.image-watermark-preview {
+    max-width: 80px;
+    max-height: 80px;
+    object-fit: contain;
+}
+
+.watermark-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.control-group {
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .upload-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .watermark-controls {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-watermark-container">
+    <div class="container">
+        <div class="watermark-card">
+            <div class="text-center mb-4">
+                <h1 class="h2 fw-bold mb-3" style="color: #FF6B6B;">
+                    <i class="fas fa-tint me-2"></i>PDF Watermark Pro
+                </h1>
+                <p class="text-muted">Add text or image watermarks to your PDF documents</p>
+            </div>
+
+            <div class="upload-section">
+                <div class="upload-box" id="pdfDropZone">
+                    <div class="mb-3">
+                        <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                        <h5>Upload PDF File</h5>
+                        <p class="text-muted">Drop PDF here or click to browse</p>
+                    </div>
+                    <input type="file" id="pdfInput" accept=".pdf" style="display: none;">
+                    <button type="button" class="btn btn-outline-danger" onclick="document.getElementById('pdfInput').click()">
+                        <i class="fas fa-folder-open me-2"></i>Choose PDF
+                    </button>
+                </div>
+
+                <div class="upload-box" id="watermarkDropZone" style="display: none;">
+                    <div class="mb-3">
+                        <i class="fas fa-image fa-3x text-warning mb-3"></i>
+                        <h5>Upload Watermark Image</h5>
+                        <p class="text-muted">PNG, JPG, or SVG format</p>
+                    </div>
+                    <input type="file" id="watermarkInput" accept=".png,.jpg,.jpeg,.svg" style="display: none;">
+                    <button type="button" class="btn btn-outline-warning" onclick="document.getElementById('watermarkInput').click()">
+                        <i class="fas fa-folder-open me-2"></i>Choose Image
+                    </button>
+                </div>
+            </div>
+
+            <div class="watermark-options" id="watermarkOptions" style="display: none;">
+                <h5 class="mb-3">Watermark Settings:</h5>
+                
+                <div class="watermark-type-selector">
+                    <div class="type-option active" data-type="text">
+                        <i class="fas fa-font fa-2x mb-2"></i>
+                        <div>Text Watermark</div>
+                    </div>
+                    <div class="type-option" data-type="image">
+                        <i class="fas fa-image fa-2x mb-2"></i>
+                        <div>Image Watermark</div>
+                    </div>
+                </div>
+
+                <div class="watermark-controls">
+                    <div class="control-group">
+                        <h6 class="mb-3">Watermark Content</h6>
+                        
+                        <div id="textControls">
+                            <div class="mb-3">
+                                <label class="form-label">Watermark Text:</label>
+                                <input type="text" class="form-control" id="watermarkText" placeholder="Enter watermark text" value="CONFIDENTIAL">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Font Size:</label>
+                                <input type="range" class="form-range" id="fontSize" min="10" max="72" value="36">
+                                <small class="text-muted">Size: <span id="fontSizeValue">36</span>px</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Text Color:</label>
+                                <input type="color" class="form-control form-control-color" id="textColor" value="#ff6b6b">
+                            </div>
+                        </div>
+
+                        <div id="imageControls" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Image Scale:</label>
+                                <input type="range" class="form-range" id="imageScale" min="10" max="200" value="100">
+                                <small class="text-muted">Scale: <span id="imageScaleValue">100</span>%</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h6 class="mb-3">Position & Opacity</h6>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Position:</label>
+                            <div class="position-grid">
+                                <div class="position-option" data-position="top-left"><i class="fas fa-arrow-up"></i></div>
+                                <div class="position-option" data-position="top-center"><i class="fas fa-arrow-up"></i></div>
+                                <div class="position-option" data-position="top-right"><i class="fas fa-arrow-up"></i></div>
+                                <div class="position-option" data-position="center-left"><i class="fas fa-arrows-alt-h"></i></div>
+                                <div class="position-option active" data-position="center"><i class="fas fa-crosshairs"></i></div>
+                                <div class="position-option" data-position="center-right"><i class="fas fa-arrows-alt-h"></i></div>
+                                <div class="position-option" data-position="bottom-left"><i class="fas fa-arrow-down"></i></div>
+                                <div class="position-option" data-position="bottom-center"><i class="fas fa-arrow-down"></i></div>
+                                <div class="position-option" data-position="bottom-right"><i class="fas fa-arrow-down"></i></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Opacity:</label>
+                            <input type="range" class="opacity-slider" id="opacitySlider" min="10" max="100" value="50">
+                            <small class="text-muted">Opacity: <span id="opacityValue">50</span>%</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Rotation:</label>
+                            <input type="range" class="form-range" id="rotationSlider" min="-180" max="180" value="-45">
+                            <small class="text-muted">Angle: <span id="rotationValue">-45</span>°</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h6 class="mb-3">Preview:</h6>
+                    <div class="pdf-preview" id="pdfPreview">
+                        <div class="watermark-preview text-watermark-preview" id="watermarkPreview">CONFIDENTIAL</div>
+                        <div class="text-muted">PDF Page Preview</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-danger btn-lg w-100 mt-3" id="addWatermarkButton" disabled>
+                <i class="fas fa-tint me-2"></i>Add Watermark to PDF
+            </button>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Adding watermark to PDF...</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar" style="width: 0%; background: linear-gradient(45deg, #FF6B6B, #FF8E53);"></div>
+                </div>
+            </div>
+
+            <div class="result-container" id="resultContainer" style="display: none;">
+                <div class="text-center mb-3">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">Watermark Added Successfully!</h4>
+                    <p class="text-muted">Your PDF has been watermarked and is ready for download</p>
+                </div>
+
+                <button type="button" class="btn btn-success btn-lg w-100" id="downloadButton">
+                    <i class="fas fa-download me-2"></i>Download Watermarked PDF
+                </button>
+                
+                <div class="mt-3 text-center">
+                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                        <i class="fas fa-plus me-2"></i>Add Watermark to Another PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tools/pdf-watermark.js') }}"></script>
+{% endblock %}

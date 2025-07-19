@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Reduce PDF File Size{% endblock %}
+
+{% block extra_css %}
+<style>
+.pdf-compressor-container {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.compressor-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+.compression-level-selector {
+    background: #f0f9ff;
+    border: 2px solid #bae6fd;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.compression-option {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.compression-option:hover {
+    border-color: #4facfe;
+    background: #f0f9ff;
+}
+
+.compression-option.active {
+    border-color: #4facfe;
+    background: #f0f9ff;
+}
+
+.compression-option::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+}
+
+.compression-option.active::after {
+    border-color: #4facfe;
+    background: #4facfe;
+}
+
+.file-size-display {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.size-comparison {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.size-bar {
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-grow: 1;
+    margin: 0 1rem;
+}
+
+.original-bar {
+    height: 100%;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    border-radius: 10px;
+}
+
+.compressed-bar {
+    height: 100%;
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.savings-badge {
+    background: linear-gradient(45deg, #48bb78, #38a169);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-compressor-container">
+    <div class="container">
+        <div class="compressor-card">
+            <div class="text-center mb-4">
+                <h1 class="h2 fw-bold mb-3" style="color: #4facfe;">
+                    <i class="fas fa-compress-alt me-2"></i>PDF Compressor Pro
+                </h1>
+                <p class="text-muted">Reduce PDF file size while maintaining quality</p>
+            </div>
+
+            <div class="file-drop-zone" id="dropZone">
+                <div class="mb-3">
+                    <i class="fas fa-file-pdf fa-3x text-info mb-3"></i>
+                    <h4>Drop PDF file here or click to browse</h4>
+                    <p class="text-muted">Single PDF file • Maximum 100MB</p>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                <button type="button" class="btn btn-outline-info" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open me-2"></i>Choose PDF File
+                </button>
+            </div>
+
+            <div class="compression-level-selector" id="compressionSelector" style="display: none;">
+                <h5 class="mb-3">Choose Compression Level:</h5>
+                
+                <div class="compression-option" data-level="low">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Low Compression</h6>
+                            <small class="text-muted">Best quality, larger file size (10-20% reduction)</small>
+                        </div>
+                        <div class="text-info fw-bold">Recommended for text documents</div>
+                    </div>
+                </div>
+
+                <div class="compression-option" data-level="medium">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Medium Compression</h6>
+                            <small class="text-muted">Balanced quality and size (30-50% reduction)</small>
+                        </div>
+                        <div class="text-info fw-bold">Best for most use cases</div>
+                    </div>
+                </div>
+
+                <div class="compression-option" data-level="high">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1">High Compression</h6>
+                            <small class="text-muted">Smaller file size, good quality (50-70% reduction)</small>
+                        </div>
+                        <div class="text-info fw-bold">Great for sharing online</div>
+                    </div>
+                </div>
+
+                <div class="compression-option" data-level="maximum">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Maximum Compression</h6>
+                            <small class="text-muted">Smallest file size, acceptable quality (70-85% reduction)</small>
+                        </div>
+                        <div class="text-info fw-bold">For email attachments</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-size-display" id="fileSizeDisplay" style="display: none;">
+                <h6 class="mb-3">File Size Preview:</h6>
+                
+                <div class="size-comparison">
+                    <div class="text-start">
+                        <strong>Original:</strong><br>
+                        <span id="originalSize">0 MB</span>
+                    </div>
+                    <div class="size-bar">
+                        <div class="original-bar" id="originalBar"></div>
+                    </div>
+                    <div class="text-end">
+                        <strong>Compressed:</strong><br>
+                        <span id="compressedSize">0 MB</span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <span class="savings-badge" id="savingsBadge">0% smaller</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-info btn-lg w-100 mt-3" id="compressButton" disabled>
+                <i class="fas fa-compress-alt me-2"></i>Compress PDF Now
+            </button>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Compressing PDF...</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-info" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="result-container" id="resultContainer" style="display: none;">
+                <div class="text-center mb-3">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">PDF Compressed Successfully!</h4>
+                    <p class="text-muted">Your file has been optimized</p>
+                </div>
+                
+                <div class="final-comparison mb-3">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border rounded p-3">
+                                <h6>Original Size</h6>
+                                <span class="h5 text-danger" id="finalOriginalSize">0 MB</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-3">
+                                <h6>Compressed Size</h6>
+                                <span class="h5 text-info" id="finalCompressedSize">0 MB</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-3">
+                                <h6>Space Saved</h6>
+                                <span class="h5 text-success" id="finalSavings">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-success btn-lg w-100" id="downloadButton">
+                    <i class="fas fa-download me-2"></i>Download Compressed PDF
+                </button>
+                
+                <div class="mt-3 text-center">
+                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                        <i class="fas fa-plus me-2"></i>Compress Another PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tools/pdf-compressor.js') }}"></script>
+{% endblock %}

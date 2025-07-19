@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}PDF to Word Converter - Convert PDF to DOCX{% endblock %}
+
+{% block extra_css %}
+<style>
+.pdf-converter-container {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.converter-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+.conversion-options {
+    background: #faf5ff;
+    border: 2px solid #ddd6fe;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.option-group {
+    margin-bottom: 1.5rem;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #8B5CF6;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.language-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.language-option {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.language-option:hover {
+    border-color: #8B5CF6;
+    background: #faf5ff;
+}
+
+.language-option.active {
+    border-color: #8B5CF6;
+    background: #8B5CF6;
+    color: white;
+}
+
+.conversion-preview {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.file-format-icon {
+    font-size: 3rem;
+    margin: 1rem;
+}
+
+.conversion-arrow {
+    font-size: 2rem;
+    color: #8B5CF6;
+    margin: 0 1rem;
+}
+
+.quality-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f3f4f6;
+    border-radius: 10px;
+    margin: 0.5rem 0;
+}
+
+.quality-bar {
+    flex-grow: 1;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    margin: 0 1rem;
+    overflow: hidden;
+}
+
+.quality-fill {
+    height: 100%;
+    background: linear-gradient(45deg, #8B5CF6, #A855F7);
+    transition: width 0.3s ease;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-converter-container">
+    <div class="container">
+        <div class="converter-card">
+            <div class="text-center mb-4">
+                <h1 class="h2 fw-bold mb-3" style="color: #8B5CF6;">
+                    <i class="fas fa-file-word me-2"></i>PDF to Word Converter
+                </h1>
+                <p class="text-muted">Convert PDF documents to editable Word format with OCR support</p>
+            </div>
+
+            <div class="file-drop-zone" id="dropZone">
+                <div class="mb-3">
+                    <i class="fas fa-file-pdf fa-3x" style="color: #8B5CF6;" mb-3></i>
+                    <h4>Drop PDF file here or click to browse</h4>
+                    <p class="text-muted">Single PDF file • Maximum 50MB • Text and image PDFs supported</p>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open me-2"></i>Choose PDF File
+                </button>
+            </div>
+
+            <div class="conversion-options" id="conversionOptions" style="display: none;">
+                <h5 class="mb-3">Conversion Settings:</h5>
+                
+                <div class="option-group">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h6 class="mb-1">OCR (Text Recognition)</h6>
+                            <small class="text-muted">Extract text from scanned PDFs and images</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="ocrToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="language-selection" id="languageSelection">
+                        <label class="form-label">OCR Language:</label>
+                        <div class="language-selector">
+                            <div class="language-option active" data-lang="eng">English</div>
+                            <div class="language-option" data-lang="spa">Spanish</div>
+                            <div class="language-option" data-lang="fra">French</div>
+                            <div class="language-option" data-lang="deu">German</div>
+                            <div class="language-option" data-lang="ita">Italian</div>
+                            <div class="language-option" data-lang="por">Portuguese</div>
+                            <div class="language-option" data-lang="rus">Russian</div>
+                            <div class="language-option" data-lang="chi_sim">Chinese</div>
+                            <div class="language-option" data-lang="jpn">Japanese</div>
+                            <div class="language-option" data-lang="kor">Korean</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Preserve Layout</h6>
+                            <small class="text-muted">Maintain original formatting and layout structure</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="layoutToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Extract Images</h6>
+                            <small class="text-muted">Include images from PDF in Word document</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="imagesToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="conversion-preview">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="text-center">
+                            <i class="fas fa-file-pdf file-format-icon text-danger"></i>
+                            <div>PDF Document</div>
+                        </div>
+                        <i class="fas fa-arrow-right conversion-arrow"></i>
+                        <div class="text-center">
+                            <i class="fas fa-file-word file-format-icon text-primary"></i>
+                            <div>Word Document</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-indicator">
+                        <span>Conversion Quality:</span>
+                        <div class="quality-bar">
+                            <div class="quality-fill" id="qualityFill" style="width: 95%;"></div>
+                        </div>
+                        <span id="qualityText">Excellent</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-lg w-100 mt-3" id="convertButton" disabled>
+                <i class="fas fa-magic me-2"></i>Convert to Word
+            </button>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="d-flex justify-content-between mb-2">
+                    <span id="progressMessage">Converting PDF to Word...</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar" style="width: 0%; background: linear-gradient(45deg, #8B5CF6, #A855F7);"></div>
+                </div>
+            </div>
+
+            <div class="result-container" id="resultContainer" style="display: none;">
+                <div class="text-center mb-3">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">Conversion Complete!</h4>
+                    <p class="text-muted">Your PDF has been successfully converted to Word format</p>
+                </div>
+                
+                <div class="conversion-stats mb-3">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border rounded p-3">
+                                <h6>Pages Converted</h6>
+                                <span class="h5 text-primary" id="pagesConverted">0</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-3">
+                                <h6>Text Extracted</h6>
+                                <span class="h5 text-success" id="textExtracted">Yes</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-3">
+                                <h6>Images Included</h6>
+                                <span class="h5 text-info" id="imagesIncluded">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-success btn-lg w-100" id="downloadButton">
+                    <i class="fas fa-download me-2"></i>Download Word Document
+                </button>
+                
+                <div class="mt-3 text-center">
+                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                        <i class="fas fa-plus me-2"></i>Convert Another PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tools/pdf-to-word.js') }}"></script>
+{% endblock %}

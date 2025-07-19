@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Extract Pages from PDF{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tools/pdf-splitter.css') }}">
+<style>
+.pdf-splitter-container {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.splitter-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+.page-range-selector {
+    background: #fff5f5;
+    border: 2px solid #feb2b2;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.range-input-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.page-input {
+    border: 2px solid #ff6b6b;
+    border-radius: 10px;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: bold;
+    width: 80px;
+}
+
+.page-slider {
+    flex-grow: 1;
+    height: 8px;
+    background: #fed7d7;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+.page-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.split-option {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.split-option:hover {
+    border-color: #ff6b6b;
+    background: #fff5f5;
+}
+
+.split-option.active {
+    border-color: #ff6b6b;
+    background: #fff5f5;
+}
+
+.page-preview {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    background: #f7fafc;
+    text-align: center;
+}
+
+.preview-page {
+    display: inline-block;
+    width: 60px;
+    height: 80px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    margin: 5px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.preview-page:hover {
+    border-color: #ff6b6b;
+    transform: scale(1.05);
+}
+
+.preview-page.selected {
+    border-color: #ff6b6b;
+    background: #fff5f5;
+}
+
+.preview-page::after {
+    content: attr(data-page);
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #718096;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-splitter-container">
+    <div class="container">
+        <div class="splitter-card">
+            <div class="text-center mb-4">
+                <h1 class="h2 fw-bold mb-3" style="color: #ff6b6b;">
+                    <i class="fas fa-cut me-2"></i>PDF Splitter Pro
+                </h1>
+                <p class="text-muted">Extract specific pages or split your PDF into multiple documents</p>
+            </div>
+
+            <div class="file-drop-zone" id="dropZone">
+                <div class="mb-3">
+                    <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                    <h4>Drop PDF file here or click to browse</h4>
+                    <p class="text-muted">Single PDF file • Maximum 50MB</p>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                <button type="button" class="btn btn-outline-danger" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open me-2"></i>Choose PDF File
+                </button>
+            </div>
+
+            <div class="split-options" id="splitOptions" style="display: none;">
+                <h5 class="mb-3">Choose Split Method:</h5>
+                
+                <div class="split-option" data-method="pages">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-list-ol text-danger me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Extract Specific Pages</h6>
+                            <small class="text-muted">Choose individual pages or page ranges</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-option" data-method="range">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-arrows-alt-h text-danger me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Page Range</h6>
+                            <small class="text-muted">Extract pages from X to Y</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-option" data-method="every">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-layer-group text-danger me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Split Every N Pages</h6>
+                            <small class="text-muted">Create multiple files with equal pages</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-range-selector" id="pageRangeSelector" style="display: none;">
+                <h6 class="mb-3">Select Pages to Extract:</h6>
+                
+                <div class="range-input-group">
+                    <label>From:</label>
+                    <input type="number" class="page-input" id="startPage" min="1" value="1">
+                    <input type="range" class="page-slider" id="startSlider" min="1" max="1" value="1">
+                    <label>To:</label>
+                    <input type="number" class="page-input" id="endPage" min="1" value="1">
+                    <input type="range" class="page-slider" id="endSlider" min="1" max="1" value="1">
+                </div>
+
+                <div class="page-preview" id="pagePreview">
+                    <p class="text-muted">Page preview will appear here</p>
+                </div>
+            </div>
+
+            <div class="every-pages-selector" id="everyPagesSelector" style="display: none;">
+                <h6 class="mb-3">Split Configuration:</h6>
+                <div class="d-flex align-items-center gap-3">
+                    <label>Every</label>
+                    <input type="number" class="page-input" id="everyNPages" min="1" value="1">
+                    <label>pages</label>
+                </div>
+                <p class="text-muted mt-2">This will create multiple PDF files, each containing the specified number of pages</p>
+            </div>
+
+            <button type="button" class="btn btn-danger btn-lg w-100 mt-3" id="splitButton" disabled>
+                <i class="fas fa-cut me-2"></i>Split PDF Now
+            </button>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Splitting PDF...</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-danger" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="result-container" id="resultContainer" style="display: none;">
+                <div class="text-center mb-3">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">PDF Split Successfully!</h4>
+                </div>
+                <div id="downloadLinks"></div>
+                <div class="mt-3 text-center">
+                    <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
+                        <i class="fas fa-plus me-2"></i>Split Another PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tools/pdf-splitter.js') }}"></script>
+{% endblock %}
