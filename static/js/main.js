@@ -216,32 +216,37 @@ function initializeAnimations() {
         const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
         if (animationElements.length === 0) return;
 
-        // Improved floating icon animations with timeout safety
+        // Safe floating icon animations with element verification
         const initFloatingIconAnimations = () => {
-            const floatingIcons = document.querySelectorAll('.floating-icon');
-            if (floatingIcons.length > 0 && typeof gsap !== 'undefined') {
-                // Initial entrance animation
-                gsap.from('.floating-icon', {
-                    duration: 1,
-                    y: 10,
-                    opacity: 0,
-                    stagger: 0.1,
-                    ease: "power2.out",
-                    onComplete: () => {
-                        // Start continuous floating animation after entrance
-                        gsap.to(".floating-icon", {
-                            y: -20,
-                            repeat: -1,
-                            yoyo: true,
-                            duration: 1.5,
-                            ease: "power2.inOut",
-                            stagger: 0.2
-                        });
-                    }
-                });
-                
-                console.log('🌟 Floating icon animations initialized');
-            }
+            // Wait a bit for DOM to be ready and icons to be created
+            setTimeout(() => {
+                const floatingIcons = document.querySelectorAll('.floating-icon');
+                if (floatingIcons.length > 0 && typeof gsap !== 'undefined') {
+                    // Initial entrance animation
+                    gsap.from('.floating-icon', {
+                        duration: 1,
+                        y: 10,
+                        opacity: 0,
+                        stagger: 0.1,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            // Start continuous floating animation after entrance
+                            gsap.to(".floating-icon", {
+                                y: -20,
+                                repeat: -1,
+                                yoyo: true,
+                                duration: 1.5,
+                                ease: "power2.inOut",
+                                stagger: 0.2
+                            });
+                        }
+                    });
+                    console.log('🌟 Floating icon animations initialized');
+                } else if (typeof gsap !== 'undefined') {
+                    // Elements might not exist, skip GSAP animation silently
+                    console.log('✨ GSAP loaded, floating icons not found - skipping animation');
+                }
+            }, 800);
         };
 
         // Load GSAP animations with proper timing
@@ -665,21 +670,27 @@ function formatFileSize(bytes) {
 }
 
 // Service Worker Registration (optimized)
-    // Enhanced Service Worker registration with environment detection
-    if ('serviceWorker' in navigator && location.protocol === 'https:') {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then((registration) => {
-                    console.log('✅ PWA enabled');
-                    console.log('✅ Service Worker registered successfully');
-                })
-                .catch((error) => {
-                    // Only warn in production, silently fail in development
-                    if (location.hostname !== 'localhost' && !location.hostname.includes('replit.dev')) {
-                        console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
-                    }
-                });
-        });
+    // Enhanced Service Worker registration with proper environment detection
+    if ('serviceWorker' in navigator) {
+        // Check if we're on HTTPS or localhost (where Service Workers work)
+        const isSecureContext = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname.includes('replit.dev');
+        
+        if (isSecureContext) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ PWA enabled');
+                        console.log('✅ Service Worker registered successfully');
+                    })
+                    .catch((error) => {
+                        // Silently handle development environment errors
+                        console.log('Service Worker registration failed silently');
+                    });
+            });
+        } else {
+            // Not secure context, skip Service Worker
+            console.log('Service Worker requires HTTPS or localhost');
+        }
     }
 
 function SuntynAI() {
