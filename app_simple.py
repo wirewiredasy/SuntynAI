@@ -1,47 +1,30 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, send_file
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
-
 # create the app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET")
+app.secret_key = os.environ.get("SESSION_SECRET", "dev-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1) # needed for url_for to generate with https
-
-# configure the database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///pdf_toolkit.db")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Upload configuration
 app.config["UPLOAD_FOLDER"] = 'uploads'
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
 
-# initialize the app with the extension, flask-sqlalchemy >= 3.0.x
-db.init_app(app)
-
-with app.app_context():
-    # Make sure to import the models here or their tables won't be created
-    try:
-        import models  # noqa: F401
-        db.create_all()
-        logging.info("✅ Database tables created successfully")
-    except ImportError:
-        logging.warning("No models.py file found, creating basic tables")
-        db.create_all()
+# Add context processor for templates that expect current_user
+@app.context_processor
+def inject_user():
+    # Create a mock user object for templates that expect current_user
+    class MockUser:
+        def __init__(self):
+            self.is_authenticated = False
+            self.username = None
+    
+    return dict(current_user=MockUser())
 
 # Main route - clean PDF toolkit homepage
 @app.route('/')
@@ -111,16 +94,52 @@ def cookies():
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('errors/404.html'), 404
+    try:
+        return render_template('errors/404.html'), 404
+    except:
+        return '<h1>404 Not Found</h1><p>The page you requested could not be found.</p>', 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('errors/500.html'), 500
+    try:
+        return render_template('errors/500.html'), 500
+    except:
+        return '<h1>500 Internal Server Error</h1><p>Something went wrong on our end.</p>', 500
 
 # Service worker
 @app.route('/service-worker.js')
 def service_worker():
     return send_file('service-worker.js', mimetype='application/javascript')
+
+# Placeholder auth routes
+@app.route('/login')
+def login():
+    return '<h1>Login</h1><p>Login functionality coming soon!</p><a href="/">← Back to Home</a>'
+
+@app.route('/register') 
+def register():
+    return '<h1>Register</h1><p>Registration functionality coming soon!</p><a href="/">← Back to Home</a>'
+
+@app.route('/dashboard')
+def dashboard():
+    return '<h1>Dashboard</h1><p>Dashboard functionality coming soon!</p><a href="/">← Back to Home</a>'
+
+@app.route('/profile')
+def profile():
+    return '<h1>Profile</h1><p>Profile functionality coming soon!</p><a href="/">← Back to Home</a>'
+
+@app.route('/settings')
+def settings():
+    return '<h1>Settings</h1><p>Settings functionality coming soon!</p><a href="/">← Back to Home</a>'
+
+@app.route('/logout')
+def logout():
+    return '<h1>Logout</h1><p>Logout functionality coming soon!</p><a href="/">← Back to Home</a>'
+
+# Generic tool page route
+@app.route('/tool/<tool_name>')
+def tool_page(tool_name):
+    return f'<h1>{tool_name.replace("-", " ").title()}</h1><p>This tool is coming soon!</p><a href="/">← Back to Home</a>'
 
 # Register PDF routes blueprint
 try:
