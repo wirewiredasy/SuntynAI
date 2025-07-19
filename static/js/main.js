@@ -17,19 +17,19 @@ console.log('🚀 Initializing Suntyn AI...');
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Suntyn AI initialized successfully');
 
-    // Initialize only critical components immediately
+    // Only initialize critical path immediately
     initializeToolSearch();
-    initializeToolForms();
-
+    
     // Log initial load time
     const domLoadTime = performance.now() - loadStartTime;
     console.log(`DOM ready in: ${domLoadTime.toFixed(2)}ms`);
 
-    // Use intersection observer for lazy initialization
-    initializeLazyComponents();
-    
-    // Initialize drag and drop manager
-    initializeDragDropManager();
+    // Defer non-critical initialization
+    requestIdleCallback(() => {
+        initializeToolForms();
+        initializeLazyComponents();
+        initializeDragDropManager();
+    }, { timeout: 500 });
 });
 
 // Initialize SortableJS for drag-drop functionality
@@ -62,7 +62,7 @@ function initializeDragDropManager() {
     });
 }
 
-// Optimized lazy component initialization
+// Optimized lazy component initialization with DOM performance boost
 function initializeLazyComponents() {
     const lazyComponents = [
         { selector: '.chart-container', init: initializeCharts },
@@ -77,25 +77,35 @@ function initializeLazyComponents() {
                     entry.target.matches(comp.selector)
                 );
                 if (component) {
-                    requestIdleCallback(() => component.init());
+                    // Use requestIdleCallback for better performance
+                    if ('requestIdleCallback' in window) {
+                        requestIdleCallback(() => component.init(), { timeout: 2000 });
+                    } else {
+                        setTimeout(() => component.init(), 16);
+                    }
                     observer.unobserve(entry.target);
                 }
             }
         });
-    }, { rootMargin: '100px' });
+    }, { rootMargin: '50px' }); // Reduced from 100px
 
-    lazyComponents.forEach(comp => {
-        document.querySelectorAll(comp.selector).forEach(el => {
-            observer.observe(el);
+    // Batch DOM queries for better performance
+    requestIdleCallback(() => {
+        const fragment = document.createDocumentFragment();
+        lazyComponents.forEach(comp => {
+            const elements = document.querySelectorAll(comp.selector);
+            elements.forEach(el => observer.observe(el));
         });
     });
 
-    // Fallback initialization after 2 seconds
+    // Reduced fallback timeout for better UX
     setTimeout(() => {
-        initializeFileUploads();
-        initializeCharts();
-        initializeAnimations();
-    }, 2000);
+        requestIdleCallback(() => {
+            initializeFileUploads();
+            initializeCharts();
+            initializeAnimations();
+        });
+    }, 1000);
 }
 
 // Optimized Chart.js initialization
@@ -249,31 +259,35 @@ function initializeAnimations() {
             }, 800);
         };
 
-        // Load GSAP animations with proper timing
+        // Load GSAP animations with better performance
         if (typeof gsap !== 'undefined') {
-            // GSAP is already loaded, initialize immediately
-            initFloatingIconAnimations();
-            console.log('✨ GSAP animations initialized');
+            // Use requestIdleCallback for non-blocking animation init
+            requestIdleCallback(() => {
+                initFloatingIconAnimations();
+                console.log('✨ GSAP animations initialized');
+            });
         } else {
-            // Wait for GSAP to load with timeout fallback
+            // Reduced polling for better performance
             let gsapCheckAttempts = 0;
-            const maxAttempts = 20;
+            const maxAttempts = 10;
             
             const checkGSAP = setInterval(() => {
                 gsapCheckAttempts++;
                 if (typeof gsap !== 'undefined') {
                     clearInterval(checkGSAP);
-                    setTimeout(initFloatingIconAnimations, 300);
+                    requestIdleCallback(() => initFloatingIconAnimations());
                     console.log('✨ GSAP loaded and animations initialized');
                 } else if (gsapCheckAttempts >= maxAttempts) {
                     clearInterval(checkGSAP);
-                    // Fallback CSS animations
-                    animationElements.forEach((el, i) => {
-                        el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
+                    // Lightweight CSS fallback
+                    requestIdleCallback(() => {
+                        animationElements.forEach((el, i) => {
+                            el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
+                        });
                     });
                     console.log('✅ Using CSS animation fallback');
                 }
-            }, 100);
+            }, 200); // Reduced frequency
         }
 
         window.animationsInitialized = true;
@@ -1488,21 +1502,18 @@ const app = new SuntynAI();
 window.SuntynAI = SuntynAI;
 window.app = app;
 
-// Register service worker for PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(function(registration) {
-                    console.log('🎯 Service Worker registered successfully:', registration.scope);
-                })
-                .catch(function(error) {
-                    console.info('⚠️ Service Worker registration failed, continuing without PWA features');
-                    // Register a minimal service worker for basic caching
-                    if ('caches' in window) {
-                        caches.open('suntyn-v1').then(cache => {
-                            cache.addAll(['/static/css/main.css', '/static/js/main.js']);
-                        });
-                    }
-                });
+// Register service worker for PWA - deferred for better performance
+        if ('serviceWorker' in navigator && location.protocol === 'https:') {
+            // Defer service worker registration to avoid blocking DOM
+            setTimeout(() => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('🎯 Service Worker registered successfully');
+                    })
+                    .catch(function(error) {
+                        // Silent fail to avoid console spam and performance impact
+                    });
+            }, 2000);
         }
 /**
  * The code has been updated by converting the class to function based approach, fixing the syntax errors and implementing error handling.
