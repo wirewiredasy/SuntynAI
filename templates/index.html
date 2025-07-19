@@ -293,7 +293,14 @@
         <div class="row g-4" id="pdf-tools-grid">
             {% for tool_id, tool_data in tools.items() %}
             <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="pdf-tool-card h-100">
+                <div class="pdf-tool-card h-100 {% if tool_data.status == 'coming' %}coming-soon{% endif %}">
+                    {% if tool_data.status == 'coming' %}
+                    <div class="coming-badge">
+                        <i class="ti ti-clock"></i>
+                        Soon
+                    </div>
+                    {% endif %}
+                    
                     <div class="tool-icon">
                         <i class="{{ tool_data.icon }}"></i>
                     </div>
@@ -304,10 +311,17 @@
                     </div>
                     
                     <div class="tool-action">
+                        {% if tool_data.status == 'active' %}
                         <a href="/{{ tool_id }}" class="btn-tool-primary">
                             <span>Use Tool</span>
                             <i class="ti ti-arrow-right"></i>
                         </a>
+                        {% else %}
+                        <button class="btn-tool-coming" disabled>
+                            <span>Coming Soon</span>
+                            <i class="ti ti-clock"></i>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -505,6 +519,47 @@
 .pdf-tool-card:nth-child(6) { animation-delay: 0.6s; }
 .pdf-tool-card:nth-child(7) { animation-delay: 0.7s; }
 .pdf-tool-card:nth-child(8) { animation-delay: 0.8s; }
+.pdf-tool-card:nth-child(9) { animation-delay: 0.9s; }
+.pdf-tool-card:nth-child(10) { animation-delay: 1.0s; }
+
+/* Coming Soon Styles */
+.pdf-tool-card.coming-soon {
+    opacity: 0.7;
+    background: #f8f9fa;
+}
+
+.coming-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #ffc107, #ff8f00);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-tool-coming {
+    background: #6c757d;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: not-allowed;
+}
+
+.pdf-tool-card.coming-soon .tool-icon {
+    background: linear-gradient(135deg, #6c757d, #495057);
+}
 </style>
 
 

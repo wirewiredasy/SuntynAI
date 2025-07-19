@@ -101,18 +101,35 @@ def create_app():
     def index():
         # Simple PDF toolkit data structure
         tools_data = {
-            'merge': {'name': 'PDF Merger', 'icon': 'ti ti-files', 'desc': 'Merge multiple PDFs into one'},
-            'split': {'name': 'PDF Splitter', 'icon': 'ti ti-cut', 'desc': 'Split PDF into separate files'},
-            'compress': {'name': 'PDF Compressor', 'icon': 'ti ti-package', 'desc': 'Reduce PDF file size'},
-            'pdf-to-word': {'name': 'PDF to Word', 'icon': 'ti ti-file-word', 'desc': 'Convert PDF to Word document'},
-            'pdf-to-excel': {'name': 'PDF to Excel', 'icon': 'ti ti-file-excel', 'desc': 'Extract tables to Excel'},
-            'word-to-pdf': {'name': 'Word to PDF', 'icon': 'ti ti-file-text', 'desc': 'Convert Word to PDF'},
-            'image-to-pdf': {'name': 'Image to PDF', 'icon': 'ti ti-photo', 'desc': 'Convert images to PDF'},
-            'pdf-to-image': {'name': 'PDF to Image', 'icon': 'ti ti-camera', 'desc': 'Extract images from PDF'},
-            'unlock-pdf': {'name': 'Unlock PDF', 'icon': 'ti ti-lock-open', 'desc': 'Remove PDF password'},
-            'protect-pdf': {'name': 'Protect PDF', 'icon': 'ti ti-shield', 'desc': 'Add password to PDF'},
-            'rotate-pdf': {'name': 'Rotate PDF', 'icon': 'ti ti-rotate', 'desc': 'Rotate PDF pages'},
-            'watermark': {'name': 'Add Watermark', 'icon': 'ti ti-droplet', 'desc': 'Add watermark to PDF'},
+            # Core PDF Tools (Working)
+            'merge': {'name': 'PDF Merger', 'icon': 'ti ti-files', 'desc': 'Merge multiple PDFs into one', 'status': 'active'},
+            'split': {'name': 'PDF Splitter', 'icon': 'ti ti-cut', 'desc': 'Split PDF into separate files', 'status': 'active'},
+            'compress': {'name': 'PDF Compressor', 'icon': 'ti ti-package', 'desc': 'Reduce PDF file size', 'status': 'active'},
+            'pdf-to-word': {'name': 'PDF to Word', 'icon': 'ti ti-file-word', 'desc': 'Convert PDF to Word document', 'status': 'active'},
+            'pdf-to-image': {'name': 'PDF to Image', 'icon': 'ti ti-camera', 'desc': 'Extract images from PDF', 'status': 'active'},
+            'image-to-pdf': {'name': 'Image to PDF', 'icon': 'ti ti-photo', 'desc': 'Convert images to PDF', 'status': 'active'},
+            
+            # Additional PDF Tools (15 more)
+            'pdf-to-excel': {'name': 'PDF to Excel', 'icon': 'ti ti-file-spreadsheet', 'desc': 'Extract tables to Excel', 'status': 'coming'},
+            'word-to-pdf': {'name': 'Word to PDF', 'icon': 'ti ti-file-text', 'desc': 'Convert Word to PDF', 'status': 'coming'},
+            'unlock-pdf': {'name': 'Unlock PDF', 'icon': 'ti ti-lock-open', 'desc': 'Remove PDF password', 'status': 'coming'},
+            'protect-pdf': {'name': 'Protect PDF', 'icon': 'ti ti-shield', 'desc': 'Add password to PDF', 'status': 'coming'},
+            'rotate-pdf': {'name': 'Rotate PDF', 'icon': 'ti ti-rotate', 'desc': 'Rotate PDF pages', 'status': 'coming'},
+            'watermark': {'name': 'Add Watermark', 'icon': 'ti ti-droplet', 'desc': 'Add watermark to PDF', 'status': 'coming'},
+            'pdf-to-text': {'name': 'PDF to Text', 'icon': 'ti ti-file-text', 'desc': 'Extract text from PDF', 'status': 'coming'},
+            'text-to-pdf': {'name': 'Text to PDF', 'icon': 'ti ti-writing', 'desc': 'Convert text to PDF', 'status': 'coming'},
+            'pdf-pages': {'name': 'Extract Pages', 'icon': 'ti ti-file-export', 'desc': 'Extract specific pages', 'status': 'coming'},
+            'pdf-info': {'name': 'PDF Info', 'icon': 'ti ti-info-circle', 'desc': 'View PDF properties', 'status': 'coming'},
+            'pdf-repair': {'name': 'Repair PDF', 'icon': 'ti ti-tool', 'desc': 'Fix corrupted PDFs', 'status': 'coming'},
+            'pdf-ocr': {'name': 'PDF OCR', 'icon': 'ti ti-scan', 'desc': 'Scan text from images', 'status': 'coming'},
+            'pdf-signature': {'name': 'Sign PDF', 'icon': 'ti ti-signature', 'desc': 'Add digital signature', 'status': 'coming'},
+            'pdf-form': {'name': 'Fill Forms', 'icon': 'ti ti-forms', 'desc': 'Fill PDF forms', 'status': 'coming'},
+            'pdf-bookmark': {'name': 'Add Bookmarks', 'icon': 'ti ti-bookmark', 'desc': 'Add navigation bookmarks', 'status': 'coming'},
+            'pdf-metadata': {'name': 'Edit Metadata', 'icon': 'ti ti-tags', 'desc': 'Edit PDF properties', 'status': 'coming'},
+            'pdf-compare': {'name': 'Compare PDFs', 'icon': 'ti ti-arrows-diff', 'desc': 'Compare two PDFs', 'status': 'coming'},
+            'pdf-optimize': {'name': 'Optimize PDF', 'icon': 'ti ti-speed', 'desc': 'Optimize for web', 'status': 'coming'},
+            'pdf-annotate': {'name': 'Annotate PDF', 'icon': 'ti ti-highlight', 'desc': 'Add annotations', 'status': 'coming'},
+            'pdf-redact': {'name': 'Redact PDF', 'icon': 'ti ti-eraser', 'desc': 'Remove sensitive info', 'status': 'coming'}
         }
         return render_template('index.html', tools=tools_data)
 
