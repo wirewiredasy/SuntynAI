@@ -285,26 +285,29 @@
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link-custom" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="ti ti-tools me-1"></i>Tools
+                            <i class="ti ti-tool me-1"></i>Tools
                         </a>
                         <ul class="dropdown-menu custom-dropdown">
                             <li class="dropdown-header">
-                                <i class="ti ti-category me-1"></i>Tool Categories
+                                <i class="ti ti-category-2 me-1"></i>Tool Categories
                             </li>
                             <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
-                                <i class="ti ti-file-text me-2"></i>PDF Tools
+                                <i class="ti ti-file-type-pdf me-2 text-danger"></i>PDF Tools
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
-                                <i class="ti ti-photo me-2"></i>Image Tools
+                                <i class="ti ti-photo-edit me-2 text-primary"></i>Image Tools
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
-                                <i class="ti ti-calculator me-2"></i>Finance Tools
+                                <i class="ti ti-currency-rupee me-2 text-warning"></i>Finance Tools
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
-                                <i class="ti ti-video me-2"></i>Video/Audio Tools
+                                <i class="ti ti-video-plus me-2 text-success"></i>Video/Audio Tools
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
-                                <i class="ti ti-shield-check me-2"></i>Government Tools
+                                <i class="ti ti-shield-check me-2 text-info"></i>Government Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-brain me-2 text-primary"></i>AI Tools
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-primary" href="{{ url_for('index') }}#tools-section">
@@ -444,47 +447,47 @@
 
                 <!-- Quick Links -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Quick Links</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-link me-2"></i>Quick Links</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">PDF Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">Image Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">Finance Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light">Video Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-warning">All Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-file-type-pdf me-2"></i>PDF Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-photo-edit me-2"></i>Image Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-currency-rupee me-2"></i>Finance Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-video-plus me-2"></i>Video Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-warning"><i class="ti ti-apps me-2"></i>All Tools</a></li>
                     </ul>
                 </div>
 
                 <!-- Popular Tools -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Popular</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-star me-2"></i>Popular</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light">PDF Merge</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light">Image Compress</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='qr-code-generator') }}" class="text-light">QR Generator</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light">EMI Calculator</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='password-generator') }}" class="text-light">Password Gen</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light"><i class="ti ti-file-plus me-2"></i>PDF Merge</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light"><i class="ti ti-compress me-2"></i>Image Compress</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='qr-code-generator') }}" class="text-light"><i class="ti ti-qrcode me-2"></i>QR Generator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light"><i class="ti ti-calculator me-2"></i>EMI Calculator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='password-generator') }}" class="text-light"><i class="ti ti-key me-2"></i>Password Gen</a></li>
                     </ul>
                 </div>
 
                 <!-- Company -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Company</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-building me-2"></i>Company</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="/about" class="text-light">About</a></li>
-                        <li><a href="/contact" class="text-light">Contact</a></li>
-                        <li><a href="/blog" class="text-light">Blog</a></li>
-                        <li><a href="/faq" class="text-light">FAQ</a></li>
+                        <li><a href="/about" class="text-light"><i class="ti ti-info-circle me-2"></i>About</a></li>
+                        <li><a href="/contact" class="text-light"><i class="ti ti-mail me-2"></i>Contact</a></li>
+                        <li><a href="/blog" class="text-light"><i class="ti ti-news me-2"></i>Blog</a></li>
+                        <li><a href="/faq" class="text-light"><i class="ti ti-help-circle me-2"></i>FAQ</a></li>
                     </ul>
                 </div>
 
                 <!-- Legal -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);">Legal</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-scale me-2"></i>Legal</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="/privacy" class="text-light">Privacy</a></li>
-                        <li><a href="/terms" class="text-light">Terms</a></li>
-                        <li><a href="/cookies" class="text-light">Cookies</a></li>
-                        <li><a href="/security" class="text-light">Security</a></li>
+                        <li><a href="/privacy" class="text-light"><i class="ti ti-shield-lock me-2"></i>Privacy</a></li>
+                        <li><a href="/terms" class="text-light"><i class="ti ti-file-text me-2"></i>Terms</a></li>
+                        <li><a href="/cookies" class="text-light"><i class="ti ti-cookie me-2"></i>Cookies</a></li>
+                        <li><a href="/security" class="text-light"><i class="ti ti-shield-check me-2"></i>Security</a></li>
                     </ul>
                 </div>
             </div>

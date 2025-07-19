@@ -140,9 +140,8 @@ def create_app():
                 'passport-checker', 'driving-license-validator', 'voter-id-checker'
             ]
         },
-
         'Utility Tools': {
-            'icon': 'tools',
+            'icon': 'tool',
             'color': 'dark',
             'tools': [
                 'qr-code-generator', 'barcode-generator', 'url-shortener'
@@ -348,9 +347,9 @@ def create_app():
                         process_qr_generator, process_barcode_generator, process_password_generator,
                         process_hash_generator, process_uuid_generator, process_url_shortener, process_json_formatter
                     )
-                    
+
                     start_time = datetime.now()
-                    
+
                     if tool_name == 'qr-code-generator':
                         result = process_qr_generator(request)
                     elif tool_name == 'barcode-generator':
@@ -367,18 +366,18 @@ def create_app():
                         result = process_json_formatter(request)
                     else:
                         result = {'success': False, 'error': 'Tool not found'}
-                    
+
                     # Ensure proper response format
                     if 'success' not in result:
                         if 'error' in result:
                             result = {'success': False, 'error': result['error']}
                         else:
                             result['success'] = True
-                            
+
                 except Exception as e:
                     logger.error(f"Utility tool error for {tool_name}: {str(e)}")
                     result = {'success': False, 'error': f'Tool processing failed: {str(e)}'}
-                    
+
                 processing_time = (datetime.now() - start_time).total_seconds()
             else:
                 # Import universal tool processor for other tools
