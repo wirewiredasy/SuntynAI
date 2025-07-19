@@ -888,8 +888,7 @@ class ToolProcessor:
             if not grades:
                 return {'success': True, 'message': 'No grades provided'}
 
-            grade_points = {'A+': 4.0, 'A': 4.```python
-0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 
+            grade_points = {'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 
                           'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 
                           'D': 1.0, 'F': 0.0}
 
@@ -1664,7 +1663,7 @@ console.log(JSON.stringify(result, null, 2));
                 "java": ".java",
                 "cpp": ".cpp"
             }
-            filename = f"generated_code{extensions.get(language, ".txt")}"
+            filename = f"generated_code{extensions.get(language, '.txt')}"
 
             return {
                 "success": True,
@@ -1788,3 +1787,12 @@ console.log(JSON.stringify(result, null, 2));
                 "success": True,
                 "results": {
                     "original_text": text,
+                    "corrected_text": corrected_text,
+                    "issues_found": len(issues),
+                    "issues": issues,
+                    "word_count": len(words),
+                    "sentence_count": sentences_count
+                }
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Text check failed: {str(e)}"}

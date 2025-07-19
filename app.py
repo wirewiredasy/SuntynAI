@@ -341,14 +341,42 @@ def create_app():
             if not tool_name:
                 return jsonify({'success': False, 'error': 'Tool name is required'}), 400
 
-            # Import universal tool processor
-            from tools.universal_processor import UniversalToolProcessor
-            processor = UniversalToolProcessor()
+            # Process utility tools with specialized processor
+            if tool_name in ['qr-code-generator', 'barcode-generator', 'url-shortener', 'password-generator', 'hash-generator', 'uuid-generator', 'json-formatter']:
+                from tools.utility_tools import (
+                    process_qr_generator, process_barcode_generator, process_password_generator,
+                    process_hash_generator, process_uuid_generator, process_url_shortener, process_json_formatter
+                )
+                
+                start_time = datetime.now()
+                
+                if tool_name == 'qr-code-generator':
+                    result = process_qr_generator(request)
+                elif tool_name == 'barcode-generator':
+                    result = process_barcode_generator(request)
+                elif tool_name == 'password-generator':
+                    result = process_password_generator(request)
+                elif tool_name == 'hash-generator':
+                    result = process_hash_generator(request)
+                elif tool_name == 'uuid-generator':
+                    result = process_uuid_generator(request)
+                elif tool_name == 'url-shortener':
+                    result = process_url_shortener(request)
+                elif tool_name == 'json-formatter':
+                    result = process_json_formatter(request)
+                else:
+                    result = {'success': False, 'error': 'Tool not found'}
+                    
+                processing_time = (datetime.now() - start_time).total_seconds()
+            else:
+                # Import universal tool processor for other tools
+                from tools.universal_processor import UniversalToolProcessor
+                processor = UniversalToolProcessor()
 
-            # Process the tool
-            start_time = datetime.now()
-            result = processor.process_tool(tool_name, request.files, request.form)
-            processing_time = (datetime.now() - start_time).total_seconds()
+                # Process the tool
+                start_time = datetime.now()
+                result = processor.process_tool(tool_name, request.files, request.form)
+                processing_time = (datetime.now() - start_time).total_seconds()
 
             # Ensure we have a valid result
             if not isinstance(result, dict):
