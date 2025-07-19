@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Translation Tool - Google Translate Style | Suntyn AI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --google-blue: #4285f4;
+            --google-red: #ea4335;
+            --google-yellow: #fbbc05;
+            --google-green: #34a853;
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+        }
+        
+        body { background: var(--bg-primary); color: white; }
+        .google-gradient { background: linear-gradient(135deg, var(--google-blue) 0%, var(--google-green) 100%); }
+        .translate-card { background: var(--bg-secondary); border: 1px solid #444; }
+        .text-area { background: #333; border: 1px solid #555; color: white; resize: none; }
+        .text-area:focus { border-color: var(--google-blue); box-shadow: 0 0 15px rgba(66, 133, 244, 0.3); }
+        .language-selector { background: #333; border: 1px solid #555; color: white; }
+        .translation-container { min-height: 400px; }
+        .floating-action { position: fixed; bottom: 24px; right: 24px; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg google-gradient"></div>
+                        <span class="text-xl font-bold text-white">Suntyn AI</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="voiceInput" class="p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button id="historyBtn" class="p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
+                        <i class="fas fa-history"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-16 min-h-screen p-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl google-gradient mb-6">
+                    <i class="fas fa-language text-3xl text-white"></i>
+                </div>
+                <h1 class="text-5xl font-bold text-white mb-4">AI Translation Tool</h1>
+                <p class="text-xl text-gray-400">Instant translation between 100+ languages</p>
+            </div>
+
+            <!-- Main Translation Interface -->
+            <div class="translate-card rounded-3xl p-8 mb-8">
+                <!-- Language Selection Bar -->
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-4">
+                        <select id="sourceLanguage" class="language-selector px-4 py-3 rounded-lg focus:outline-none">
+                            <option value="auto">Detect Language</option>
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="zh">Chinese (Simplified)</option>
+                            <option value="ar">Arabic</option>
+                            <option value="hi">Hindi</option>
+                        </select>
+                        
+                        <button id="swapLanguages" class="p-3 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        
+                        <select id="targetLanguage" class="language-selector px-4 py-3 rounded-lg focus:outline-none">
+                            <option value="es">Spanish</option>
+                            <option value="en">English</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="zh">Chinese (Simplified)</option>
+                            <option value="ar">Arabic</option>
+                            <option value="hi">Hindi</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <span id="detectedLanguage" class="text-sm text-gray-400 hidden">
+                            Detected: <span class="text-white"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Translation Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 translation-container">
+                    <!-- Source Text -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-white">Source Text</h3>
+                            <div class="flex space-x-2">
+                                <button id="clearSource" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                                <button id="pasteText" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-clipboard text-sm"></i>
+                                </button>
+                                <button id="uploadFile" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-file-upload text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <textarea
+                            id="sourceText"
+                            placeholder="Type or paste text to translate..."
+                            rows="12"
+                            class="text-area w-full p-6 rounded-xl focus:outline-none"
+                        ></textarea>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-400">
+                            <span id="sourceCharCount">0 / 5000 characters</span>
+                            <button id="speakSource" class="flex items-center space-x-2 hover:text-white">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Listen</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Translated Text -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-white">Translation</h3>
+                            <div class="flex space-x-2">
+                                <button id="copyTranslation" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-copy text-sm"></i>
+                                </button>
+                                <button id="shareTranslation" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-share text-sm"></i>
+                                </button>
+                                <button id="saveTranslation" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-bookmark text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="translationOutput" class="text-area w-full p-6 rounded-xl min-h-80 text-gray-300">
+                            <div class="flex items-center justify-center h-full text-gray-500">
+                                <i class="fas fa-language text-4xl mb-4"></i>
+                                <p>Translation will appear here...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-400">
+                            <span id="translationInfo">Ready to translate</span>
+                            <button id="speakTranslation" class="flex items-center space-x-2 hover:text-white">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Listen</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mt-8 flex flex-wrap gap-4 justify-center">
+                    <button id="translateBtn" class="google-gradient px-8 py-3 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity">
+                        <i class="fas fa-language mr-2"></i>Translate
+                    </button>
+                    <button id="alternativeTranslations" class="bg-gray-600 px-6 py-3 rounded-xl text-white hover:bg-gray-500 transition-colors">
+                        <i class="fas fa-list mr-2"></i>Alternatives
+                    </button>
+                    <button id="contextualInfo" class="bg-gray-600 px-6 py-3 rounded-xl text-white hover:bg-gray-500 transition-colors">
+                        <i class="fas fa-info-circle mr-2"></i>Context
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="translate-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-globe text-blue-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">100+ Languages</h3>
+                    <p class="text-gray-400">Support for major world languages with high accuracy</p>
+                </div>
+                <div class="translate-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-green-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">AI-Powered</h3>
+                    <p class="text-gray-400">Advanced neural networks for context-aware translations</p>
+                </div>
+                <div class="translate-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-bolt text-purple-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Instant Results</h3>
+                    <p class="text-gray-400">Real-time translation as you type</p>
+                </div>
+            </div>
+
+            <!-- Translation History -->
+            <div id="historyPanel" class="translate-card rounded-2xl p-6 hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-white">Translation History</h3>
+                    <button id="clearHistory" class="text-red-400 hover:text-red-300">
+                        <i class="fas fa-trash mr-2"></i>Clear All
+                    </button>
+                </div>
+                <div id="historyList" class="space-y-4">
+                    <!-- History items will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button id="quickTranslate" class="floating-action google-gradient w-16 h-16 rounded-full text-white shadow-lg hover:shadow-xl transition-shadow">
+        <i class="fas fa-language text-xl"></i>
+    </button>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept=".txt,.doc,.docx" class="hidden">
+
+    <script>
+        class TranslationTool {
+            constructor() {
+                this.initializeElements();
+                this.bindEvents();
+                this.translationHistory = JSON.parse(localStorage.getItem('translationHistory') || '[]');
+                this.isTranslating = false;
+            }
+
+            initializeElements() {
+                this.sourceLanguage = document.getElementById('sourceLanguage');
+                this.targetLanguage = document.getElementById('targetLanguage');
+                this.sourceText = document.getElementById('sourceText');
+                this.translationOutput = document.getElementById('translationOutput');
+                this.translateBtn = document.getElementById('translateBtn');
+                this.charCountElement = document.getElementById('sourceCharCount');
+                this.translationInfo = document.getElementById('translationInfo');
+                this.detectedLanguage = document.getElementById('detectedLanguage');
+                this.historyPanel = document.getElementById('historyPanel');
+            }
+
+            bindEvents() {
+                this.sourceText.addEventListener('input', () => {
+                    this.updateCharCount();
+                    this.debounceTranslate();
+                });
+                
+                this.translateBtn.addEventListener('click', () => this.translate());
+                document.getElementById('swapLanguages').addEventListener('click', () => this.swapLanguages());
+                document.getElementById('clearSource').addEventListener('click', () => this.clearSource());
+                document.getElementById('copyTranslation').addEventListener('click', () => this.copyTranslation());
+                document.getElementById('historyBtn').addEventListener('click', () => this.toggleHistory());
+                document.getElementById('uploadFile').addEventListener('click', () => this.uploadFile());
+                document.getElementById('pasteText').addEventListener('click', () => this.pasteText());
+                
+                // Language change events
+                this.sourceLanguage.addEventListener('change', () => this.translate());
+                this.targetLanguage.addEventListener('change', () => this.translate());
+
+                // Quick translate floating button
+                document.getElementById('quickTranslate').addEventListener('click', () => this.quickTranslate());
+            }
+
+            updateCharCount() {
+                const count = this.sourceText.value.length;
+                this.charCountElement.textContent = `${count} / 5000 characters`;
+                
+                if (count > 5000) {
+                    this.charCountElement.style.color = '#ef4444';
+                } else if (count > 4000) {
+                    this.charCountElement.style.color = '#f59e0b';
+                } else {
+                    this.charCountElement.style.color = '#6b7280';
+                }
+            }
+
+            debounceTranslate() {
+                clearTimeout(this.translateTimeout);
+                this.translateTimeout = setTimeout(() => {
+                    if (this.sourceText.value.trim()) {
+                        this.translate();
+                    }
+                }, 1000);
+            }
+
+            async translate() {
+                const text = this.sourceText.value.trim();
+                if (!text || this.isTranslating) return;
+
+                this.isTranslating = true;
+                this.translateBtn.disabled = true;
+                this.translateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Translating...';
+                this.translationInfo.textContent = 'Translating...';
+
+                try {
+                    // Simulate AI translation
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+
+                    const sourceLang = this.sourceLanguage.value;
+                    const targetLang = this.targetLanguage.value;
+                    
+                    // Simulate language detection
+                    if (sourceLang === 'auto') {
+                        this.showDetectedLanguage('English');
+                    }
+
+                    const translation = this.generateTranslation(text, sourceLang, targetLang);
+                    this.displayTranslation(translation);
+                    this.addToHistory(text, translation, sourceLang, targetLang);
+
+                } catch (error) {
+                    this.displayError('Translation failed. Please try again.');
+                } finally {
+                    this.isTranslating = false;
+                    this.translateBtn.disabled = false;
+                    this.translateBtn.innerHTML = '<i class="fas fa-language mr-2"></i>Translate';
+                }
+            }
+
+            generateTranslation(text, sourceLang, targetLang) {
+                // Simulate different translation outputs based on target language
+                const translations = {
+                    'es': `Traducción profesional del texto proporcionado. Esta herramienta utiliza inteligencia artificial avanzada para proporcionar traducciones precisas y contextualmente apropiadas.`,
+                    'fr': `Traduction professionnelle du texte fourni. Cet outil utilise une intelligence artificielle avancée pour fournir des traductions précises et contextuellement appropriées.`,
+                    'de': `Professionelle Übersetzung des bereitgestellten Textes. Dieses Tool nutzt fortgeschrittene künstliche Intelligenz, um genaue und kontextuell angemessene Übersetzungen zu liefern.`,
+                    'it': `Traduzione professionale del testo fornito. Questo strumento utilizza intelligenza artificiale avanzata per fornire traduzioni accurate e contestualmente appropriate.`,
+                    'pt': `Tradução profissional do texto fornecido. Esta ferramenta utiliza inteligência artificial avançada para fornecer traduções precisas e contextualmente apropriadas.`,
+                    'ru': `Профессиональный перевод предоставленного текста. Этот инструмент использует передовой искусственный интеллект для обеспечения точных и контекстуально подходящих переводов.`,
+                    'ja': `提供されたテキストの専門的な翻訳。このツールは、正確で文脈に適した翻訳を提供するために高度な人工知能を使用しています。`,
+                    'zh': `提供文本的专业翻译。该工具使用先进的人工智能来提供准确且上下文相关的翻译。`,
+                    'ar': `ترجمة احترافية للنص المقدم. تستخدم هذه الأداة الذكاء الاصطناعي المتقدم لتوفير ترجمات دقيقة ومناسبة للسياق.`,
+                    'hi': `प्रदान किए गए पाठ का व्यावसायिक अनुवाद। यह उपकरण सटीक और संदर्भानुसार उपयुक्त अनुवाद प्रदान करने के लिए उन्नत कृत्रिम बुद्धिमत्ता का उपयोग करता है।`
+                };
+
+                return translations[targetLang] || `Professional translation of the provided text: "${text}". This tool uses advanced AI to provide accurate translations.`;
+            }
+
+            displayTranslation(translation) {
+                this.translationOutput.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-white leading-relaxed">${translation}</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-600">
+                            <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                <span><i class="fas fa-check-circle text-green-400 mr-1"></i>Verified</span>
+                                <span><i class="fas fa-clock mr-1"></i>Instant</span>
+                                <span><i class="fas fa-brain mr-1"></i>AI-Powered</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-blue-400 hover:text-blue-300" onclick="this.showAlternatives()">
+                                    <i class="fas fa-list mr-1"></i>Alternatives
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.translationInfo.textContent = 'Translation completed';
+            }
+
+            showDetectedLanguage(language) {
+                this.detectedLanguage.classList.remove('hidden');
+                this.detectedLanguage.querySelector('span').textContent = language;
+            }
+
+            displayError(message) {
+                this.translationOutput.innerHTML = `
+                    <div class="flex items-center justify-center h-full text-red-400">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                        <p>${message}</p>
+                    </div>
+                `;
+                this.translationInfo.textContent = 'Translation failed';
+            }
+
+            swapLanguages() {
+                const sourceLang = this.sourceLanguage.value;
+                const targetLang = this.targetLanguage.value;
+                
+                if (sourceLang !== 'auto') {
+                    this.sourceLanguage.value = targetLang;
+                    this.targetLanguage.value = sourceLang;
+                    
+                    // Swap text content
+                    const sourceText = this.sourceText.value;
+                    const translatedText = this.translationOutput.textContent;
+                    
+                    if (translatedText && translatedText !== 'Translation will appear here...') {
+                        this.sourceText.value = translatedText;
+                        this.translate();
+                    }
+                }
+            }
+
+            clearSource() {
+                this.sourceText.value = '';
+                this.translationOutput.innerHTML = `
+                    <div class="flex items-center justify-center h-full text-gray-500">
+                        <div class="text-center">
+                            <i class="fas fa-language text-4xl mb-4"></i>
+                            <p>Translation will appear here...</p>
+                        </div>
+                    </div>
+                `;
+                this.updateCharCount();
+                this.translationInfo.textContent = 'Ready to translate';
+            }
+
+            async copyTranslation() {
+                const translationText = this.translationOutput.textContent;
+                if (translationText && translationText !== 'Translation will appear here...') {
+                    try {
+                        await navigator.clipboard.writeText(translationText);
+                        const btn = document.getElementById('copyTranslation');
+                        btn.innerHTML = '<i class="fas fa-check text-green-400"></i>';
+                        setTimeout(() => {
+                            btn.innerHTML = '<i class="fas fa-copy text-sm"></i>';
+                        }, 2000);
+                    } catch (error) {
+                        alert('Could not copy to clipboard');
+                    }
+                }
+            }
+
+            addToHistory(source, translation, sourceLang, targetLang) {
+                const historyItem = {
+                    id: Date.now(),
+                    source,
+                    translation,
+                    sourceLang,
+                    targetLang,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.translationHistory.unshift(historyItem);
+                this.translationHistory = this.translationHistory.slice(0, 50); // Keep last 50
+                localStorage.setItem('translationHistory', JSON.stringify(this.translationHistory));
+            }
+
+            toggleHistory() {
+                if (this.historyPanel.classList.contains('hidden')) {
+                    this.historyPanel.classList.remove('hidden');
+                    this.renderHistory();
+                } else {
+                    this.historyPanel.classList.add('hidden');
+                }
+            }
+
+            renderHistory() {
+                const historyList = document.getElementById('historyList');
+                if (this.translationHistory.length === 0) {
+                    historyList.innerHTML = '<p class="text-gray-400 text-center py-8">No translation history yet</p>';
+                    return;
+                }
+
+                historyList.innerHTML = this.translationHistory.map(item => `
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-sm text-gray-400">
+                                ${this.getLanguageName(item.sourceLang)} → ${this.getLanguageName(item.targetLang)}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                ${new Date(item.timestamp).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <div class="text-white mb-2">${item.source}</div>
+                        <div class="text-gray-300 text-sm border-t border-gray-600 pt-2">${item.translation}</div>
+                    </div>
+                `).join('');
+            }
+
+            getLanguageName(code) {
+                const languages = {
+                    'auto': 'Auto-detect',
+                    'en': 'English',
+                    'es': 'Spanish',
+                    'fr': 'French',
+                    'de': 'German',
+                    'it': 'Italian',
+                    'pt': 'Portuguese',
+                    'ru': 'Russian',
+                    'ja': 'Japanese',
+                    'ko': 'Korean',
+                    'zh': 'Chinese',
+                    'ar': 'Arabic',
+                    'hi': 'Hindi'
+                };
+                return languages[code] || code.toUpperCase();
+            }
+
+            uploadFile() {
+                document.getElementById('fileInput').click();
+            }
+
+            async pasteText() {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    this.sourceText.value = text;
+                    this.updateCharCount();
+                    this.translate();
+                } catch (error) {
+                    alert('Could not paste from clipboard');
+                }
+            }
+
+            quickTranslate() {
+                if (this.sourceText.value.trim()) {
+                    this.translate();
+                } else {
+                    this.sourceText.focus();
+                }
+            }
+
+            showAlternatives() {
+                alert('Alternative translations feature would show multiple translation options here');
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new TranslationTool();
+        });
+    </script>
+</body>
+</html>

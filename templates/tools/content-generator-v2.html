@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Generator - Notion Style | Suntyn AI</title>
+    
+    <!-- Modern CSS Framework -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --notion-gradient: linear-gradient(135deg, #00d4aa 0%, #0066ff 100%);
+            --bg-primary: #191919;
+            --bg-secondary: #2f2f2f;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+        }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        .notion-bg {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
+        }
+        
+        .content-workspace {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .template-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 212, 170, 0.2);
+            border-color: rgba(0, 212, 170, 0.3);
+        }
+        
+        .notion-button {
+            background: var(--notion-gradient);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+        }
+        
+        .notion-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.4);
+        }
+        
+        .editor-modern {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .editor-modern:focus {
+            border-color: #00d4aa;
+            box-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+        }
+        
+        .generation-animate {
+            animation: contentGenerate 2s ease-in-out infinite;
+        }
+        
+        @keyframes contentGenerate {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="notion-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-50 backdrop-blur-md border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-blue-500"></div>
+                        <span class="text-xl font-bold text-white">Suntyn AI</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-16 min-h-screen">
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Header Section -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-green-400 to-blue-500 mb-6">
+                    <i class="fas fa-pen-fancy text-3xl text-white"></i>
+                </div>
+                <h1 class="text-5xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-4">AI Content Generator</h1>
+                <p class="text-xl text-gray-400">Create engaging content with artificial intelligence</p>
+                <div class="flex justify-center items-center space-x-4 mt-6">
+                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-sm">
+                        <i class="fas fa-rocket mr-1"></i>Creative AI
+                    </span>
+                    <span class="px-3 py-1 bg-blue-500 bg-opacity-20 text-blue-400 rounded-full text-sm">
+                        <i class="fas fa-language mr-1"></i>Multi-Format
+                    </span>
+                </div>
+            </div>
+
+            <!-- Main Content Generator Interface -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Template Selection Panel -->
+                <div class="lg:col-span-1">
+                    <div class="content-workspace p-6">
+                        <h3 class="text-xl font-bold text-white mb-6">Content Templates</h3>
+                        <div class="space-y-4">
+                            <div class="template-card p-4 rounded-xl cursor-pointer" data-template="blog">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-blog text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Blog Post</h4>
+                                        <p class="text-sm text-gray-400">SEO-optimized articles</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="template-card p-4 rounded-xl cursor-pointer" data-template="social">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-hashtag text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Social Media</h4>
+                                        <p class="text-sm text-gray-400">Engaging posts & captions</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="template-card p-4 rounded-xl cursor-pointer" data-template="email">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-envelope text-green-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Email Content</h4>
+                                        <p class="text-sm text-gray-400">Newsletters & campaigns</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="template-card p-4 rounded-xl cursor-pointer" data-template="ad">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-bullhorn text-red-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Ad Copy</h4>
+                                        <p class="text-sm text-gray-400">Compelling advertisements</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="template-card p-4 rounded-xl cursor-pointer" data-template="product">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-box text-yellow-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Product Description</h4>
+                                        <p class="text-sm text-gray-400">E-commerce content</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Generator Workspace -->
+                <div class="lg:col-span-3">
+                    <div class="content-workspace p-8">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold text-white mb-4">Content Generation Workspace</h2>
+                            <p class="text-gray-400">Describe what you want to create and let AI generate compelling content</p>
+                        </div>
+
+                        <!-- Input Section -->
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-3">Content Topic & Description</label>
+                                <textarea
+                                    id="contentPrompt"
+                                    placeholder="Describe what you want to create... (e.g., 'A blog post about sustainable technology in 2024')"
+                                    rows="4"
+                                    class="editor-modern w-full rounded-xl p-4 text-white placeholder-gray-500 resize-none focus:outline-none"
+                                ></textarea>
+                            </div>
+
+                            <!-- Advanced Options -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Content Type</label>
+                                    <select id="contentType" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                        <option value="blog">Blog Post</option>
+                                        <option value="social">Social Media</option>
+                                        <option value="email">Email Content</option>
+                                        <option value="ad">Advertisement</option>
+                                        <option value="product">Product Description</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Tone</label>
+                                    <select id="contentTone" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                        <option value="professional">Professional</option>
+                                        <option value="casual">Casual</option>
+                                        <option value="friendly">Friendly</option>
+                                        <option value="persuasive">Persuasive</option>
+                                        <option value="informative">Informative</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Length</label>
+                                    <select id="contentLength" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                                        <option value="short">Short (1-2 paragraphs)</option>
+                                        <option value="medium">Medium (3-5 paragraphs)</option>
+                                        <option value="long">Long (6+ paragraphs)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Generate Button -->
+                            <div class="flex space-x-4">
+                                <button id="generateBtn" class="notion-button flex-1 px-8 py-4 rounded-xl text-white font-semibold flex items-center justify-center space-x-2">
+                                    <i class="fas fa-magic"></i>
+                                    <span>Generate Content</span>
+                                </button>
+                                <button id="regenerateBtn" class="px-8 py-4 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2" disabled>
+                                    <i class="fas fa-redo"></i>
+                                    <span>Regenerate</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Generated Content Display -->
+                        <div id="generatedContent" class="mt-8 hidden">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">Generated Content</h3>
+                                <div class="flex space-x-2">
+                                    <button id="copyBtn" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                        <i class="fas fa-copy mr-1"></i>Copy
+                                    </button>
+                                    <button id="downloadBtn" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                        <i class="fas fa-download mr-1"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="contentOutput" class="editor-modern p-6 rounded-xl min-h-64 text-gray-200 leading-relaxed">
+                                <!-- Generated content will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="template-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-blue-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">AI-Powered</h3>
+                    <p class="text-gray-400">Advanced language models for natural content generation</p>
+                </div>
+                <div class="template-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-palette text-green-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Customizable</h3>
+                    <p class="text-gray-400">Adjust tone, style, and length to match your needs</p>
+                </div>
+                <div class="template-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-rocket text-purple-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Fast Generation</h3>
+                    <p class="text-gray-400">Create content in seconds, not hours</p>
+                </div>
+                <div class="template-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 bg-red-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-red-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Original Content</h3>
+                    <p class="text-gray-400">Unique, plagiarism-free content every time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modern Content Generator Implementation
+        class ContentGenerator {
+            constructor() {
+                this.initializeElements();
+                this.bindEvents();
+                this.selectedTemplate = 'blog';
+            }
+
+            initializeElements() {
+                this.contentPrompt = document.getElementById('contentPrompt');
+                this.generateBtn = document.getElementById('generateBtn');
+                this.regenerateBtn = document.getElementById('regenerateBtn');
+                this.copyBtn = document.getElementById('copyBtn');
+                this.downloadBtn = document.getElementById('downloadBtn');
+                this.generatedContent = document.getElementById('generatedContent');
+                this.contentOutput = document.getElementById('contentOutput');
+                this.contentType = document.getElementById('contentType');
+                this.contentTone = document.getElementById('contentTone');
+                this.contentLength = document.getElementById('contentLength');
+                this.templateCards = document.querySelectorAll('.template-card');
+            }
+
+            bindEvents() {
+                this.generateBtn.addEventListener('click', () => this.generateContent());
+                this.regenerateBtn.addEventListener('click', () => this.regenerateContent());
+                this.copyBtn.addEventListener('click', () => this.copyContent());
+                this.downloadBtn.addEventListener('click', () => this.downloadContent());
+                
+                // Template selection
+                this.templateCards.forEach(card => {
+                    card.addEventListener('click', () => this.selectTemplate(card));
+                });
+
+                // Auto-resize textarea
+                this.contentPrompt.addEventListener('input', this.autoResize.bind(this));
+            }
+
+            selectTemplate(card) {
+                // Remove active state from all cards
+                this.templateCards.forEach(c => c.classList.remove('ring-2', 'ring-green-400'));
+                
+                // Add active state to selected card
+                card.classList.add('ring-2', 'ring-green-400');
+                
+                this.selectedTemplate = card.dataset.template;
+                this.contentType.value = this.selectedTemplate;
+            }
+
+            autoResize() {
+                this.contentPrompt.style.height = 'auto';
+                this.contentPrompt.style.height = Math.min(this.contentPrompt.scrollHeight, 200) + 'px';
+            }
+
+            async generateContent() {
+                const prompt = this.contentPrompt.value.trim();
+                if (!prompt) {
+                    alert('Please describe what content you want to create');
+                    return;
+                }
+
+                this.generateBtn.disabled = true;
+                this.generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+                this.generateBtn.classList.add('generation-animate');
+
+                try {
+                    // Simulate AI processing
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    const content = this.createIntelligentContent(prompt);
+                    this.displayGeneratedContent(content);
+                    this.regenerateBtn.disabled = false;
+
+                } catch (error) {
+                    alert('Error generating content. Please try again.');
+                } finally {
+                    this.generateBtn.disabled = false;
+                    this.generateBtn.innerHTML = '<i class="fas fa-magic mr-2"></i>Generate Content';
+                    this.generateBtn.classList.remove('generation-animate');
+                }
+            }
+
+            async regenerateContent() {
+                if (!this.contentPrompt.value.trim()) return;
+                
+                this.regenerateBtn.disabled = true;
+                this.regenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Regenerating...';
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const content = this.createIntelligentContent(this.contentPrompt.value.trim(), true);
+                    this.displayGeneratedContent(content);
+                } finally {
+                    this.regenerateBtn.disabled = false;
+                    this.regenerateBtn.innerHTML = '<i class="fas fa-redo mr-2"></i>Regenerate';
+                }
+            }
+
+            createIntelligentContent(prompt, isRegeneration = false) {
+                const type = this.contentType.value;
+                const tone = this.contentTone.value;
+                const length = this.contentLength.value;
+
+                // Create contextual content based on type
+                const templates = {
+                    blog: {
+                        title: 'The Future of Technology: Trends and Innovations',
+                        content: `
+                            <h2>Introduction</h2>
+                            <p>In today's rapidly evolving technological landscape, understanding emerging trends is crucial for businesses and individuals alike. This comprehensive analysis explores the most significant technological innovations shaping our future.</p>
+                            
+                            <h2>Key Technological Trends</h2>
+                            <p>Artificial Intelligence continues to revolutionize industries, from healthcare to finance. Machine learning algorithms are becoming more sophisticated, enabling unprecedented automation and decision-making capabilities.</p>
+                            
+                            <p>Blockchain technology is transforming how we think about data security and digital transactions. Its decentralized nature offers new possibilities for trust and transparency in digital interactions.</p>
+                            
+                            <h2>Impact on Society</h2>
+                            <p>These technological advances are not just changing how we work—they're reshaping how we live, communicate, and interact with the world around us. The integration of IoT devices is creating smarter cities and homes.</p>
+                            
+                            <h2>Conclusion</h2>
+                            <p>As we move forward, staying informed about these technological trends will be essential for adapting to our increasingly digital future. The key is to embrace change while maintaining focus on human-centered design.</p>
+                        `
+                    },
+                    social: {
+                        title: 'Social Media Post',
+                        content: `
+                            <p>🚀 Excited to share the latest innovations in AI technology!</p>
+                            
+                            <p>✨ Key highlights:</p>
+                            <p>• Revolutionary machine learning capabilities</p>
+                            <p>• Enhanced user experiences</p>
+                            <p>• Sustainable technology solutions</p>
+                            
+                            <p>The future is here, and it's more accessible than ever! 💡</p>
+                            
+                            <p>#Technology #AI #Innovation #Future #DigitalTransformation</p>
+                        `
+                    },
+                    email: {
+                        title: 'Email Newsletter',
+                        content: `
+                            <h2>Subject: Discover the Latest Technology Trends</h2>
+                            
+                            <p>Dear Valued Subscriber,</p>
+                            
+                            <p>We're excited to bring you the latest insights from the world of technology. This month's newsletter features cutting-edge innovations that are transforming industries worldwide.</p>
+                            
+                            <h3>Featured Content:</h3>
+                            <ul>
+                                <li>AI-powered solutions for business optimization</li>
+                                <li>Sustainable technology initiatives</li>
+                                <li>Expert interviews and industry insights</li>
+                            </ul>
+                            
+                            <p>Don't miss out on these game-changing developments. Click below to read the full analysis.</p>
+                            
+                            <p>Best regards,<br>The Suntyn AI Team</p>
+                        `
+                    },
+                    ad: {
+                        title: 'Advertisement Copy',
+                        content: `
+                            <h2>Transform Your Business with AI Technology</h2>
+                            
+                            <p><strong>Boost productivity by 300% with our revolutionary AI solutions!</strong></p>
+                            
+                            <p>🔥 Limited Time Offer:</p>
+                            <ul>
+                                <li>Free consultation with AI experts</li>
+                                <li>Custom implementation strategy</li>
+                                <li>24/7 support and training</li>
+                            </ul>
+                            
+                            <p>Join thousands of satisfied customers who have already transformed their workflows with our cutting-edge technology.</p>
+                            
+                            <p><strong>Act now - offer expires soon!</strong></p>
+                            
+                            <p>📞 Call today or visit our website for a free demo.</p>
+                        `
+                    },
+                    product: {
+                        title: 'Product Description',
+                        content: `
+                            <h2>Premium AI-Powered Productivity Suite</h2>
+                            
+                            <p><strong>Revolutionize your workflow with intelligent automation</strong></p>
+                            
+                            <h3>Key Features:</h3>
+                            <ul>
+                                <li>Advanced AI algorithms for task optimization</li>
+                                <li>Seamless integration with existing tools</li>
+                                <li>Real-time analytics and reporting</li>
+                                <li>Intuitive user interface</li>
+                                <li>Enterprise-grade security</li>
+                            </ul>
+                            
+                            <h3>Benefits:</h3>
+                            <p>Save time, reduce errors, and boost productivity with our comprehensive AI solution. Designed for teams of all sizes, from startups to enterprise organizations.</p>
+                            
+                            <h3>Specifications:</h3>
+                            <p>Compatible with Windows, Mac, and Linux. Cloud-based with offline capabilities. API integration available.</p>
+                            
+                            <p><strong>Price: Starting at $29/month</strong></p>
+                        `
+                    }
+                };
+
+                const selectedTemplate = templates[type] || templates.blog;
+                
+                if (isRegeneration) {
+                    return {
+                        title: selectedTemplate.title + ' (Regenerated)',
+                        content: selectedTemplate.content + '\n\n<p><em>This is a regenerated version with fresh perspectives and updated insights.</em></p>'
+                    };
+                }
+
+                return selectedTemplate;
+            }
+
+            displayGeneratedContent(content) {
+                this.contentOutput.innerHTML = `
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-bold text-white">${content.title}</h3>
+                        <div class="prose prose-invert max-w-none">
+                            ${content.content}
+                        </div>
+                        <div class="mt-6 p-4 bg-gray-700 bg-opacity-50 rounded-lg">
+                            <div class="flex justify-between text-sm text-gray-400">
+                                <span>📊 Generated: ${new Date().toLocaleString()}</span>
+                                <span>📝 Type: ${this.contentType.value.toUpperCase()}</span>
+                                <span>🎯 Tone: ${this.contentTone.value}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.generatedContent.classList.remove('hidden');
+                this.generatedContent.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            copyContent() {
+                const textContent = this.contentOutput.innerText;
+                navigator.clipboard.writeText(textContent).then(() => {
+                    this.copyBtn.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+                    setTimeout(() => {
+                        this.copyBtn.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
+                    }, 2000);
+                });
+            }
+
+            downloadContent() {
+                const content = this.contentOutput.innerHTML;
+                const blob = new Blob([content], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `generated-content-${Date.now()}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new ContentGenerator();
+        });
+    </script>
+</body>
+</html>

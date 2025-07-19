@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Letter Writer - Professional | Suntyn AI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --professional-blue: #1e40af;
+            --professional-gold: #d97706;
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a202c;
+            --bg-card: #2d3748;
+        }
+        
+        body { background: var(--bg-primary); color: white; }
+        .professional-gradient { background: linear-gradient(135deg, var(--professional-blue) 0%, var(--professional-gold) 100%); }
+        .letter-card { background: var(--bg-card); border: 1px solid #4a5568; }
+        .form-control { background: var(--bg-secondary); border: 1px solid #4a5568; color: white; }
+        .form-control:focus { border-color: var(--professional-blue); box-shadow: 0 0 15px rgba(30, 64, 175, 0.3); }
+        .letter-template { background: white; color: black; min-height: 600px; }
+        .typing-animation { animation: typing 2s steps(20, end), blink-caret 0.75s step-end infinite; }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: orange; } }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg professional-gradient"></div>
+                        <span class="text-xl font-bold text-white">Suntyn AI</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="saveTemplate" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-save mr-2"></i>Save Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl professional-gradient mb-6">
+                    <i class="fas fa-envelope-open-text text-3xl text-white"></i>
+                </div>
+                <h1 class="text-5xl font-bold text-white mb-4">AI Letter Writer</h1>
+                <p class="text-xl text-gray-400">Create professional letters with artificial intelligence</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Letter Configuration Panel -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Letter Type Selection -->
+                    <div class="letter-card p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-white mb-6">Letter Type</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors">
+                                <input type="radio" name="letterType" value="business" class="text-blue-500" checked>
+                                <div>
+                                    <div class="font-semibold text-white">Business Letter</div>
+                                    <div class="text-sm text-gray-400">Professional correspondence</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors">
+                                <input type="radio" name="letterType" value="cover" class="text-blue-500">
+                                <div>
+                                    <div class="font-semibold text-white">Cover Letter</div>
+                                    <div class="text-sm text-gray-400">Job application letter</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors">
+                                <input type="radio" name="letterType" value="complaint" class="text-blue-500">
+                                <div>
+                                    <div class="font-semibold text-white">Complaint Letter</div>
+                                    <div class="text-sm text-gray-400">Formal complaint</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors">
+                                <input type="radio" name="letterType" value="recommendation" class="text-blue-500">
+                                <div>
+                                    <div class="font-semibold text-white">Recommendation</div>
+                                    <div class="text-sm text-gray-400">Professional reference</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors">
+                                <input type="radio" name="letterType" value="resignation" class="text-blue-500">
+                                <div>
+                                    <div class="font-semibold text-white">Resignation Letter</div>
+                                    <div class="text-sm text-gray-400">Job resignation</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Letter Details -->
+                    <div class="letter-card p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-white mb-6">Letter Details</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
+                                <input type="text" id="senderName" placeholder="John Doe" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Your Title/Position</label>
+                                <input type="text" id="senderTitle" placeholder="Software Engineer" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Recipient Name</label>
+                                <input type="text" id="recipientName" placeholder="Jane Smith" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Recipient Title</label>
+                                <input type="text" id="recipientTitle" placeholder="Hiring Manager" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Company Name</label>
+                                <input type="text" id="companyName" placeholder="ABC Corporation" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Subject/Purpose</label>
+                                <textarea id="letterPurpose" rows="3" placeholder="Describe the purpose of your letter..." class="form-control w-full p-3 rounded-lg focus:outline-none resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Options -->
+                    <div class="letter-card p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-white mb-6">AI Options</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Tone</label>
+                                <select id="letterTone" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                                    <option value="professional">Professional</option>
+                                    <option value="formal">Formal</option>
+                                    <option value="friendly">Friendly</option>
+                                    <option value="persuasive">Persuasive</option>
+                                    <option value="apologetic">Apologetic</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Length</label>
+                                <select id="letterLength" class="form-control w-full p-3 rounded-lg focus:outline-none">
+                                    <option value="short">Short (1 page)</option>
+                                    <option value="medium">Medium (1-2 pages)</option>
+                                    <option value="long">Long (2+ pages)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="generateLetter" class="w-full mt-6 professional-gradient py-3 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                            <i class="fas fa-magic mr-2"></i>Generate Letter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Letter Preview and Editor -->
+                <div class="lg:col-span-2">
+                    <div class="letter-card p-8 rounded-2xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-white">Letter Preview</h3>
+                            <div class="flex space-x-2">
+                                <button id="editMode" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                <button id="downloadLetter" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-download mr-1"></i>Download
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Letter Template -->
+                        <div id="letterTemplate" class="letter-template p-8 rounded-lg border shadow-lg">
+                            <div class="mb-8">
+                                <div class="text-right mb-4">
+                                    <div id="senderAddress" class="text-sm">
+                                        <div class="font-semibold" id="displaySenderName">Your Name</div>
+                                        <div id="displaySenderTitle">Your Title</div>
+                                        <div>Your Address</div>
+                                        <div>City, State, ZIP</div>
+                                        <div>Email | Phone</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div id="currentDate" class="text-sm"></div>
+                                </div>
+                                
+                                <div id="recipientAddress" class="text-sm mb-6">
+                                    <div class="font-semibold" id="displayRecipientName">Recipient Name</div>
+                                    <div id="displayRecipientTitle">Recipient Title</div>
+                                    <div id="displayCompanyName">Company Name</div>
+                                    <div>Company Address</div>
+                                    <div>City, State, ZIP</div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <div class="font-semibold">Subject: <span id="displaySubject">Letter Subject</span></div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div>Dear <span id="salutation">Recipient Name</span>,</div>
+                                </div>
+                            </div>
+                            
+                            <div id="letterBody" class="space-y-4 mb-6 leading-relaxed">
+                                <p>Your professionally crafted letter content will appear here. Use the AI generator to create compelling and appropriate content based on your specifications.</p>
+                                <p>The AI will ensure proper formatting, tone, and structure for your chosen letter type.</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div>Sincerely,</div>
+                                <br>
+                                <div class="font-semibold" id="signatureName">Your Name</div>
+                                <div id="signatureTitle">Your Title</div>
+                            </div>
+                        </div>
+
+                        <!-- Editor Mode -->
+                        <div id="letterEditor" class="hidden">
+                            <textarea id="letterContent" rows="20" class="form-control w-full p-4 rounded-lg focus:outline-none resize-none font-mono text-sm"></textarea>
+                            <div class="mt-4 flex space-x-3">
+                                <button id="saveEdits" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-save mr-1"></i>Save Changes
+                                </button>
+                                <button id="cancelEdit" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-times mr-1"></i>Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Templates -->
+            <div class="mt-16">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">Sample Templates</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="letter-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-transform" data-template="business">
+                        <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-briefcase text-blue-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-white mb-2">Business Inquiry</h3>
+                        <p class="text-gray-400">Professional business correspondence template</p>
+                    </div>
+                    <div class="letter-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-transform" data-template="cover">
+                        <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-user-tie text-green-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-white mb-2">Cover Letter</h3>
+                        <p class="text-gray-400">Job application cover letter template</p>
+                    </div>
+                    <div class="letter-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-transform" data-template="thank-you">
+                        <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-heart text-purple-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-white mb-2">Thank You</h3>
+                        <p class="text-gray-400">Professional thank you letter template</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LetterWriter {
+            constructor() {
+                this.initializeElements();
+                this.bindEvents();
+                this.updatePreview();
+                this.setCurrentDate();
+            }
+
+            initializeElements() {
+                this.senderName = document.getElementById('senderName');
+                this.senderTitle = document.getElementById('senderTitle');
+                this.recipientName = document.getElementById('recipientName');
+                this.recipientTitle = document.getElementById('recipientTitle');
+                this.companyName = document.getElementById('companyName');
+                this.letterPurpose = document.getElementById('letterPurpose');
+                this.letterTone = document.getElementById('letterTone');
+                this.letterLength = document.getElementById('letterLength');
+                this.letterTemplate = document.getElementById('letterTemplate');
+                this.letterEditor = document.getElementById('letterEditor');
+                this.letterContent = document.getElementById('letterContent');
+                this.letterBody = document.getElementById('letterBody');
+            }
+
+            bindEvents() {
+                // Real-time preview updates
+                ['senderName', 'senderTitle', 'recipientName', 'recipientTitle', 'companyName', 'letterPurpose'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', () => this.updatePreview());
+                });
+
+                // Letter type change
+                document.querySelectorAll('input[name="letterType"]').forEach(radio => {
+                    radio.addEventListener('change', () => this.updatePreview());
+                });
+
+                // Button events
+                document.getElementById('generateLetter').addEventListener('click', () => this.generateLetter());
+                document.getElementById('editMode').addEventListener('click', () => this.toggleEditMode());
+                document.getElementById('saveEdits').addEventListener('click', () => this.saveEdits());
+                document.getElementById('cancelEdit').addEventListener('click', () => this.cancelEdit());
+                document.getElementById('downloadLetter').addEventListener('click', () => this.downloadLetter());
+
+                // Template selection
+                document.querySelectorAll('[data-template]').forEach(template => {
+                    template.addEventListener('click', () => this.loadTemplate(template.dataset.template));
+                });
+            }
+
+            setCurrentDate() {
+                const today = new Date();
+                const formattedDate = today.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('currentDate').textContent = formattedDate;
+            }
+
+            updatePreview() {
+                document.getElementById('displaySenderName').textContent = this.senderName.value || 'Your Name';
+                document.getElementById('displaySenderTitle').textContent = this.senderTitle.value || 'Your Title';
+                document.getElementById('displayRecipientName').textContent = this.recipientName.value || 'Recipient Name';
+                document.getElementById('displayRecipientTitle').textContent = this.recipientTitle.value || 'Recipient Title';
+                document.getElementById('displayCompanyName').textContent = this.companyName.value || 'Company Name';
+                document.getElementById('displaySubject').textContent = this.letterPurpose.value || 'Letter Subject';
+                document.getElementById('salutation').textContent = this.recipientName.value || 'Recipient Name';
+                document.getElementById('signatureName').textContent = this.senderName.value || 'Your Name';
+                document.getElementById('signatureTitle').textContent = this.senderTitle.value || 'Your Title';
+            }
+
+            async generateLetter() {
+                const btn = document.getElementById('generateLetter');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+                btn.disabled = true;
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    const letterType = document.querySelector('input[name="letterType"]:checked').value;
+                    const tone = this.letterTone.value;
+                    const purpose = this.letterPurpose.value;
+
+                    const generatedContent = this.createLetterContent(letterType, tone, purpose);
+                    this.letterBody.innerHTML = generatedContent;
+
+                } catch (error) {
+                    alert('Error generating letter. Please try again.');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+
+            createLetterContent(type, tone, purpose) {
+                const templates = {
+                    business: `
+                        <p>I hope this letter finds you well. I am writing to inquire about potential business opportunities and collaboration between our organizations.</p>
+                        <p>Our company has been following your excellent work in the industry, and we believe there may be mutually beneficial opportunities for partnership. We specialize in providing innovative solutions that could complement your current offerings.</p>
+                        <p>I would welcome the opportunity to discuss this further at your convenience. Please let me know if you would be available for a brief meeting or call in the coming weeks.</p>
+                        <p>Thank you for your time and consideration. I look forward to hearing from you soon.</p>
+                    `,
+                    cover: `
+                        <p>I am writing to express my strong interest in the position that was recently posted on your company website. With my background and experience, I am confident that I would be a valuable addition to your team.</p>
+                        <p>In my previous role, I successfully managed multiple projects while maintaining high quality standards and meeting tight deadlines. My expertise in the field, combined with my passion for innovation, makes me an ideal candidate for this position.</p>
+                        <p>I have attached my resume for your review and would welcome the opportunity to discuss how my skills and experience can contribute to your organization's continued success.</p>
+                        <p>Thank you for considering my application. I look forward to hearing from you soon.</p>
+                    `,
+                    complaint: `
+                        <p>I am writing to bring to your attention a concern regarding recent service issues that I have experienced with your company.</p>
+                        <p>Despite my attempts to resolve this matter through your customer service department, the issue remains unresolved. As a loyal customer, I am disappointed with this experience and hope we can work together to find a satisfactory solution.</p>
+                        <p>I would appreciate your prompt attention to this matter and look forward to your response outlining the steps you will take to address my concerns.</p>
+                        <p>Thank you for your time and attention to this matter.</p>
+                    `,
+                    recommendation: `
+                        <p>I am pleased to write this letter of recommendation for ${this.recipientName.value || '[Name]'}, who worked under my supervision for [duration] at [company].</p>
+                        <p>During our time working together, [Name] consistently demonstrated exceptional performance, strong work ethic, and excellent communication skills. Their ability to manage complex projects and work collaboratively with team members made them an invaluable asset to our organization.</p>
+                        <p>I highly recommend [Name] for any position they may pursue. Their dedication, skills, and positive attitude will undoubtedly make them a valuable addition to any team.</p>
+                        <p>Please feel free to contact me if you need any additional information regarding this recommendation.</p>
+                    `,
+                    resignation: `
+                        <p>Please accept this letter as my formal notice of resignation from my position as ${this.senderTitle.value || '[Position]'} at ${this.companyName.value || '[Company]'}.</p>
+                        <p>My last day of employment will be [Date], providing the standard two weeks' notice. I have enjoyed my time with the company and am grateful for the opportunities for professional growth and development.</p>
+                        <p>I am committed to ensuring a smooth transition of my responsibilities and am willing to assist in training my replacement or documenting current projects.</p>
+                        <p>Thank you for the opportunity to work with such a talented team. I wish the company continued success in the future.</p>
+                    `
+                };
+
+                return templates[type] || templates.business;
+            }
+
+            toggleEditMode() {
+                const template = this.letterTemplate;
+                const editor = this.letterEditor;
+                
+                if (template.style.display === 'none') {
+                    template.style.display = 'block';
+                    editor.style.display = 'none';
+                } else {
+                    template.style.display = 'none';
+                    editor.style.display = 'block';
+                    this.letterContent.value = template.innerHTML;
+                }
+            }
+
+            saveEdits() {
+                this.letterTemplate.innerHTML = this.letterContent.value;
+                this.toggleEditMode();
+            }
+
+            cancelEdit() {
+                this.toggleEditMode();
+            }
+
+            loadTemplate(templateType) {
+                document.querySelector(`input[value="${templateType}"]`).checked = true;
+                this.generateLetter();
+            }
+
+            downloadLetter() {
+                const letterHTML = this.letterTemplate.outerHTML;
+                const blob = new Blob([letterHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `letter-${Date.now()}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new LetterWriter();
+        });
+    </script>
+</body>
+</html>

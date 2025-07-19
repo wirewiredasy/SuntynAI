@@ -218,11 +218,17 @@ def create_app():
             flash(f'Tool "{tool_name}" not found. Please check the tool name or browse available tools.', 'error')
             return redirect(url_for('all_tools'))
 
-        # Check if dedicated template exists
+        # Check if v2 unique template exists (prioritize these)
         import os
+        v2_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-v2.html')
         template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}.html')
 
-        if os.path.exists(template_path):
+        if os.path.exists(v2_template_path):
+            return render_template(f'tools/{tool_name}-v2.html', 
+                                 tool_name=tool_name,
+                                 category=tool_category,
+                                 category_data=TOOL_CATEGORIES[tool_category])
+        elif os.path.exists(template_path):
             return render_template(f'tools/{tool_name}.html', 
                                  tool_name=tool_name,
                                  category=tool_category,

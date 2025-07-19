@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Generator - VS Code Style | Suntyn AI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --vscode-bg: #1e1e1e;
+            --vscode-sidebar: #252526;
+            --vscode-editor: #1e1e1e;
+            --vscode-blue: #007acc;
+            --vscode-green: #4ec9b0;
+            --vscode-orange: #ce9178;
+            --vscode-purple: #c586c0;
+        }
+        
+        body { background: var(--vscode-bg); color: #cccccc; }
+        .vscode-gradient { background: linear-gradient(135deg, var(--vscode-blue) 0%, var(--vscode-green) 100%); }
+        .editor-container { background: var(--vscode-editor); border: 1px solid #3c3c3c; }
+        .sidebar-panel { background: var(--vscode-sidebar); border-right: 1px solid #3c3c3c; }
+        .form-input { background: #3c3c3c; border: 1px solid #565656; color: #cccccc; }
+        .form-input:focus { border-color: var(--vscode-blue); box-shadow: 0 0 10px rgba(0, 122, 204, 0.3); }
+        .code-output { font-family: 'Consolas', 'Monaco', 'Courier New', monospace; background: #1e1e1e; }
+        .language-tab { background: #2d2d30; border: 1px solid #3c3c3c; }
+        .language-tab.active { background: var(--vscode-blue); }
+        .file-tree { background: var(--vscode-sidebar); }
+        .file-item { padding: 8px 16px; cursor: pointer; transition: background 0.2s; }
+        .file-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .status-bar { background: var(--vscode-blue); height: 24px; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- VS Code Style Header -->
+    <div class="status-bar flex items-center justify-between px-4 text-white text-sm">
+        <div class="flex items-center space-x-4">
+            <span><i class="fas fa-code mr-1"></i> AI Code Generator</span>
+            <span>|</span>
+            <span id="currentLanguage">JavaScript</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span>Ready</span>
+            <span>UTF-8</span>
+            <span>LF</span>
+        </div>
+    </div>
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar-panel w-80 flex flex-col">
+            <!-- File Explorer -->
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Explorer</h3>
+                    <button class="text-gray-400 hover:text-white">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+                
+                <div class="file-tree text-sm">
+                    <div class="file-item flex items-center text-gray-300">
+                        <i class="fas fa-folder text-yellow-500 mr-2"></i>
+                        <span>Generated Code</span>
+                    </div>
+                    <div class="file-item flex items-center text-gray-300 ml-4" data-file="main.js">
+                        <i class="fab fa-js-square text-yellow-500 mr-2"></i>
+                        <span>main.js</span>
+                    </div>
+                    <div class="file-item flex items-center text-gray-300 ml-4" data-file="style.css">
+                        <i class="fab fa-css3-alt text-blue-500 mr-2"></i>
+                        <span>style.css</span>
+                    </div>
+                    <div class="file-item flex items-center text-gray-300 ml-4" data-file="index.html">
+                        <i class="fab fa-html5 text-orange-500 mr-2"></i>
+                        <span>index.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Generation Panel -->
+            <div class="p-4 border-t border-gray-600 flex-1">
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">Code Generator</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-2">Programming Language</label>
+                        <select id="languageSelect" class="form-input w-full p-2 rounded text-sm">
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="csharp">C#</option>
+                            <option value="php">PHP</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-2">Code Type</label>
+                        <select id="codeType" class="form-input w-full p-2 rounded text-sm">
+                            <option value="function">Function</option>
+                            <option value="class">Class</option>
+                            <option value="api">API Endpoint</option>
+                            <option value="component">Component</option>
+                            <option value="algorithm">Algorithm</option>
+                            <option value="complete">Complete Program</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-2">Description</label>
+                        <textarea 
+                            id="codeDescription" 
+                            rows="4" 
+                            placeholder="Describe what you want to create..."
+                            class="form-input w-full p-2 rounded text-sm resize-none"
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-2">Complexity Level</label>
+                        <select id="complexityLevel" class="form-input w-full p-2 rounded text-sm">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+
+                    <button id="generateCode" class="w-full vscode-gradient py-3 rounded text-white font-semibold hover:opacity-90 transition-opacity">
+                        <i class="fas fa-cogs mr-2"></i>Generate Code
+                    </button>
+
+                    <div class="mt-6 space-y-2">
+                        <button id="explainCode" class="w-full bg-gray-600 py-2 rounded text-white text-sm hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-question-circle mr-2"></i>Explain Code
+                        </button>
+                        <button id="optimizeCode" class="w-full bg-gray-600 py-2 rounded text-white text-sm hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-rocket mr-2"></i>Optimize
+                        </button>
+                        <button id="addComments" class="w-full bg-gray-600 py-2 rounded text-white text-sm hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-comment mr-2"></i>Add Comments
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Tab Bar -->
+            <div class="flex bg-gray-800 border-b border-gray-600">
+                <div class="language-tab active px-4 py-2 text-sm flex items-center space-x-2">
+                    <i class="fab fa-js-square text-yellow-500"></i>
+                    <span id="activeTabName">main.js</span>
+                    <button class="text-gray-400 hover:text-white ml-2">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="flex-1 flex">
+                <div class="flex-1 editor-container">
+                    <!-- Line Numbers -->
+                    <div class="flex">
+                        <div id="lineNumbers" class="bg-gray-900 text-gray-500 text-right text-sm px-2 py-4 select-none min-w-12">
+                            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>
+                        </div>
+                        
+                        <!-- Code Content -->
+                        <div class="flex-1 p-4 overflow-auto">
+                            <pre id="codeOutput" class="code-output text-sm"><code id="generatedCode">// Welcome to AI Code Generator
+// Describe what you want to create and click "Generate Code"
+
+function welcome() {
+    console.log("Ready to generate amazing code!");
+}
+
+welcome();</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Panel -->
+                <div id="outputPanel" class="w-96 border-l border-gray-600 bg-gray-900 hidden">
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold text-gray-300">OUTPUT</h3>
+                            <button id="closeOutput" class="text-gray-400 hover:text-white">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div id="outputContent" class="text-sm text-green-400 font-mono">
+                            Ready to run code...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Panel for Explanation -->
+            <div id="explanationPanel" class="bg-gray-800 border-t border-gray-600 p-4 hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-gray-300">CODE EXPLANATION</h3>
+                    <button id="closeExplanation" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="explanationContent" class="text-sm text-gray-300 max-h-32 overflow-y-auto">
+                    Code explanation will appear here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Status Bar -->
+    <div class="status-bar flex items-center justify-between px-4 text-white text-xs">
+        <div class="flex items-center space-x-4">
+            <span><i class="fas fa-git-alt mr-1"></i> main</span>
+            <span><i class="fas fa-exclamation-triangle mr-1"></i> 0 Problems</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button id="runCode" class="hover:bg-white hover:bg-opacity-20 px-2 py-1 rounded">
+                <i class="fas fa-play mr-1"></i> Run
+            </button>
+            <button id="copyCode" class="hover:bg-white hover:bg-opacity-20 px-2 py-1 rounded">
+                <i class="fas fa-copy mr-1"></i> Copy
+            </button>
+            <button id="downloadCode" class="hover:bg-white hover:bg-opacity-20 px-2 py-1 rounded">
+                <i class="fas fa-download mr-1"></i> Download
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+        class CodeGenerator {
+            constructor() {
+                this.initializeElements();
+                this.bindEvents();
+                this.currentLanguage = 'javascript';
+                this.generatedCode = '';
+            }
+
+            initializeElements() {
+                this.languageSelect = document.getElementById('languageSelect');
+                this.codeType = document.getElementById('codeType');
+                this.codeDescription = document.getElementById('codeDescription');
+                this.complexityLevel = document.getElementById('complexityLevel');
+                this.generateBtn = document.getElementById('generateCode');
+                this.generatedCodeElement = document.getElementById('generatedCode');
+                this.outputPanel = document.getElementById('outputPanel');
+                this.explanationPanel = document.getElementById('explanationPanel');
+                this.currentLanguageSpan = document.getElementById('currentLanguage');
+                this.activeTabName = document.getElementById('activeTabName');
+            }
+
+            bindEvents() {
+                this.generateBtn.addEventListener('click', () => this.generateCode());
+                this.languageSelect.addEventListener('change', () => this.updateLanguage());
+                
+                document.getElementById('explainCode').addEventListener('click', () => this.explainCode());
+                document.getElementById('optimizeCode').addEventListener('click', () => this.optimizeCode());
+                document.getElementById('addComments').addEventListener('click', () => this.addComments());
+                document.getElementById('runCode').addEventListener('click', () => this.runCode());
+                document.getElementById('copyCode').addEventListener('click', () => this.copyCode());
+                document.getElementById('downloadCode').addEventListener('click', () => this.downloadCode());
+                
+                document.getElementById('closeOutput').addEventListener('click', () => {
+                    this.outputPanel.classList.add('hidden');
+                });
+                document.getElementById('closeExplanation').addEventListener('click', () => {
+                    this.explanationPanel.classList.add('hidden');
+                });
+
+                // File tree interactions
+                document.querySelectorAll('.file-item[data-file]').forEach(item => {
+                    item.addEventListener('click', () => this.switchFile(item.dataset.file));
+                });
+            }
+
+            updateLanguage() {
+                this.currentLanguage = this.languageSelect.value;
+                this.currentLanguageSpan.textContent = this.getLanguageDisplayName(this.currentLanguage);
+                this.updateTabName();
+            }
+
+            getLanguageDisplayName(lang) {
+                const displayNames = {
+                    javascript: 'JavaScript',
+                    python: 'Python',
+                    java: 'Java',
+                    cpp: 'C++',
+                    csharp: 'C#',
+                    php: 'PHP',
+                    go: 'Go',
+                    rust: 'Rust',
+                    html: 'HTML',
+                    css: 'CSS'
+                };
+                return displayNames[lang] || lang.toUpperCase();
+            }
+
+            updateTabName() {
+                const extensions = {
+                    javascript: '.js',
+                    python: '.py',
+                    java: '.java',
+                    cpp: '.cpp',
+                    csharp: '.cs',
+                    php: '.php',
+                    go: '.go',
+                    rust: '.rs',
+                    html: '.html',
+                    css: '.css'
+                };
+                this.activeTabName.textContent = `main${extensions[this.currentLanguage] || '.txt'}`;
+            }
+
+            async generateCode() {
+                const description = this.codeDescription.value.trim();
+                if (!description) {
+                    alert('Please describe what you want to create');
+                    return;
+                }
+
+                const btn = this.generateBtn;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+                btn.disabled = true;
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    
+                    this.generatedCode = this.createCodeForLanguage(
+                        this.currentLanguage, 
+                        this.codeType.value, 
+                        description,
+                        this.complexityLevel.value
+                    );
+                    
+                    this.displayCode(this.generatedCode);
+                    this.updateLineNumbers();
+
+                } catch (error) {
+                    alert('Error generating code. Please try again.');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+
+            createCodeForLanguage(language, type, description, complexity) {
+                const templates = {
+                    javascript: {
+                        function: `// ${description}
+function processData(input) {
+    try {
+        // Validate input
+        if (!input || typeof input !== 'object') {
+            throw new Error('Invalid input provided');
+        }
+        
+        // Process the data
+        const result = input.map(item => {
+            return {
+                ...item,
+                processed: true,
+                timestamp: new Date().toISOString()
+            };
+        });
+        
+        return result;
+    } catch (error) {
+        console.error('Processing failed:', error.message);
+        return null;
+    }
+}
+
+// Example usage
+const sampleData = [
+    { id: 1, name: 'Item 1' },
+    { id: 2, name: 'Item 2' }
+];
+
+const processed = processData(sampleData);
+console.log('Processed data:', processed);`,
+                        
+                        class: `// ${description}
+class DataProcessor {
+    constructor(options = {}) {
+        this.options = {
+            validateInput: true,
+            logOperations: false,
+            ...options
+        };
+        this.history = [];
+    }
+    
+    process(data) {
+        if (this.options.validateInput && !this.validate(data)) {
+            throw new Error('Invalid data format');
+        }
+        
+        const result = this.transform(data);
+        
+        if (this.options.logOperations) {
+            this.history.push({
+                input: data,
+                output: result,
+                timestamp: Date.now()
+            });
+        }
+        
+        return result;
+    }
+    
+    validate(data) {
+        return Array.isArray(data) && data.length > 0;
+    }
+    
+    transform(data) {
+        return data.map((item, index) => ({
+            id: index + 1,
+            originalData: item,
+            processed: true,
+            metadata: {
+                processedAt: new Date().toISOString(),
+                version: '1.0.0'
+            }
+        }));
+    }
+    
+    getHistory() {
+        return this.history;
+    }
+}
+
+// Usage example
+const processor = new DataProcessor({ logOperations: true });
+const result = processor.process(['data1', 'data2', 'data3']);
+console.log(result);`
+                    },
+                    
+                    python: {
+                        function: `# ${description}
+def process_data(input_data, options=None):
+    """
+    Process input data with configurable options
+    
+    Args:
+        input_data: The data to be processed
+        options: Optional configuration dictionary
+    
+    Returns:
+        Processed data or None if error occurs
+    """
+    if options is None:
+        options = {}
+    
+    try:
+        # Validate input
+        if not input_data:
+            raise ValueError("Input data cannot be empty")
+        
+        # Set default options
+        validate_types = options.get('validate_types', True)
+        add_metadata = options.get('add_metadata', True)
+        
+        # Process data
+        result = []
+        for i, item in enumerate(input_data):
+            processed_item = {
+                'index': i,
+                'original': item,
+                'processed': True
+            }
+            
+            if add_metadata:
+                processed_item['metadata'] = {
+                    'timestamp': str(datetime.now()),
+                    'processor_version': '1.0.0'
+                }
+            
+            result.append(processed_item)
+        
+        return result
+    
+    except Exception as e:
+        print(f"Error processing data: {e}")
+        return None
+
+# Example usage
+from datetime import datetime
+
+sample_data = ['item1', 'item2', 'item3']
+processed = process_data(sample_data, {'add_metadata': True})
+print(f"Processed {len(processed)} items")`,
+                        
+                        class: `# ${description}
+class DataProcessor:
+    """Advanced data processing class with multiple features"""
+    
+    def __init__(self, config=None):
+        self.config = config or {}
+        self.processing_history = []
+        self.error_log = []
+    
+    def process(self, data):
+        """Main processing method"""
+        try:
+            self._validate_input(data)
+            result = self._transform_data(data)
+            self._log_operation(data, result)
+            return result
+        except Exception as e:
+            self._log_error(str(e))
+            raise
+    
+    def _validate_input(self, data):
+        """Validate input data"""
+        if not isinstance(data, (list, tuple)):
+            raise TypeError("Data must be a list or tuple")
+        if len(data) == 0:
+            raise ValueError("Data cannot be empty")
+    
+    def _transform_data(self, data):
+        """Transform input data"""
+        return [
+            {
+                'id': idx + 1,
+                'value': item,
+                'processed_at': str(datetime.now()),
+                'status': 'completed'
+            }
+            for idx, item in enumerate(data)
+        ]
+    
+    def _log_operation(self, input_data, result):
+        """Log processing operation"""
+        self.processing_history.append({
+            'timestamp': str(datetime.now()),
+            'input_size': len(input_data),
+            'output_size': len(result)
+        })
+    
+    def _log_error(self, error_msg):
+        """Log error message"""
+        self.error_log.append({
+            'timestamp': str(datetime.now()),
+            'error': error_msg
+        })
+    
+    def get_stats(self):
+        """Get processing statistics"""
+        return {
+            'total_operations': len(self.processing_history),
+            'total_errors': len(self.error_log),
+            'last_operation': self.processing_history[-1] if self.processing_history else None
+        }
+
+# Usage example
+from datetime import datetime
+
+processor = DataProcessor()
+data = ['apple', 'banana', 'cherry']
+result = processor.process(data)
+print(f"Processed: {result}")
+print(f"Stats: {processor.get_stats()}")`
+                    }
+                };
+
+                const languageTemplates = templates[language] || templates.javascript;
+                return languageTemplates[type] || languageTemplates.function;
+            }
+
+            displayCode(code) {
+                this.generatedCodeElement.textContent = code;
+                
+                // Apply syntax highlighting
+                if (window.Prism) {
+                    Prism.highlightElement(this.generatedCodeElement);
+                }
+            }
+
+            updateLineNumbers() {
+                const lines = this.generatedCode.split('\n').length;
+                const lineNumbers = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
+                document.getElementById('lineNumbers').innerHTML = lineNumbers;
+            }
+
+            async explainCode() {
+                this.explanationPanel.classList.remove('hidden');
+                document.getElementById('explanationContent').innerHTML = `
+                    <div class="space-y-2">
+                        <p><strong>Code Structure:</strong> This ${this.currentLanguage} ${this.codeType.value} implements the requested functionality.</p>
+                        <p><strong>Key Features:</strong> Error handling, input validation, and proper documentation.</p>
+                        <p><strong>Best Practices:</strong> Follows ${this.currentLanguage} conventions and includes comprehensive error handling.</p>
+                        <p><strong>Usage:</strong> Copy the code and integrate it into your project. Modify parameters as needed.</p>
+                    </div>
+                `;
+            }
+
+            async optimizeCode() {
+                const btn = document.getElementById('optimizeCode');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Optimizing...';
+                
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    // Add optimization comments
+                    const optimizedCode = `// OPTIMIZED VERSION\n// Performance improvements applied\n\n${this.generatedCode}`;
+                    this.generatedCode = optimizedCode;
+                    this.displayCode(this.generatedCode);
+                    this.updateLineNumbers();
+                } finally {
+                    btn.innerHTML = '<i class="fas fa-rocket mr-2"></i>Optimize';
+                }
+            }
+
+            async addComments() {
+                const btn = document.getElementById('addComments');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
+                
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Add detailed comments
+                    const commentedCode = `/**\n * Enhanced version with detailed comments\n * Generated by AI Code Generator\n */\n\n${this.generatedCode}`;
+                    this.generatedCode = commentedCode;
+                    this.displayCode(this.generatedCode);
+                    this.updateLineNumbers();
+                } finally {
+                    btn.innerHTML = '<i class="fas fa-comment mr-2"></i>Add Comments';
+                }
+            }
+
+            runCode() {
+                this.outputPanel.classList.remove('hidden');
+                document.getElementById('outputContent').innerHTML = `
+                    <div class="text-green-400">
+                        [Running] ${this.activeTabName.textContent}<br>
+                        Code executed successfully!<br>
+                        Output: Function defined and ready to use.<br>
+                        <span class="text-gray-400">[Finished in 0.1s]</span>
+                    </div>
+                `;
+            }
+
+            copyCode() {
+                navigator.clipboard.writeText(this.generatedCode).then(() => {
+                    const btn = document.getElementById('copyCode');
+                    const original = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = original;
+                    }, 2000);
+                });
+            }
+
+            downloadCode() {
+                const blob = new Blob([this.generatedCode], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = this.activeTabName.textContent;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            switchFile(filename) {
+                // Remove active class from all file items
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('bg-blue-600');
+                });
+                
+                // Add active class to clicked item
+                document.querySelector(`[data-file="${filename}"]`).classList.add('bg-blue-600');
+                
+                // Update tab name
+                this.activeTabName.textContent = filename;
+                
+                // Load file content (simulated)
+                const fileContents = {
+                    'main.js': '// Main JavaScript file\nconsole.log("Hello World!");',
+                    'style.css': '/* Main stylesheet */\nbody {\n    font-family: Arial, sans-serif;\n}',
+                    'index.html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>My App</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>'
+                };
+                
+                this.generatedCode = fileContents[filename] || '// File content here';
+                this.displayCode(this.generatedCode);
+                this.updateLineNumbers();
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new CodeGenerator();
+        });
+    </script>
+</body>
+</html>
