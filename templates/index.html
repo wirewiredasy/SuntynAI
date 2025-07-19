@@ -3,76 +3,79 @@
 {% block title %}PDF Toolkit - 25+ Professional PDF Tools{% endblock %}
 
 {% block content %}
-<!-- Ultra-Modern AI Hero Section -->
-<section class="hero-ai-modern" id="hero-section">
-    <!-- Animated Background with Neural Network -->
-    <div class="neural-bg">
-        <canvas id="neural-canvas"></canvas>
-        <div class="gradient-mesh"></div>
+<!-- Professional Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg">
+        <div class="hero-particles"></div>
+        <div class="hero-gradient"></div>
     </div>
-
-    <div class="container-fluid px-0">
-        <div class="row g-0 min-vh-100 align-items-center">
-            <!-- Left Content Column -->
-            <div class="col-lg-6 col-xl-5">
-                <div class="hero-content-wrapper px-4 px-lg-5">
-                    <!-- AI Badge -->
-                    <div class="ai-badge-wrapper">
-                        <div class="ai-badge">
-                            <div class="badge-glow"></div>
-                            <i class="ti ti-robot badge-icon"></i>
-                            <span class="badge-dot"></span>
-                            <span class="badge-text">PDF Toolkit • 25+ Tools</span>
-                            <div class="badge-particles">
-                                <div class="particle"></div>
-                                <div class="particle"></div>
-                                <div class="particle"></div>
-                            </div>
+    
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="ti ti-tools"></i>
+                        <span>45 Professional Tools</span>
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        Complete <span class="gradient-text">Toolkit</span><br>
+                        for <span class="highlight-text">PDF & Images</span>
+                    </h1>
+                    
+                    <p class="hero-description">
+                        Professional-grade PDF and image processing tools. Merge, split, compress, convert, and edit with advanced features and beautiful interfaces.
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="#pdf-tools" class="btn-hero-primary">
+                            <i class="ti ti-file-pdf"></i>
+                            PDF Tools
+                        </a>
+                        <a href="#image-tools" class="btn-hero-secondary">
+                            <i class="ti ti-photo"></i>
+                            Image Tools
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="floating-cards">
+                        <div class="floating-card pdf-card">
+                            <i class="ti ti-file-pdf"></i>
+                            <span>25 PDF Tools</span>
+                        </div>
+                        <div class="floating-card image-card">
+                            <i class="ti ti-photo"></i>
+                            <span>20 Image Tools</span>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                    <!-- Main Heading with Glitch Effect -->
-                    <h1 class="hero-heading">
-                        <span class="word-animate" data-delay="0">The</span>
-                        <span class="word-animate gradient-text" data-delay="100">Professional</span>
-                        <br>
-                        <span class="word-animate glitch-text" data-delay="200">PDF Toolkit</span>
-                        <br>
-                        <span class="word-animate highlight-text" data-delay="300">like TinyWow</span>
-                    </h1>
-
-                    <!-- Typing Animation Subtitle -->
-                    <div class="hero-subtitle">
-                        <p class="typing-container">
-                            <span class="typing-cursor">|</span>
-                            <span class="typed-text"></span>
-                        </p>
-                        <p class="hero-description">
-                            Transform your PDF workflow with 25+ professional tools. 
-                            Merge, split, compress, convert, and secure your PDFs - 
-                            all with advanced processing capabilities.
-                        </p>
-                    </div>
-
-                    <!-- Interactive CTA Buttons -->
-                    <div class="hero-actions">
-                        <a href="#tools-demo" class="btn-ai-primary" data-demo="start">
-                            <span class="btn-bg"></span>
-                            <span class="btn-content">
-                                <i class="ti ti-rocket"></i>
-                                <span>Try Demo</span>
-                                <span class="btn-arrow">→</span>
-                            </span>
-                            <div class="btn-ripple"></div>
-                        </a>
-
-                        {% if not current_user.is_authenticated %}
-                        <a href="{{ url_for('register') }}" class="btn-ai-secondary">
-                            <span class="btn-content">
-                                <i class="ti ti-user-plus"></i>
-                                <span>Start Free</span>
-                            </span>
-                        </a>
+<!-- Category Navigation -->
+<section class="category-nav">
+    <div class="container">
+        <div class="nav-tabs-modern" role="tablist">
+            <button class="nav-tab active" data-tab="pdf-tools">
+                <i class="ti ti-file-pdf"></i>
+                <span>PDF Tools</span>
+                <span class="badge">25</span>
+            </button>
+            <button class="nav-tab" data-tab="image-tools">
+                <i class="ti ti-photo"></i>
+                <span>Image Tools</span>
+                <span class="badge">20</span>
+            </button>
+        </div>
+    </div>
+</section>
                         {% endif %}
                     </div>
 
@@ -289,37 +292,78 @@
             </div>
         </div>
 
-        <!-- PDF Tools Grid -->
-        <div class="row g-4" id="pdf-tools-grid">
-            {% for tool_id, tool_data in tools.items() %}
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="pdf-tool-card h-100 {% if tool_data.status == 'coming' %}coming-soon{% endif %}">
-                    {% if tool_data.status == 'coming' %}
-                    <div class="coming-badge">
-                        <i class="ti ti-clock"></i>
-                        Soon
-                    </div>
-                    {% endif %}
-                    
-                    <div class="tool-icon">
-                        <i class="{{ tool_data.icon }}"></i>
-                    </div>
-                    
-                    <div class="tool-content">
-                        <h5 class="tool-title">{{ tool_data.name }}</h5>
-                        <p class="tool-description">{{ tool_data.desc }}</p>
-                    </div>
-                    
-                    <div class="tool-action">
-                        {% if tool_data.status == 'active' %}
-                        <a href="/{{ tool_id }}" class="btn-tool-primary">
-                            <span>Use Tool</span>
-                            <i class="ti ti-arrow-right"></i>
-                        </a>
-                        {% else %}
-                        <button class="btn-tool-coming" disabled>
-                            <span>Coming Soon</span>
-                            <i class="ti ti-clock"></i>
+<!-- Tools Categories -->
+<div class="tools-categories">
+    
+    <!-- PDF Tools Section -->
+    <div class="tab-content active" id="pdf-tools">
+        <div class="category-header">
+            <div class="category-icon">
+                <i class="ti ti-file-pdf"></i>
+            </div>
+            <div class="category-info">
+                <h3>PDF Tools Collection</h3>
+                <p>25 professional PDF processing tools for all your document needs</p>
+            </div>
+        </div>
+        
+        <div class="tools-grid">
+            {% for tool_id, tool_data in tools.items() if tool_data.category == 'pdf' %}
+            <div class="tool-card pdf-tool" data-tool="{{ tool_id }}">
+                <div class="tool-icon">
+                    <i class="{{ tool_data.icon }}"></i>
+                </div>
+                <div class="tool-content">
+                    <h4>{{ tool_data.name }}</h4>
+                    <p>{{ tool_data.desc }}</p>
+                </div>
+                <div class="tool-action">
+                    <a href="/{{ tool_id }}" class="tool-btn">
+                        <span>Use Tool</span>
+                        <i class="ti ti-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="tool-hover-effect"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Image Tools Section -->
+    <div class="tab-content" id="image-tools">
+        <div class="category-header">
+            <div class="category-icon">
+                <i class="ti ti-photo"></i>
+            </div>
+            <div class="category-info">
+                <h3>Image Tools Collection</h3>
+                <p>20 professional image editing and processing tools</p>
+            </div>
+        </div>
+        
+        <div class="tools-grid">
+            {% for tool_id, tool_data in tools.items() if tool_data.category == 'image' %}
+            <div class="tool-card image-tool" data-tool="{{ tool_id }}">
+                <div class="tool-icon">
+                    <i class="{{ tool_data.icon }}"></i>
+                </div>
+                <div class="tool-content">
+                    <h4>{{ tool_data.name }}</h4>
+                    <p>{{ tool_data.desc }}</p>
+                </div>
+                <div class="tool-action">
+                    <a href="/{{ tool_id }}" class="tool-btn">
+                        <span>Use Tool</span>
+                        <i class="ti ti-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="tool-hover-effect"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+</div>
                         </button>
                         {% endif %}
                     </div>

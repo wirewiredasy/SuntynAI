@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Professional PDF Toolkit{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-4">
+                <div class="tool-icon-large mx-auto mb-3">
+                    <i class="ti ti-cut"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-2">PDF Splitter</h1>
+                <p class="lead text-muted">Split PDF files into separate documents by pages</p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control form-control-lg" 
+                                   accept=".pdf" required>
+                            <div class="form-text">Select a PDF file to split into pages</div>
+                        </div>
+
+                        <!-- Split Options -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Split Method</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="split_method" value="all_pages" id="allPages" checked>
+                                <label class="form-check-label" for="allPages">
+                                    Split into individual pages
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="split_method" value="page_range" id="pageRange">
+                                <label class="form-check-label" for="pageRange">
+                                    Extract specific page range
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Page Range Input -->
+                        <div class="mb-4" id="rangeInput" style="display: none;">
+                            <label class="form-label fw-bold">Page Range</label>
+                            <input type="text" name="page_range" class="form-control form-control-lg" 
+                                   placeholder="e.g., 1-5 or 2,4,6-8">
+                            <div class="form-text">Enter page numbers or ranges (e.g., 1-5, 2,4, 6-8)</div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">
+                                <i class="ti ti-cut me-2"></i>Split PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('input[name="split_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const rangeInput = document.getElementById('rangeInput');
+        if (this.value === 'page_range') {
+            rangeInput.style.display = 'block';
+        } else {
+            rangeInput.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-control-lg {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.form-control-lg:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+}
+</style>
+{% endblock %}

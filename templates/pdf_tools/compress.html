@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Professional PDF Toolkit{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-4">
+                <div class="tool-icon-large mx-auto mb-3">
+                    <i class="ti ti-package"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-2">PDF Compressor</h1>
+                <p class="lead text-muted">Reduce PDF file size while maintaining quality</p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control form-control-lg" 
+                                   accept=".pdf" required>
+                            <div class="form-text">Select a PDF file to compress</div>
+                        </div>
+
+                        <!-- Compression Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Compression Level</label>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="light" id="light" checked>
+                                        <label class="form-check-label fw-bold" for="light">
+                                            Light Compression
+                                            <div class="text-muted small">20% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="medium" id="medium">
+                                        <label class="form-check-label fw-bold" for="medium">
+                                            Medium Compression
+                                            <div class="text-muted small">45% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="high" id="high">
+                                        <label class="form-check-label fw-bold" for="high">
+                                            High Compression
+                                            <div class="text-muted small">65% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="maximum" id="maximum">
+                                        <label class="form-check-label fw-bold" for="maximum">
+                                            Maximum Compression
+                                            <div class="text-muted small">80% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">
+                                <i class="ti ti-package me-2"></i>Compress PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-control-lg {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.form-control-lg:focus {
+    border-color: #fa709a;
+    box-shadow: 0 0 0 0.2rem rgba(250, 112, 154, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(250, 112, 154, 0.3);
+}
+
+.form-check.card {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.form-check.card:hover {
+    border-color: #fa709a;
+    transform: translateY(-2px);
+}
+
+.form-check-input:checked ~ .form-check-label {
+    color: #fa709a;
+}
+</style>
+{% endblock %}
