@@ -7,10 +7,17 @@ import string
 import uuid
 import json
 import logging
+import tempfile
+import os
 from flask import request
 from PIL import Image
-import barcode
-from barcode.writer import ImageWriter
+try:
+    import barcode
+    from barcode.writer import ImageWriter
+    BARCODE_AVAILABLE = True
+except ImportError:
+    BARCODE_AVAILABLE = False
+    logging.warning("Barcode library not available")
 
 def process_qr_generator(request):
     """Process QR code generator tool"""
@@ -41,29 +48,27 @@ def process_qr_generator(request):
         # Resize to exact dimensions
         img = img.resize((size, size), Image.Resampling.NEAREST)
         
-        # Save to temp file and return download URL
-        import tempfile
-        from utils.file_handler import save_uploaded_file
+        # Create base64 for preview and save file
+        buffer = io.BytesIO()
+        img.save(buffer, format=output_format)
+        buffer.seek(0)
+        img_base64 = base64.b64encode(buffer.getvalue()).decode()
         
-        with tempfile.NamedTemporaryFile(suffix=f'.{output_format.lower()}', delete=False) as temp_file:
-            img.save(temp_file.name, format=output_format)
-            
-            output_filename = f'qr_code_{uuid.uuid4().hex[:8]}.{output_format.lower()}'
-            final_path = save_uploaded_file(temp_file.name, output_filename)
-            
-            # Also create base64 for preview
-            buffer = io.BytesIO()
-            img.save(buffer, format=output_format)
-            buffer.seek(0)
-            img_base64 = base64.b64encode(buffer.getvalue()).decode()
-            
-            return {
-                'success': True,
-                'message': 'QR code generated successfully',
-                'qr_image': f'data:image/{output_format.lower()};base64,{img_base64}',
-                'download_url': f'/uploads/{output_filename}',
-                'output_file': final_path
-            }
+        # Save file to uploads directory
+        output_filename = f'qr_code_{uuid.uuid4().hex[:8]}.{output_format.lower()}'
+        uploads_dir = os.path.join(os.getcwd(), 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+        final_path = os.path.join(uploads_dir, output_filename)
+        
+        img.save(final_path, format=output_format)
+        
+        return {
+            'success': True,
+            'message': 'QR code generated successfully',
+            'qr_image': f'data:image/{output_format.lower()};base64,{img_base64}',
+            'download_url': f'/uploads/{output_filename}',
+            'output_file': final_path
+        }
     
     except Exception as e:
         logging.error(f"QR generator error: {str(e)}")
@@ -72,6 +77,9 @@ def process_qr_generator(request):
 def process_barcode_generator(request):
     """Process barcode generator tool"""
     try:
+        if not BARCODE_AVAILABLE:
+            return {'error': 'Barcode generation not available, please install python-barcode'}
+            
         text = request.form.get('text', '')
         barcode_type = request.form.get('barcode_type', 'code128')
         
@@ -79,8 +87,11 @@ def process_barcode_generator(request):
             return {'error': 'Text is required'}
         
         # Create barcode
-        barcode_class = barcode.get_barcode_class(barcode_type)
-        barcode_instance = barcode_class(text, writer=ImageWriter())
+        try:
+            barcode_class = barcode.get_barcode_class(barcode_type)
+            barcode_instance = barcode_class(text, writer=ImageWriter())
+        except Exception as e:
+            return {'error': f'Invalid barcode type or data: {str(e)}'}
         
         # Generate barcode image
         buffer = io.BytesIO()
@@ -276,17 +287,21 @@ def process_uuid_generator(request):
 def process_url_shortener(request):
     """Process URL shortener tool"""
     try:
-        long_url = request.form.get('long_url', '')
-        custom_path = request.form.get('custom_path', '')
+        long_url = request.form.get('long_url', '').strip()
+        custom_path = request.form.get('custom_path', '').strip()
         
         if not long_url:
             return {'error': 'URL is required'}
+        
+        # Add protocol if missing
+        if not long_url.startswith(('http://', 'https://')):
+            long_url = 'https://' + long_url
         
         # Validate URL
         try:
             from urllib.parse import urlparse
             parsed = urlparse(long_url)
-            if not parsed.scheme or not parsed.netloc:
+            if not parsed.netloc:
                 return {'error': 'Invalid URL format'}
         except Exception:
             return {'error': 'Invalid URL format'}

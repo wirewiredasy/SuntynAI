@@ -343,29 +343,41 @@ def create_app():
 
             # Process utility tools with specialized processor
             if tool_name in ['qr-code-generator', 'barcode-generator', 'url-shortener', 'password-generator', 'hash-generator', 'uuid-generator', 'json-formatter']:
-                from tools.utility_tools import (
-                    process_qr_generator, process_barcode_generator, process_password_generator,
-                    process_hash_generator, process_uuid_generator, process_url_shortener, process_json_formatter
-                )
-                
-                start_time = datetime.now()
-                
-                if tool_name == 'qr-code-generator':
-                    result = process_qr_generator(request)
-                elif tool_name == 'barcode-generator':
-                    result = process_barcode_generator(request)
-                elif tool_name == 'password-generator':
-                    result = process_password_generator(request)
-                elif tool_name == 'hash-generator':
-                    result = process_hash_generator(request)
-                elif tool_name == 'uuid-generator':
-                    result = process_uuid_generator(request)
-                elif tool_name == 'url-shortener':
-                    result = process_url_shortener(request)
-                elif tool_name == 'json-formatter':
-                    result = process_json_formatter(request)
-                else:
-                    result = {'success': False, 'error': 'Tool not found'}
+                try:
+                    from tools.utility_tools import (
+                        process_qr_generator, process_barcode_generator, process_password_generator,
+                        process_hash_generator, process_uuid_generator, process_url_shortener, process_json_formatter
+                    )
+                    
+                    start_time = datetime.now()
+                    
+                    if tool_name == 'qr-code-generator':
+                        result = process_qr_generator(request)
+                    elif tool_name == 'barcode-generator':
+                        result = process_barcode_generator(request)
+                    elif tool_name == 'password-generator':
+                        result = process_password_generator(request)
+                    elif tool_name == 'hash-generator':
+                        result = process_hash_generator(request)
+                    elif tool_name == 'uuid-generator':
+                        result = process_uuid_generator(request)
+                    elif tool_name == 'url-shortener':
+                        result = process_url_shortener(request)
+                    elif tool_name == 'json-formatter':
+                        result = process_json_formatter(request)
+                    else:
+                        result = {'success': False, 'error': 'Tool not found'}
+                    
+                    # Ensure proper response format
+                    if 'success' not in result:
+                        if 'error' in result:
+                            result = {'success': False, 'error': result['error']}
+                        else:
+                            result['success'] = True
+                            
+                except Exception as e:
+                    logger.error(f"Utility tool error for {tool_name}: {str(e)}")
+                    result = {'success': False, 'error': f'Tool processing failed: {str(e)}'}
                     
                 processing_time = (datetime.now() - start_time).total_seconds()
             else:
