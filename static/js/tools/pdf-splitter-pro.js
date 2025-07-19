@@ -224,15 +224,17 @@ class PDFSplitterPro {
         }
     }
     
-    // Global function for downloading files
-    downloadFile(url, filename) {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+}
+
+// Global function for downloading files
+function downloadFile(url, filename) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
     resetUI() {
         this.splitButton.disabled = false;

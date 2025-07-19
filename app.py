@@ -483,9 +483,14 @@ def create_app():
             if not tool_name:
                 return jsonify({'success': False, 'error': 'Tool name is required'}), 400
 
-            # Handle professional PDF tools with real processing
-            if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor']:
+            # Handle all PDF tools with real processing
+            if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-excel', 'pdf-to-powerpoint', 
+                           'word-to-pdf', 'excel-to-pdf', 'powerpoint-to-pdf', 'pdf-password-remover', 
+                           'pdf-watermark', 'pdf-page-extractor']:
                 from tools.pdf_tools import process_pdf_merger, process_pdf_splitter, process_pdf_compressor
+                from tools.pdf_tools_extended import (process_pdf_to_excel, process_pdf_to_powerpoint, 
+                                                    process_word_to_pdf, process_pdf_password_remover,
+                                                    process_pdf_watermark, process_pdf_page_extractor)
                 
                 if tool_name == 'pdf-merger':
                     result = process_pdf_merger(request)
@@ -493,6 +498,22 @@ def create_app():
                     result = process_pdf_splitter(request)
                 elif tool_name == 'pdf-compressor':
                     result = process_pdf_compressor(request)
+                elif tool_name == 'pdf-to-excel':
+                    result = process_pdf_to_excel(request)
+                elif tool_name == 'pdf-to-powerpoint':
+                    result = process_pdf_to_powerpoint(request)
+                elif tool_name == 'word-to-pdf':
+                    result = process_word_to_pdf(request)
+                elif tool_name == 'excel-to-pdf':
+                    result = process_word_to_pdf(request)  # Same as word-to-pdf for now
+                elif tool_name == 'powerpoint-to-pdf':
+                    result = process_word_to_pdf(request)  # Same as word-to-pdf for now
+                elif tool_name == 'pdf-password-remover':
+                    result = process_pdf_password_remover(request)
+                elif tool_name == 'pdf-watermark':
+                    result = process_pdf_watermark(request)
+                elif tool_name == 'pdf-page-extractor':
+                    result = process_pdf_page_extractor(request)
                 
                 return jsonify(result)
                 

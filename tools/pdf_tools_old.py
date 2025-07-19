@@ -1,7 +1,3 @@
-"""
-PDF Tools - Core PDF processing functions
-"""
-
 import os
 import tempfile
 import io
@@ -22,41 +18,39 @@ def process_pdf_merger(request):
     """Process PDF merger tool"""
     try:
         if 'files' not in request.files:
-            return {'success': False, 'error': 'No files provided'}
+            return {'error': 'No files provided'}
         
         files = request.files.getlist('files')
         if len(files) < 2:
-            return {'success': False, 'error': 'At least 2 PDF files are required'}
+            return {'error': 'At least 2 PDF files required'}
         
+        # Validate all files
+        for file in files:
+            if not validate_file_type(file.filename, ['pdf']):
+                return {'error': f'Invalid file type: {file.filename}'}
+        
+        # Create temporary directory for processing
         with tempfile.TemporaryDirectory() as temp_dir:
-            # Save all uploaded files
-            input_paths = []
+            merger = PyPDF2.PdfMerger()
+            
+            # Save and process each file
             for file in files:
-                if not validate_file_type(file.filename, ['pdf']):
-                    return {'success': False, 'error': f'Invalid file type: {file.filename}'}
-                
                 filename = secure_filename(file.filename)
                 filepath = os.path.join(temp_dir, filename)
                 file.save(filepath)
-                input_paths.append(filepath)
-            
-            # Merge PDFs
-            pdf_merger = PyPDF2.PdfMerger()
-            
-            for path in input_paths:
-                with open(path, 'rb') as pdf_file:
-                    pdf_merger.append(pdf_file)
+                
+                # Add to merger
+                merger.append(filepath)
             
             # Generate unique filename with timestamp
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
             output_filename = f'{timestamp}merged_document.pdf'
             output_path = os.path.join(temp_dir, output_filename)
             
-            # Write merged PDF
             with open(output_path, 'wb') as output_file:
-                pdf_merger.write(output_file)
+                merger.write(output_file)
             
-            pdf_merger.close()
+            merger.close()
             
             # Save to uploads directory
             upload_dir = ensure_upload_directory()
@@ -74,19 +68,17 @@ def process_pdf_merger(request):
     
     except Exception as e:
         logging.error(f"PDF merger error: {str(e)}")
-        return {'success': False, 'error': f'Failed to merge PDFs: {str(e)}'}
+        return {'error': 'Failed to merge PDFs'}
 
 def process_pdf_splitter(request):
     """Process PDF splitter tool"""
     try:
         if 'file' not in request.files:
-            return {'success': False, 'error': 'No file provided'}
+            return {'error': 'No file provided'}
         
         file = request.files['file']
-        split_type = request.form.get('split_type', 'pages')
-        
         if not validate_file_type(file.filename, ['pdf']):
-            return {'success': False, 'error': 'Invalid file type'}
+            return {'error': 'Invalid file type'}
         
         with tempfile.TemporaryDirectory() as temp_dir:
             # Save uploaded file
@@ -100,14 +92,76 @@ def process_pdf_splitter(request):
                 total_pages = len(pdf_reader.pages)
                 
                 output_files = []
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
                 
-                if split_type == 'pages':
-                    # Split into individual pages
+                # Get split options
+                split_type = request.form.get('split_type', 'all')
+                
+                if split_type == 'range':
+                    # Split by page range
+                    start_page = max(1, int(request.form.get('start_page', 1))) - 1
+                    end_page = min(total_pages, int(request.form.get('end_page', total_pages))) - 1
+                    
+                    pdf_writer = PyPDF2.PdfWriter()
+                    for page_num in range(start_page, end_page + 1):
+                        pdf_writer.add_page(pdf_reader.pages[page_num])
+                    
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
+                    output_filename = f'{timestamp}pages_{start_page+1}_to_{end_page+1}.pdf'
+                    output_path = os.path.join(temp_dir, output_filename)
+                    
+                    with open(output_path, 'wb') as output_file:
+                        pdf_writer.write(output_file)
+                    
+                    # Save to uploads directory
+                    upload_dir = ensure_upload_directory()
+                    final_path = os.path.join(upload_dir, output_filename)
+                    shutil.copy2(output_path, final_path)
+                    
+                    output_files.append({
+                        'filename': output_filename,
+                        'path': final_path,
+                        'download_url': f'/uploads/{output_filename}',
+                        'pages': f'{start_page+1}-{end_page+1}'
+                    })
+                    
+                elif split_type == 'every':
+                    # Split every N pages
+                    every_n = int(request.form.get('every_n', 2))
+                    part_num = 1
+                    
+                    for start_page in range(0, total_pages, every_n):
+                        end_page = min(start_page + every_n - 1, total_pages - 1)
+                        
+                        pdf_writer = PyPDF2.PdfWriter()
+                        for page_num in range(start_page, end_page + 1):
+                            pdf_writer.add_page(pdf_reader.pages[page_num])
+                        
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
+                        output_filename = f'{timestamp}part_{part_num}.pdf'
+                        output_path = os.path.join(temp_dir, output_filename)
+                        
+                        with open(output_path, 'wb') as output_file:
+                            pdf_writer.write(output_file)
+                        
+                        # Save to uploads directory
+                        upload_dir = ensure_upload_directory()
+                        final_path = os.path.join(upload_dir, output_filename)
+                        shutil.copy2(output_path, final_path)
+                        
+                        output_files.append({
+                            'filename': output_filename,
+                            'path': final_path,
+                            'download_url': f'/uploads/{output_filename}',
+                            'pages': f'{start_page+1}-{end_page+1}'
+                        })
+                        part_num += 1
+                else:
+                    # Split into individual pages (default)
                     for page_num in range(total_pages):
                         pdf_writer = PyPDF2.PdfWriter()
                         pdf_writer.add_page(pdf_reader.pages[page_num])
                         
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
                         output_filename = f'{timestamp}page_{page_num + 1}.pdf'
                         output_path = os.path.join(temp_dir, output_filename)
                         
@@ -126,69 +180,9 @@ def process_pdf_splitter(request):
                             'page': page_num + 1
                         })
                 
-                elif split_type == 'range':
-                    # Split by page range
-                    start_page = int(request.form.get('start_page', 1)) - 1
-                    end_page = int(request.form.get('end_page', total_pages)) - 1
-                    
-                    pdf_writer = PyPDF2.PdfWriter()
-                    for page_num in range(start_page, min(end_page + 1, total_pages)):
-                        pdf_writer.add_page(pdf_reader.pages[page_num])
-                    
-                    output_filename = f'{timestamp}pages_{start_page+1}_to_{end_page+1}.pdf'
-                    output_path = os.path.join(temp_dir, output_filename)
-                    
-                    with open(output_path, 'wb') as output_file:
-                        pdf_writer.write(output_file)
-                    
-                    # Save to uploads directory
-                    upload_dir = ensure_upload_directory()
-                    final_path = os.path.join(upload_dir, output_filename)
-                    shutil.copy2(output_path, final_path)
-                    
-                    output_files.append({
-                        'filename': output_filename,
-                        'path': final_path,
-                        'download_url': f'/uploads/{output_filename}',
-                        'pages': f'{start_page+1}-{end_page+1}'
-                    })
-                
-                elif split_type == 'every':
-                    # Split every N pages
-                    every_n = int(request.form.get('every_n', 1))
-                    part_num = 1
-                    
-                    for start_page in range(0, total_pages, every_n):
-                        pdf_writer = PyPDF2.PdfWriter()
-                        end_page = min(start_page + every_n, total_pages)
-                        
-                        for page_num in range(start_page, end_page):
-                            pdf_writer.add_page(pdf_reader.pages[page_num])
-                        
-                        output_filename = f'{timestamp}part_{part_num}.pdf'
-                        output_path = os.path.join(temp_dir, output_filename)
-                        
-                        with open(output_path, 'wb') as output_file:
-                            pdf_writer.write(output_file)
-                        
-                        # Save to uploads directory
-                        upload_dir = ensure_upload_directory()
-                        final_path = os.path.join(upload_dir, output_filename)
-                        shutil.copy2(output_path, final_path)
-                        
-                        output_files.append({
-                            'filename': output_filename,
-                            'path': final_path,
-                            'download_url': f'/uploads/{output_filename}',
-                            'part': part_num,
-                            'pages': f'{start_page+1}-{end_page}'
-                        })
-                        
-                        part_num += 1
-                
                 return {
                     'success': True,
-                    'message': f'PDF split into {len(output_files)} files',
+                    'message': f'PDF split into {total_pages} pages',
                     'output_files': output_files,
                     'total_pages': total_pages
                 }
@@ -201,11 +195,11 @@ def process_pdf_compressor(request):
     """Process PDF compressor tool"""
     try:
         if 'file' not in request.files:
-            return {'success': False, 'error': 'No file provided'}
+            return {'error': 'No file provided'}
         
         file = request.files['file']
         if not validate_file_type(file.filename, ['pdf']):
-            return {'success': False, 'error': 'Invalid file type'}
+            return {'error': 'Invalid file type'}
         
         compression_level = request.form.get('compression_level', 'medium')
         
