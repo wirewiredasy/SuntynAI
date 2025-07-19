@@ -10,16 +10,25 @@ import tempfile
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
-import fitz  # PyMuPDF
+try:
+    import fitz  # PyMuPDF
+    FITZ_AVAILABLE = True
+except ImportError:
+    FITZ_AVAILABLE = False
+    fitz = None
+
 from PIL import Image
 
 try:
     from PyPDF2 import PdfReader, PdfWriter
+    PYPDF2_AVAILABLE = True
 except ImportError:
     try:
         from pypdf import PdfReader, PdfWriter
+        PYPDF2_AVAILABLE = True
     except ImportError:
         PdfReader = PdfWriter = None
+        PYPDF2_AVAILABLE = False
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
