@@ -223,8 +223,8 @@ function initializeAnimations() {
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (prefersReducedMotion) return;
 
-        const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
-        if (animationElements.length === 0) return;
+        const animationElements = document.querySelectorAll('.hero-animation');
+        // Note: Removed .floating-icon to prevent GSAP targeting non-existent elements
 
         // Safe GSAP animations for existing elements only
         const initSafeGSAPAnimations = () => {
@@ -1131,38 +1131,47 @@ SuntynAI.prototype.createFloatingIcons = function() {
 
 // Enhanced floating icon animation method
 SuntynAI.prototype.initializeFloatingIconAnimations = function() {
+    // Safely handle floating icons only if they exist
     const floatingIcons = document.querySelectorAll('.floating-icon');
     
-    if (floatingIcons.length === 0) return;
+    if (floatingIcons.length === 0) {
+        // No floating icons found, skip animation silently
+        return;
+    }
 
     // Check if GSAP is available
     if (typeof gsap !== 'undefined') {
-        // Set initial state
-        gsap.set('.floating-icon', { y: 0, opacity: 0.15 });
-        
-        // Continuous floating animation
-        floatingIcons.forEach((icon, index) => {
-            gsap.to(icon, {
-                y: -20,
-                repeat: -1,
-                yoyo: true,
-                duration: 1.5 + (index * 0.1), // Varied duration for natural feel
-                ease: "power2.inOut",
-                delay: index * 0.2 // Staggered start
-            });
-            
-            // Add subtle rotation
-            gsap.to(icon, {
-                rotation: 5,
-                repeat: -1,
-                yoyo: true,
-                duration: 2 + (index * 0.1),
-                ease: "power2.inOut",
-                delay: index * 0.3
-            });
+        // Only animate if elements actually exist
+        requestIdleCallback(() => {
+            // Double-check elements still exist
+            const icons = document.querySelectorAll('.floating-icon');
+            if (icons.length > 0) {
+                // Set initial state
+                gsap.set('.floating-icon', { y: 0, opacity: 0.15 });
+                
+                // Continuous floating animation
+                icons.forEach((icon, index) => {
+                    gsap.to(icon, {
+                        y: -20,
+                        repeat: -1,
+                        yoyo: true,
+                        duration: 1.5 + (index * 0.1),
+                        ease: "power2.inOut",
+                        delay: index * 0.2
+                    });
+                    
+                    gsap.to(icon, {
+                        rotation: 5,
+                        repeat: -1,
+                        yoyo: true,
+                        duration: 2 + (index * 0.1),
+                        ease: "power2.inOut",
+                        delay: index * 0.3
+                    });
+                });
+                console.log('🌟 Enhanced floating icon animations started');
+            }
         });
-        
-        console.log('🌟 Enhanced floating icon animations started');
     } else {
         // CSS fallback animation
         floatingIcons.forEach((icon, index) => {
