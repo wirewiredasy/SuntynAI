@@ -156,7 +156,11 @@ def create_app():
     # Routes
     @app.route('/')
     def index():
-        return render_template('index.html', categories=TOOL_CATEGORIES)
+        # Get PDF tools for the main page
+        from pdf_tools import get_pdf_tools, get_tool_categories
+        tools = get_pdf_tools()
+        categories = get_tool_categories()
+        return render_template('index.html', tools=tools, categories=categories, pdf_tools=True)
 
     @app.route('/service-worker.js')
     def service_worker():

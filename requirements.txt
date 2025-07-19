@@ -75,3 +75,15 @@ flask
 flask-sqlalchemy
 gunicorn
 psycopg2-binary
+camelot-py
+docx2pdf
+fpdf2
+pdf2docx
+pdf2image
+pdfminer.six
+pdfplumber
+pikepdf
+pymupdf
+pytesseract
+reportlab
+tabula-py

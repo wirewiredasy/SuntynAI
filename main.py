@@ -1,4 +1,9 @@
-from app import app  # noqa: F401
+from app import app
+from pdf_tools import get_pdf_tools, get_tool_categories  # Import PDF toolkit
+from routes.pdf_routes import pdf_bp  # Import PDF routes blueprint
+
+# Register PDF routes blueprint
+app.register_blueprint(pdf_bp)
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash

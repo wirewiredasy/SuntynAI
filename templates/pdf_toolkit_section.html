@@ -1,0 +1,430 @@
+<!-- Professional PDF Toolkit Section -->
+<section class="pdf-toolkit-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <div class="section-badge">
+                    <span class="badge bg-primary bg-gradient">
+                        <i class="ti ti-file-text me-2"></i>
+                        Professional PDF Toolkit
+                    </span>
+                </div>
+                <h2 class="display-4 fw-bold mb-3">
+                    <span class="gradient-text">25+ PDF Tools</span> 
+                    Like TinyWow & ILovePDF
+                </h2>
+                <p class="lead text-muted mb-4">
+                    Merge, split, compress, convert, and secure your PDFs with professional-grade tools. 
+                    Advanced processing capabilities with beautiful, responsive interfaces.
+                </p>
+            </div>
+        </div>
+
+        <!-- PDF Tool Categories -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="category-filter-tabs">
+                    <button class="category-tab active" data-category="all">
+                        <i class="ti ti-apps"></i>
+                        All Tools ({{ tools|length }})
+                    </button>
+                    {% for category in categories %}
+                    {% if category.id != 'all' %}
+                    <button class="category-tab" data-category="{{ category.id }}">
+                        <i class="ti ti-{{ category.id == 'merge' and 'files' or 'file-text' }}"></i>
+                        {{ category.name }} ({{ category.count }})
+                    </button>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF Tools Grid -->
+        <div class="row g-4" id="pdf-tools-grid">
+            {% for tool in tools %}
+            <div class="col-lg-4 col-md-6" data-category="{{ tool.category }}">
+                <div class="pdf-tool-card {{ tool.popular and 'popular' or '' }}">
+                    {% if tool.popular %}
+                    <div class="popular-badge">
+                        <i class="ti ti-star-filled"></i>
+                        Popular
+                    </div>
+                    {% endif %}
+                    
+                    <div class="tool-icon">
+                        <i class="{{ tool.icon }}"></i>
+                        <div class="icon-glow"></div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <h3 class="tool-title">{{ tool.name }}</h3>
+                        <p class="tool-description">{{ tool.description }}</p>
+                        
+                        <div class="tool-features">
+                            {% if tool.id == 'pdf-merger' %}
+                            <span class="feature-tag">Multi-file Support</span>
+                            <span class="feature-tag">Drag & Drop</span>
+                            {% elif tool.id == 'pdf-compressor' %}
+                            <span class="feature-tag">4 Compression Levels</span>
+                            <span class="feature-tag">Quality Preview</span>
+                            {% elif tool.id == 'pdf-splitter' %}
+                            <span class="feature-tag">Page Ranges</span>
+                            <span class="feature-tag">Batch Processing</span>
+                            {% elif tool.id == 'pdf-to-word' %}
+                            <span class="feature-tag">OCR Support</span>
+                            <span class="feature-tag">Layout Preserved</span>
+                            {% else %}
+                            <span class="feature-tag">Fast Processing</span>
+                            <span class="feature-tag">High Quality</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="tool-actions">
+                        <a href="/pdf/tool/{{ tool.id }}" class="btn-tool-primary">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                        
+                        <button class="btn-tool-demo" onclick="demoTool('{{ tool.id }}')">
+                            <i class="ti ti-play"></i>
+                            Demo
+                        </button>
+                    </div>
+                    
+                    <div class="tool-stats">
+                        <div class="stat">
+                            <span class="stat-value">{{ range(100, 999) | random }}K+</span>
+                            <span class="stat-label">Files Processed</span>
+                        </div>
+                        <div class="stat-rating">
+                            <div class="stars">
+                                <i class="ti ti-star-filled"></i>
+                                <i class="ti ti-star-filled"></i>
+                                <i class="ti ti-star-filled"></i>
+                                <i class="ti ti-star-filled"></i>
+                                <i class="ti ti-star-filled"></i>
+                            </div>
+                            <span>4.9</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Load More Button -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <button class="btn btn-outline-primary btn-lg load-more-tools" style="display: none;">
+                    <span class="spinner-border spinner-border-sm me-2" style="display: none;"></span>
+                    Load More Tools
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PDF Tools Demo Modal -->
+<div class="modal fade" id="toolDemoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Tool Demo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="demo-container">
+                    <div class="demo-preview">
+                        <div class="demo-screen">
+                            <img src="/static/images/tool-demo-placeholder.svg" alt="Tool Demo" class="img-fluid">
+                        </div>
+                        <div class="demo-controls">
+                            <button class="btn btn-primary">
+                                <i class="ti ti-play"></i>
+                                Play Demo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* PDF Toolkit Styles */
+.pdf-toolkit-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+}
+
+.section-badge .badge {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+}
+
+.category-filter-tabs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.category-tab {
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-tab:hover,
+.category-tab.active {
+    background: #007bff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pdf-tool-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    height: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pdf-tool-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.pdf-tool-card.popular {
+    border: 2px solid #ffd700;
+}
+
+.popular-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #333;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.tool-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.tool-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.icon-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0,123,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pdf-tool-card:hover .icon-glow {
+    opacity: 1;
+}
+
+.tool-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.tool-description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.tool-features {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.feature-tag {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.tool-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-tool-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-tool-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #003d82);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-tool-demo {
+    border: 2px solid #007bff;
+    background: transparent;
+    color: #007bff;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-tool-demo:hover {
+    background: #007bff;
+    color: white;
+}
+
+.tool-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: #333;
+    display: block;
+    font-size: 0.875rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.stat-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stars {
+    color: #ffd700;
+}
+
+.stars i {
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .category-filter-tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .category-tab {
+        min-width: 200px;
+        justify-content: center;
+    }
+    
+    .tool-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+// PDF Tools functionality
+function demoTool(toolId) {
+    const modal = new bootstrap.Modal(document.getElementById('toolDemoModal'));
+    modal.show();
+}
+
+// Category filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    const toolCards = document.querySelectorAll('[data-category]');
+    
+    categoryTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const category = this.dataset.category;
+            
+            // Update active tab
+            categoryTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter tools
+            toolCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.5s ease';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+
+// Animation keyframes
+const style = document.createElement('style');
+style.textContent = `
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+`;
+document.head.appendChild(style);
+</script>
