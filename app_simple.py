@@ -170,5 +170,8 @@ def tool_page(tool_name):
 
 # PDF routes already registered above
 
+# For Gunicorn compatibility
+application = app
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
