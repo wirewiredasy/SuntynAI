@@ -93,65 +93,8 @@ def create_app():
         from models import User
         return User.query.get(int(user_id))
 
-    # Tool categories configuration
-    TOOL_CATEGORIES = {
-        'PDF Tools': {
-            'icon': 'file-text',
-            'color': 'danger',
-            'tools': [
-                'pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-word',
-                'pdf-to-excel', 'pdf-to-powerpoint', 'word-to-pdf', 'excel-to-pdf',
-                'powerpoint-to-pdf', 'pdf-password-remover', 'pdf-watermark',
-                'pdf-page-extractor', 'pdf-converter', 'pdf-editor'
-            ]
-        },
-        'Image Tools': {
-            'icon': 'photo',
-            'color': 'primary',
-            'tools': [
-                'image-compressor', 'image-resizer', 'image-converter', 'background-remover',
-                'image-cropper', 'image-enhancer', 'watermark-remover', 'meme-generator',
-                'image-filter', 'photo-editor', 'collage-maker', 'image-optimizer'
-            ]
-        },
-        'Video/Audio Tools': {
-            'icon': 'video',
-            'color': 'success',
-            'tools': [
-                'video-compressor', 'video-converter', 'audio-converter', 'video-trimmer',
-                'audio-trimmer', 'video-merger', 'audio-merger', 'video-to-audio',
-                'audio-to-video', 'video-editor', 'audio-editor', 'screen-recorder'
-            ]
-        },
-        'Finance Tools': {
-            'icon': 'calculator',
-            'color': 'warning',
-            'tools': [
-                'emi-calculator', 'gst-calculator', 'currency-converter', 'loan-calculator',
-                'investment-calculator', 'tax-calculator', 'profit-calculator',
-                'expense-tracker', 'budget-planner', 'salary-calculator'
-            ]
-        },
-        'Government Tools': {
-            'icon': 'shield-check',
-            'color': 'info',
-            'tools': [
-                'aadhaar-validator', 'pan-validator', 'gst-validator', 'vehicle-number-validator',
-                'passport-checker', 'driving-license-validator', 'voter-id-checker'
-            ]
-        },
-        'Utility Tools': {
-            'icon': 'tool',
-            'color': 'dark',
-            'tools': [
-                'qr-code-generator', 'barcode-generator', 'url-shortener'
-            ]
-        },
-
-    }
-
-    # Store categories in app config
-    app.config['TOOL_CATEGORIES'] = TOOL_CATEGORIES
+    # PDF Toolkit Configuration - Clean and focused
+    app.config['PDF_TOOLKIT'] = True
 
     # Routes
     @app.route('/')
@@ -184,67 +127,22 @@ def create_app():
     def faq():
         return render_template('faq.html')
 
+    # Clean PDF toolkit routes - redirect old paths
     @app.route('/all-tools')
     def all_tools():
-        return render_template('all_tools.html', categories=TOOL_CATEGORIES)
+        return redirect(url_for('index'))
 
     @app.route('/category/<category_name>')
     def category(category_name):
-        if category_name not in TOOL_CATEGORIES:
-            flash('Category not found', 'error')
-            return redirect(url_for('index'))
-        return render_template('category.html', 
-                             category_name=category_name, 
-                             category=TOOL_CATEGORIES[category_name])
+        return redirect(url_for('index'))
 
     @app.route('/tool/<tool_name>')
     def tool_page(tool_name):
-        # Find which category this tool belongs to
-        tool_category = None
-        for category, data in TOOL_CATEGORIES.items():
-            if tool_name in data['tools']:
-                tool_category = category
-                break
-
-        if not tool_category:
-            flash(f'Tool "{tool_name}" not found. Please check the tool name or browse available tools.', 'error')
-            return redirect(url_for('all_tools'))
-
-        # Check for professional templates first (prioritize these)
-        import os
-        pro_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-pro.html')
-        professional_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-professional.html')
-        v2_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-v2.html')
-        template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}.html')
-
-        if os.path.exists(pro_template_path):
-            return render_template(f'tools/{tool_name}-pro.html', 
-                                 tool_name=tool_name,
-                                 category=tool_category,
-                                 category_data=TOOL_CATEGORIES[tool_category])
-        elif os.path.exists(professional_template_path):
-            return render_template(f'tools/{tool_name}-professional.html', 
-                                 tool_name=tool_name,
-                                 category=tool_category,
-                                 category_data=TOOL_CATEGORIES[tool_category])
-        elif os.path.exists(v2_template_path):
-            return render_template(f'tools/{tool_name}-v2.html', 
-                                 tool_name=tool_name,
-                                 category=tool_category,
-                                 category_data=TOOL_CATEGORIES[tool_category])
-        elif os.path.exists(template_path):
-            return render_template(f'tools/{tool_name}.html', 
-                                 tool_name=tool_name,
-                                 category=tool_category,
-                                 category_data=TOOL_CATEGORIES[tool_category])
+        # Redirect to PDF toolkit if it's a PDF tool, otherwise to home
+        if 'pdf' in tool_name.lower():
+            return redirect(f'/pdf/tool/{tool_name}')
         else:
-            # Use generic template with tool-specific data
-            tool_display_name = tool_name.replace('-', ' ').title()
-            return render_template('tools/default.html', 
-                                 tool_name=tool_name,
-                                 tool_display_name=tool_display_name,
-                                 category=tool_category,
-                                 category_data=TOOL_CATEGORIES[tool_category])
+            return redirect(url_for('index'))
 
     @app.route('/dashboard')
     @login_required
