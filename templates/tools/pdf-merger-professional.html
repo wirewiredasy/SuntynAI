@@ -245,11 +245,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/tools/pdf-merger.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const pdfMerger = new PDFMergerPro();
-    pdfMerger.init();
-});
-</script>
+<script src="{{ url_for('static', filename='js/tools/pdf-merger-working.js') }}"></script>
 {% endblock %}
