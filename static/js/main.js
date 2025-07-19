@@ -218,13 +218,19 @@ function initializeAnimations() {
 
         // Load GSAP only when needed
         if (typeof gsap !== 'undefined') {
-            gsap.from('.floating-icon', {
-                duration: 1,
-                y: 10,
-                opacity: 0,
-                stagger: 0.1,
-                ease: "power2.out"
-            });
+            // Check if floating-icon elements exist before animating
+            const floatingIcons = document.querySelectorAll('.floating-icon');
+            if (floatingIcons.length > 0) {
+                gsap.from('.floating-icon', {
+                    duration: 1,
+                    y: 10,
+                    opacity: 0,
+                    stagger: 0.1,
+                    ease: "power2.out"
+                });
+            }
+            
+            console.log('✨ GSAP animations initialized');
         } else {
             // Fallback CSS animations
             animationElements.forEach((el, i) => {
@@ -626,7 +632,8 @@ function formatFileSize(bytes) {
 }
 
 // Service Worker Registration (optimized)
-    if ('serviceWorker' in navigator) {
+    // Enhanced Service Worker registration with environment detection
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
                 .then((registration) => {
@@ -634,13 +641,12 @@ function formatFileSize(bytes) {
                     console.log('✅ Service Worker registered successfully');
                 })
                 .catch((error) => {
-                    console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
-                    console.info('Service Worker not available');
+                    // Only warn in production, silently fail in development
+                    if (location.hostname !== 'localhost' && !location.hostname.includes('replit.dev')) {
+                        console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
+                    }
                 });
         });
-    } else {
-        console.warn('⚠️ Service Worker registration failed, continuing without PWA features');
-        console.info('Service Worker not available');
     }
 
 function SuntynAI() {

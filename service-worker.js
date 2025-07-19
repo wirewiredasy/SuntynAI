@@ -1,5 +1,5 @@
-// Service Worker for Suntyn AI
-const CACHE_NAME = 'suntyn-ai-v1.0.0';
+// Service Worker for Suntyn AI - Optimized for Development and Production
+const CACHE_NAME = 'suntyn-ai-v1.0.1';
 const urlsToCache = [
   '/',
   '/static/css/main.css',
@@ -8,11 +8,25 @@ const urlsToCache = [
   '/static/js/theme.js',
   '/static/js/performance-optimizer.js',
   '/static/js/lazy-loader.js',
-  '/manifest.json',
+  '/manifest.json'
+];
+
+// External resources to cache only in production
+const externalResources = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
-  'https://cdn.jsdelivr.net/npm/@tabler/icons@latest/icons-sprite.svg'
+  'https://cdn.jsdelivr.net/npm/@tabler/icons@latest/icons-sprite.svg',
+  'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
+  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js',
+  'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js'
 ];
+
+// Determine if we're in production
+const isProduction = !self.location.hostname.includes('localhost') && 
+                     !self.location.hostname.includes('replit.dev');
+
+// Use appropriate cache list
+const finalUrlsToCache = isProduction ? [...urlsToCache, ...externalResources] : urlsToCache;
 
 // Install event
 self.addEventListener('install', event => {
@@ -20,10 +34,14 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('✅ Service Worker: Cache opened');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(finalUrlsToCache);
       })
       .catch(err => {
         console.warn('⚠️ Service Worker: Cache failed', err);
+        // Fallback: Cache only essential resources
+        return caches.open(CACHE_NAME).then(cache => {
+          return cache.addAll(urlsToCache.slice(0, 4)); // Cache first 4 essential files
+        });
       })
   );
   self.skipWaiting();
