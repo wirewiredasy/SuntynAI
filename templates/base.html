@@ -701,19 +701,7 @@
         (function() {
             const startTime = performance.now();
 
-            // Safe service worker registration
-            if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-                window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('✅ Service Worker registered successfully');
-                    })
-                    .catch(error => {
-                        // Silently handle service worker errors
-                        console.info('Service Worker not available');
-                    });
-                });
-            }
+            // Service Worker registration handled in main.js - avoiding duplicate registration
 
             // Performance monitoring
             window.addEventListener('load', function() {

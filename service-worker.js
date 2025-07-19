@@ -21,29 +21,42 @@ const externalResources = [
   'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js'
 ];
 
-// Determine if we're in production
+// Enhanced environment detection for Replit
 const isProduction = !self.location.hostname.includes('localhost') && 
-                     !self.location.hostname.includes('replit.dev');
+                     !self.location.hostname.includes('replit.dev') &&
+                     !self.location.hostname.includes('replit.app') &&
+                     !self.location.hostname.includes('repl.co') &&
+                     self.location.protocol === 'https:';
 
 // Use appropriate cache list
 const finalUrlsToCache = isProduction ? [...urlsToCache, ...externalResources] : urlsToCache;
 
-// Install event
+// Install event with enhanced error handling
 self.addEventListener('install', event => {
+  console.log('🔧 Service Worker installing...');
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('✅ Service Worker: Cache opened');
-        return cache.addAll(finalUrlsToCache);
+        // Try to cache all resources, fallback to essential only
+        return cache.addAll(finalUrlsToCache)
+          .then(() => {
+            console.log('✅ All resources cached successfully');
+          })
+          .catch(err => {
+            console.warn('⚠️ Some resources failed to cache, trying essential only:', err.message);
+            // Fallback: Cache only essential local resources
+            return cache.addAll(urlsToCache.slice(0, 4));
+          });
       })
       .catch(err => {
-        console.warn('⚠️ Service Worker: Cache failed', err);
-        // Fallback: Cache only essential resources
-        return caches.open(CACHE_NAME).then(cache => {
-          return cache.addAll(urlsToCache.slice(0, 4)); // Cache first 4 essential files
-        });
+        console.error('❌ Service Worker: Cache open failed:', err);
+        // Don't fail installation, just log the error
+        return Promise.resolve();
       })
   );
+  
   self.skipWaiting();
 });
 

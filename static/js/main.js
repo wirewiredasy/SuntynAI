@@ -683,29 +683,64 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Service Worker Registration (optimized)
-    // Enhanced Service Worker registration with proper environment detection
-    if ('serviceWorker' in navigator) {
-        // Check if we're on HTTPS or localhost (where Service Workers work)
-        const isSecureContext = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname.includes('replit.dev');
-        
-        if (isSecureContext) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then((registration) => {
-                        console.log('✅ PWA enabled');
-                        console.log('✅ Service Worker registered successfully');
-                    })
-                    .catch((error) => {
-                        // Silently handle development environment errors
-                        console.log('Service Worker registration failed silently');
+// Service Worker Registration - Optimized for Replit
+if ('serviceWorker' in navigator) {
+    // Enhanced environment detection for Replit
+    const isSecureContext = location.protocol === 'https:' || 
+                           location.hostname === 'localhost' || 
+                           location.hostname.includes('replit.dev') ||
+                           location.hostname.includes('replit.app') ||
+                           location.hostname.includes('repl.co');
+    
+    console.log('🔧 Environment check:', {
+        protocol: location.protocol,
+        hostname: location.hostname,
+        isSecure: isSecureContext
+    });
+    
+    if (isSecureContext) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js', {
+                scope: '/',
+                updateViaCache: 'none'
+            })
+            .then((registration) => {
+                console.log('✅ Service Worker registered successfully:', registration.scope);
+                console.log('✅ PWA features enabled');
+                
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated') {
+                                console.log('🔄 Service Worker updated');
+                            }
+                        });
+                    }
+                });
+            })
+            .catch((error) => {
+                console.warn('⚠️ Service Worker registration failed:', error.message);
+                console.info('Continuing without PWA features');
+                
+                // Fallback: Enable basic caching
+                if ('caches' in window) {
+                    caches.open('suntyn-fallback-v1').then(cache => {
+                        cache.addAll([
+                            '/static/css/main.css',
+                            '/static/js/main.js'
+                        ]).catch(err => console.log('Cache fallback failed'));
                     });
+                }
             });
-        } else {
-            // Not secure context, skip Service Worker
-            console.log('Service Worker requires HTTPS or localhost');
-        }
+        });
+    } else {
+        console.info('Service Worker requires HTTPS - current protocol:', location.protocol);
     }
+} else {
+    console.info('Service Worker not supported in this browser');
+}
 
 function SuntynAI() {
     this.isInitialized = false;
@@ -1502,19 +1537,7 @@ const app = new SuntynAI();
 window.SuntynAI = SuntynAI;
 window.app = app;
 
-// Register service worker for PWA - deferred for better performance
-        if ('serviceWorker' in navigator && location.protocol === 'https:') {
-            // Defer service worker registration to avoid blocking DOM
-            setTimeout(() => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('🎯 Service Worker registered successfully');
-                    })
-                    .catch(function(error) {
-                        // Silent fail to avoid console spam and performance impact
-                    });
-            }, 2000);
-        }
+// Service Worker registration handled above - removed duplicate
 /**
  * The code has been updated by converting the class to function based approach, fixing the syntax errors and implementing error handling.
  */
