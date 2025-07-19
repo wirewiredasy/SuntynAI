@@ -1,33 +1,93 @@
 // Professional Toolkit JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // Professional Category Tab Switching
+    const navTabs = document.querySelectorAll('.nav-tab-pro');
+    const tabContents = document.querySelectorAll('.tab-content-pro');
 
-    // Category Tab Switching
-    const tabButtons = document.querySelectorAll('.nav-tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabButtons.forEach(button => {
+    navTabs.forEach(button => {
         button.addEventListener('click', function() {
             const targetTab = this.dataset.tab;
 
             // Remove active class from all buttons and contents
-            tabButtons.forEach(btn => btn.classList.remove('active'));
+            navTabs.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
 
             // Add active class to clicked button and corresponding content
             this.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
+            const targetContent = document.getElementById(targetTab);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            
+            // Track category switch
+            console.log(`Switched to category: ${targetTab}`);
         });
     });
 
-    // Tool Card Hover Effects
-    const toolCards = document.querySelectorAll('.tool-card');
-    toolCards.forEach(card => {
+    // Subcategory Tab Switching
+    const subTabs = document.querySelectorAll('.sub-tab-pro');
+    const toolGroups = document.querySelectorAll('.tool-group-pro');
+
+    subTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetGroup = this.dataset.group;
+            const parentTab = this.closest('.tab-content-pro');
+
+            // Update active sub-tab within parent category
+            const parentSubTabs = parentTab.querySelectorAll('.sub-tab-pro');
+            parentSubTabs.forEach(st => st.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show/hide tool groups
+            const parentToolGroups = parentTab.querySelectorAll('.tool-group-pro');
+            parentToolGroups.forEach(group => {
+                group.classList.remove('active');
+                if (targetGroup === 'all-pdf' || group.dataset.category === targetGroup) {
+                    setTimeout(() => {
+                        group.classList.add('active');
+                    }, 150);
+                }
+            });
+            
+            console.log(`Filtered tools by: ${targetGroup}`);
+        });
+    });
+
+    // Professional Tool Card Interactions
+    const toolCardsPro = document.querySelectorAll('.tool-card-pro');
+    toolCardsPro.forEach((card, index) => {
+        // Add stagger animation
+        card.style.setProperty('--stagger', index);
+        card.classList.add('stagger-animation');
+        
+        // Enhanced hover effects
         card.addEventListener('mouseenter', function() {
-            this.classList.add('hovered');
+            const icon = this.querySelector('.tool-icon-pro');
+            if (icon) {
+                icon.style.transform = 'scale(1.1) rotate(5deg)';
+            }
+            
+            // Track hover for analytics
+            const toolName = this.querySelector('h4').textContent;
+            console.log(`Tool hovered: ${toolName}`);
         });
 
         card.addEventListener('mouseleave', function() {
-            this.classList.remove('hovered');
+            const icon = this.querySelector('.tool-icon-pro');
+            if (icon) {
+                icon.style.transform = '';
+            }
+        });
+        
+        // Click tracking
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('.btn-tool-pro')) {
+                const toolLink = this.querySelector('.btn-tool-pro');
+                if (toolLink) {
+                    window.location.href = toolLink.href;
+                }
+            }
         });
     });
 
@@ -60,26 +120,54 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.animationDelay = `${index * 0.5}s`;
     });
 
-    // Tool Search Functionality
-    const searchInput = document.getElementById('toolSearch');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const toolCards = document.querySelectorAll('.tool-card');
+    // Professional Search Functionality
+    const heroSearch = document.getElementById('heroSearch');
+    if (heroSearch) {
+        let searchTimeout;
+        
+        heroSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = this.value.toLowerCase().trim();
+                filterToolsBySearch(searchTerm);
+            }, 300);
+        });
 
-            toolCards.forEach(card => {
-                const toolName = card.querySelector('h4').textContent.toLowerCase();
-                const toolDesc = card.querySelector('p').textContent.toLowerCase();
-
-                if (toolName.includes(searchTerm) || toolDesc.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    card.classList.add('fade-in');
-                } else {
-                    card.style.display = 'none';
-                    card.classList.remove('fade-in');
+        // Search button functionality
+        const searchBtn = document.querySelector('.search-btn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = heroSearch.value.toLowerCase().trim();
+                if (searchTerm) {
+                    filterToolsBySearch(searchTerm);
+                    // Scroll to results
+                    document.getElementById('categories').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
             });
+        }
+    }
+
+    function filterToolsBySearch(searchTerm) {
+        const toolCards = document.querySelectorAll('.tool-card-pro');
+        let visibleCount = 0;
+        
+        toolCards.forEach(card => {
+            const toolName = card.querySelector('h4').textContent.toLowerCase();
+            const toolDesc = card.querySelector('p').textContent.toLowerCase();
+            
+            if (searchTerm === '' || toolName.includes(searchTerm) || toolDesc.includes(searchTerm)) {
+                card.style.display = 'block';
+                card.style.animation = 'fadeInUp 0.6s ease forwards';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         });
+        
+        console.log(`Search results: ${visibleCount} tools found for "${searchTerm}"`);
     }
 
     // Initialize Particles Animation
