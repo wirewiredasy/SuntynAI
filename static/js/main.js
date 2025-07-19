@@ -1349,14 +1349,22 @@ const app = new SuntynAI();
 window.SuntynAI = SuntynAI;
 window.app = app;
 
-// Register service worker for PWA features
-            if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(() => console.log('✅ Service Worker registered'))
-                    .catch(() => console.log('⚠️ Service Worker registration failed, continuing without PWA features'));
-            } else {
-                console.log('Service Worker not available (requires HTTPS)');
-            }
+// Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(function(registration) {
+                    console.log('🎯 Service Worker registered successfully:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.info('⚠️ Service Worker registration failed, continuing without PWA features');
+                    // Register a minimal service worker for basic caching
+                    if ('caches' in window) {
+                        caches.open('suntyn-v1').then(cache => {
+                            cache.addAll(['/static/css/main.css', '/static/js/main.js']);
+                        });
+                    }
+                });
+        }
 /**
  * The code has been updated by converting the class to function based approach, fixing the syntax errors and implementing error handling.
  */
