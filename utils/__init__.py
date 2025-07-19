@@ -1,1 +1,1 @@
-# Utils package
+# Image and PDF processing utilities

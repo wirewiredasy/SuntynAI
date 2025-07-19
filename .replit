@@ -3,7 +3,7 @@ run = "python app.py"
 
 [nix]
 channel = "stable-24_05"
-packages = ["cargo", "espeak-ng", "freetype", "glibcLocales", "gumbo", "harfbuzz", "imagemagickBig", "jbig2dec", "jre", "lcms2", "libGL", "libGLU", "libiconv", "libimagequant", "libjpeg", "libjpeg_turbo", "libpng", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "openssl", "pkg-config", "poppler_utils", "postgresql", "qpdf", "rustc", "swig", "tcl", "tesseract", "tk", "which", "xcbuild", "zlib"]
+packages = ["cargo", "espeak-ng", "freetype", "glibcLocales", "gumbo", "harfbuzz", "imagemagickBig", "jbig2dec", "jre", "lcms2", "libGL", "libGLU", "libiconv", "libimagequant", "libjpeg", "libjpeg_turbo", "libpng", "libtiff", "libwebp", "libxcrypt", "mupdf", "oneDNN", "openjpeg", "openssl", "pkg-config", "poppler_utils", "postgresql", "qpdf", "re2", "rustc", "swig", "tcl", "tesseract", "tk", "which", "xcbuild", "zlib"]
 
 [deployment]
 deploymentTarget = "autoscale"

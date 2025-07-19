@@ -86,3 +86,9 @@ sqlalchemy
 flask
 flask-sqlalchemy
 werkzeug
+numpy
+opencv-python
+piexif
+rembg
+scikit-learn
+onnxruntime
