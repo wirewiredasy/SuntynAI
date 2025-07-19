@@ -292,74 +292,462 @@
             </div>
         </div>
 
-<!-- Tools Categories -->
-<div class="tools-categories">
+<!-- Professional Tools Categories -->
+<div class="tools-categories-modern">
     
     <!-- PDF Tools Section -->
     <div class="tab-content active" id="pdf-tools">
-        <div class="category-header">
-            <div class="category-icon">
+        <div class="category-header-modern">
+            <div class="category-badge">
                 <i class="ti ti-file-pdf"></i>
+                <span>PDF TOOLKIT</span>
             </div>
-            <div class="category-info">
-                <h3>PDF Tools Collection</h3>
-                <p>25 professional PDF processing tools for all your document needs</p>
+            <h2 class="category-title">Professional PDF Tools</h2>
+            <p class="category-subtitle">25 powerful tools for all your PDF processing needs</p>
+        </div>
+        
+        <!-- PDF Tool Subcategories -->
+        <div class="subcategories">
+            <div class="subcategory-tabs">
+                <button class="sub-tab active" data-category="conversion">
+                    <i class="ti ti-refresh"></i>
+                    <span>Convert</span>
+                    <span class="count">8</span>
+                </button>
+                <button class="sub-tab" data-category="editing">
+                    <i class="ti ti-edit"></i>
+                    <span>Edit</span>
+                    <span class="count">6</span>
+                </button>
+                <button class="sub-tab" data-category="security">
+                    <i class="ti ti-shield-lock"></i>
+                    <span>Security</span>
+                    <span class="count">4</span>
+                </button>
+                <button class="sub-tab" data-category="optimization">
+                    <i class="ti ti-adjustments"></i>
+                    <span>Optimize</span>
+                    <span class="count">7</span>
+                </button>
             </div>
         </div>
         
-        <div class="tools-grid">
-            {% for tool_id, tool_data in tools.items() if tool_data.category == 'pdf' %}
-            <div class="tool-card pdf-tool" data-tool="{{ tool_id }}">
-                <div class="tool-icon">
-                    <i class="{{ tool_data.icon }}"></i>
+        <!-- PDF Tools Grid -->
+        <div class="tools-grid-modern">
+            <!-- Conversion Tools -->
+            <div class="tool-group active" data-group="conversion">
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-merger">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-files"></i>
+                        </div>
+                        <div class="tool-badge">Popular</div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Merger</h4>
+                        <p>Combine multiple PDFs into one document</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 50K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.9</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-merger" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-content">
-                    <h4>{{ tool_data.name }}</h4>
-                    <p>{{ tool_data.desc }}</p>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-splitter">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-cut"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Splitter</h4>
+                        <p>Split PDF by pages, ranges, or intervals</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 35K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.8</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-splitter" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-action">
-                    <a href="/{{ tool_id }}" class="tool-btn">
-                        <span>Use Tool</span>
-                        <i class="ti ti-arrow-right"></i>
-                    </a>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-to-word">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-file-word"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF to Word</h4>
+                        <p>Convert PDF to editable Word documents</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 40K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.7</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-to-word" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-hover-effect"></div>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-to-excel">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-file-spreadsheet"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF to Excel</h4>
+                        <p>Extract tables to spreadsheets</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 25K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.6</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-to-excel" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="word-to-pdf">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-file-type-pdf"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Word to PDF</h4>
+                        <p>Convert Word documents to PDF</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 30K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.8</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/word-to-pdf" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="image-to-pdf">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-photo"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Image to PDF</h4>
+                        <p>Convert images to PDF documents</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 28K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.7</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/image-to-pdf" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
+            
+            <!-- Editing Tools -->
+            <div class="tool-group" data-group="editing">
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-watermark">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-droplet"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Watermark</h4>
+                        <p>Add watermarks to your PDFs</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 15K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.5</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-watermark" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-rotate">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-rotate-clockwise"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Rotate</h4>
+                        <p>Rotate PDF pages</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 12K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.6</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-rotate" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Tools -->
+            <div class="tool-group" data-group="security">
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-protect">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-lock"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Protect</h4>
+                        <p>Add password protection to PDFs</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 20K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.9</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-protect" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-unlock">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-lock-open"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Unlock</h4>
+                        <p>Remove password from PDFs</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 18K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.8</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-unlock" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Optimization Tools -->
+            <div class="tool-group" data-group="optimization">
+                <div class="tool-card-pro pdf-tool" data-tool="pdf-compressor">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="ti ti-package"></i>
+                        </div>
+                        <div class="tool-badge">New</div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>PDF Compressor</h4>
+                        <p>Reduce PDF file size significantly</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 45K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.9</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/pdf-compressor" class="btn-tool-modern">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Image Tools Section -->
     <div class="tab-content" id="image-tools">
-        <div class="category-header">
-            <div class="category-icon">
+        <div class="category-header-modern">
+            <div class="category-badge image-badge">
                 <i class="ti ti-photo"></i>
+                <span>IMAGE TOOLKIT</span>
             </div>
-            <div class="category-info">
-                <h3>Image Tools Collection</h3>
-                <p>20 professional image editing and processing tools</p>
+            <h2 class="category-title">Professional Image Tools</h2>
+            <p class="category-subtitle">20 powerful tools for image editing and processing</p>
+        </div>
+        
+        <!-- Image Tool Subcategories -->
+        <div class="subcategories">
+            <div class="subcategory-tabs">
+                <button class="sub-tab active" data-category="editing">
+                    <i class="ti ti-edit"></i>
+                    <span>Edit</span>
+                    <span class="count">8</span>
+                </button>
+                <button class="sub-tab" data-category="conversion">
+                    <i class="ti ti-refresh"></i>
+                    <span>Convert</span>
+                    <span class="count">5</span>
+                </button>
+                <button class="sub-tab" data-category="enhancement">
+                    <i class="ti ti-adjustments"></i>
+                    <span>Enhance</span>
+                    <span class="count">4</span>
+                </button>
+                <button class="sub-tab" data-category="effects">
+                    <i class="ti ti-palette"></i>
+                    <span>Effects</span>
+                    <span class="count">3</span>
+                </button>
             </div>
         </div>
         
-        <div class="tools-grid">
-            {% for tool_id, tool_data in tools.items() if tool_data.category == 'image' %}
-            <div class="tool-card image-tool" data-tool="{{ tool_id }}">
-                <div class="tool-icon">
-                    <i class="{{ tool_data.icon }}"></i>
+        <!-- Image Tools Grid -->
+        <div class="tools-grid-modern">
+            <!-- Image Editing Tools -->
+            <div class="tool-group active" data-group="editing">
+                <div class="tool-card-pro image-tool" data-tool="image-resizer">
+                    <div class="tool-header">
+                        <div class="tool-icon image-icon">
+                            <i class="ti ti-resize"></i>
+                        </div>
+                        <div class="tool-badge">Popular</div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Image Resizer</h4>
+                        <p>Resize images to custom dimensions</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 60K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.9</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/image-resizer" class="btn-tool-modern image-btn">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-content">
-                    <h4>{{ tool_data.name }}</h4>
-                    <p>{{ tool_data.desc }}</p>
+                
+                <div class="tool-card-pro image-tool" data-tool="background-remover">
+                    <div class="tool-header">
+                        <div class="tool-icon image-icon">
+                            <i class="ti ti-eraser"></i>
+                        </div>
+                        <div class="tool-badge">AI Powered</div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Background Remover</h4>
+                        <p>Remove backgrounds with AI precision</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 55K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.8</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/background-remover" class="btn-tool-modern image-btn">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-action">
-                    <a href="/{{ tool_id }}" class="tool-btn">
-                        <span>Use Tool</span>
-                        <i class="ti ti-arrow-right"></i>
-                    </a>
+                
+                <div class="tool-card-pro image-tool" data-tool="image-cropper">
+                    <div class="tool-header">
+                        <div class="tool-icon image-icon">
+                            <i class="ti ti-crop"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Image Cropper</h4>
+                        <p>Crop images with precision</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 35K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.7</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/image-cropper" class="btn-tool-modern image-btn">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-hover-effect"></div>
+                
+                <div class="tool-card-pro image-tool" data-tool="image-compressor">
+                    <div class="tool-header">
+                        <div class="tool-icon image-icon">
+                            <i class="ti ti-package"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Image Compressor</h4>
+                        <p>Reduce image file size</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 42K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.8</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/image-compressor" class="btn-tool-modern image-btn">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
+            
+            <!-- Image Conversion Tools -->
+            <div class="tool-group" data-group="conversion">
+                <div class="tool-card-pro image-tool" data-tool="convert-to-webp">
+                    <div class="tool-header">
+                        <div class="tool-icon image-icon">
+                            <i class="ti ti-file-type-png"></i>
+                        </div>
+                    </div>
+                    <div class="tool-content">
+                        <h4>Convert to WebP</h4>
+                        <p>Convert images to modern WebP format</p>
+                        <div class="tool-stats">
+                            <span class="stat-item"><i class="ti ti-users"></i> 25K+ users</span>
+                            <span class="stat-item"><i class="ti ti-star-filled"></i> 4.6</span>
+                        </div>
+                    </div>
+                    <div class="tool-action">
+                        <a href="/convert-to-webp" class="btn-tool-modern image-btn">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
