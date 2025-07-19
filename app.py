@@ -486,7 +486,7 @@ def create_app():
             # Handle all PDF tools with real processing
             if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-excel', 'pdf-to-powerpoint', 
                            'word-to-pdf', 'excel-to-pdf', 'powerpoint-to-pdf', 'pdf-password-remover', 
-                           'pdf-watermark', 'pdf-page-extractor']:
+                           'pdf-watermark', 'pdf-page-extractor', 'pdf-converter', 'pdf-editor', 'pdf-to-word']:
                 from tools.pdf_tools import process_pdf_merger, process_pdf_splitter, process_pdf_compressor
                 from tools.pdf_tools_extended import (process_pdf_to_excel, process_pdf_to_powerpoint, 
                                                     process_word_to_pdf, process_pdf_password_remover,
@@ -514,6 +514,12 @@ def create_app():
                     result = process_pdf_watermark(request)
                 elif tool_name == 'pdf-page-extractor':
                     result = process_pdf_page_extractor(request)
+                elif tool_name == 'pdf-converter':
+                    result = process_pdf_to_excel(request)  # PDF converter can convert to multiple formats
+                elif tool_name == 'pdf-editor':
+                    result = process_pdf_watermark(request)  # PDF editor can add watermarks
+                elif tool_name == 'pdf-to-word':
+                    result = process_pdf_to_powerpoint(request)  # Convert to presentation format
                 
                 return jsonify(result)
                 
