@@ -266,6 +266,28 @@ const utils = {
     }
 };
 
+// Counter Animation Function
+function animateCounter(element) {
+    if (!element) return;
+    
+    const target = parseInt(element.getAttribute('data-target')) || parseInt(element.textContent.replace(/[^\d]/g, '')) || 0;
+    const duration = 2000; // 2 seconds
+    const increment = target / (duration / 16); // 60fps
+    let current = 0;
+    
+    const updateCounter = () => {
+        current += increment;
+        if (current < target) {
+            element.textContent = Math.floor(current).toLocaleString();
+            requestAnimationFrame(updateCounter);
+        } else {
+            element.textContent = target.toLocaleString();
+        }
+    };
+    
+    updateCounter();
+}
+
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Add null checks to prevent errors
@@ -281,9 +303,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         animateCounter(entry.target);
+                        // Only animate once
+                        observer.unobserve(entry.target);
                     }
                 });
-            });
+            }, { threshold: 0.5 });
 
             statNumbers.forEach(stat => {
                 if (stat) observer.observe(stat);
