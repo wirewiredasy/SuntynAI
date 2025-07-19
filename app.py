@@ -208,11 +208,17 @@ def create_app():
 
         # Check for professional templates first (prioritize these)
         import os
+        pro_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-pro.html')
         professional_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-professional.html')
         v2_template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}-v2.html')
         template_path = os.path.join(app.template_folder, 'tools', f'{tool_name}.html')
 
-        if os.path.exists(professional_template_path):
+        if os.path.exists(pro_template_path):
+            return render_template(f'tools/{tool_name}-pro.html', 
+                                 tool_name=tool_name,
+                                 category=tool_category,
+                                 category_data=TOOL_CATEGORIES[tool_category])
+        elif os.path.exists(professional_template_path):
             return render_template(f'tools/{tool_name}-professional.html', 
                                  tool_name=tool_name,
                                  category=tool_category,
@@ -467,13 +473,64 @@ def create_app():
                 'error': f'Tool processing failed: {str(e)}'
             }), 500
 
-    # Original tool processing route (keep for compatibility)
-    @app.route('/process-tool', methods=['POST'])
+    # Main tool processing route with PDF tools integration
+    @app.route('/process_tool', methods=['POST'])
     def process_tool():
+        try:
+            # Get tool name from form or headers
+            tool_name = request.form.get('tool_name') or request.headers.get('X-Tool-Name')
+            
+            if not tool_name:
+                return jsonify({'success': False, 'error': 'Tool name is required'}), 400
+
+            # Handle professional PDF tools with real processing
+            if tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor']:
+                from tools.pdf_tools import process_pdf_merger, process_pdf_splitter, process_pdf_compressor
+                
+                if tool_name == 'pdf-merger':
+                    result = process_pdf_merger(request)
+                elif tool_name == 'pdf-splitter':
+                    result = process_pdf_splitter(request)
+                elif tool_name == 'pdf-compressor':
+                    result = process_pdf_compressor(request)
+                
+                return jsonify(result)
+                
+            # Process utility tools with specialized processor
+            if tool_name in ['qr-code-generator', 'barcode-generator', 'url-shortener', 'password-generator']:
+                from tools.utility_tools import (
+                    process_qr_generator, process_barcode_generator, 
+                    process_password_generator, process_url_shortener
+                )
+                
+                if tool_name == 'qr-code-generator':
+                    result = process_qr_generator(request)
+                elif tool_name == 'barcode-generator':
+                    result = process_barcode_generator(request)
+                elif tool_name == 'password-generator':
+                    result = process_password_generator(request)
+                elif tool_name == 'url-shortener':
+                    result = process_url_shortener(request)
+                
+                return jsonify(result)
+            
+            # Default processing for other tools
+            from tools.universal_processor import UniversalToolProcessor
+            processor = UniversalToolProcessor()
+            result = processor.process_tool(tool_name, request.files, request.form)
+            return jsonify(result)
+            
+        except Exception as e:
+            logging.error(f"Tool processing error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'error': f'Tool processing failed: {str(e)}'
+            }), 500
+    
+    # Legacy route for backward compatibility
+    @app.route('/process-tool', methods=['POST'])
+    def process_tool_legacy():
         tool_name = request.form.get('tool_name')
-        if tool_name and tool_name in ['pdf-merger', 'pdf-splitter', 'pdf-compressor', 'pdf-to-word', 'pdf-watermark']:
-            return process_tool_enhanced(tool_name)
-        
         try:
             if not tool_name:
                 return jsonify({'success': False, 'error': 'Tool name is required'}), 400

@@ -132,6 +132,54 @@ def process_pdf_compressor(request):
             # Get original file size
             original_size = os.path.getsize(filepath)
             
+            # Read and rewrite PDF (basic compression)
+            with open(filepath, 'rb') as pdf_file:
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                pdf_writer = PyPDF2.PdfWriter()
+                
+                # Add all pages
+                for page in pdf_reader.pages:
+                    pdf_writer.add_page(page)
+                
+                # Apply compression based on level
+                if compression_level in ['high', 'extreme']:
+                    pdf_writer.compress_identical_objects()
+                
+                # Create output file
+                output_filename = f'compressed_{filename}'
+                output_path = os.path.join(temp_dir, output_filename)
+                
+                with open(output_path, 'wb') as output_file:
+                    pdf_writer.write(output_file)
+                
+                # Get compressed file size
+                compressed_size = os.path.getsize(output_path)
+                
+                # Save to uploads directory
+                final_path = save_uploaded_file(output_path, output_filename)
+                
+                return {
+                    'success': True,
+                    'message': 'PDF compressed successfully',
+                    'output_file': final_path,
+                    'download_url': f'/uploads/{output_filename}',
+                    'original_size': str(original_size),
+                    'compressed_size': str(compressed_size)
+                }
+    
+    except Exception as e:
+        logging.error(f"PDF compressor error: {str(e)}")
+        return {'error': 'Failed to compress PDF'}
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Save uploaded file
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(temp_dir, filename)
+            file.save(filepath)
+            
+            # Get original file size
+            original_size = os.path.getsize(filepath)
+            
             # Compress PDF (simplified compression)
             with open(filepath, 'rb') as pdf_file:
                 pdf_reader = PyPDF2.PdfReader(pdf_file)
