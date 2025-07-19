@@ -1,6 +1,5 @@
 
 // Enhanced Scroll to Top Button with Lenis Integration
-if (typeof window.ScrollToTopButton === 'undefined') {
 class ScrollToTopButton {
     constructor() {
         this.button = null;
@@ -90,4 +89,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Export for external use
 window.ScrollToTopButton = ScrollToTopButton;
-}

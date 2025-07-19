@@ -301,7 +301,7 @@ class PerformanceOptimizer {
     }
 
     // Optimized Performance Monitoring
-    optimizePerformanceMonitoring() {
+    (function() {
         const startTime = performance.now();
 
         // Safe Core Web Vitals tracking
@@ -373,7 +373,7 @@ class PerformanceOptimizer {
         const endTime = performance.now();
         const scriptTime = endTime - startTime;
         console.log(`Performance monitoring script took ${scriptTime.toFixed(3)}ms`);
-    }
+    })();
 }
 
 // Initialize performance optimizer

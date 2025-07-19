@@ -6,17 +6,8 @@ import cv2
 import numpy as np
 import io
 import os
-try:
-    from rembg import remove
-    REMBG_AVAILABLE = True
-except ImportError:
-    REMBG_AVAILABLE = False
-    
-try:
-    import piexif
-    PIEXIF_AVAILABLE = True
-except ImportError:
-    PIEXIF_AVAILABLE = False
+from rembg import remove
+import piexif
 
 def resize_image(file, width, height, maintain_aspect=False):
     """Resize image to specified dimensions"""

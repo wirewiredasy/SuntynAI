@@ -212,32 +212,28 @@ class ModernHeroSystem {
         const toolTabs = document.querySelectorAll('.tool-tab');
         const toolDemos = document.querySelectorAll('.tool-demo');
 
-        if (toolTabs.length > 0) {
-            toolTabs.forEach(tab => {
-                if (tab) {
-                    tab.addEventListener('click', () => {
-                        const targetTool = tab.dataset.tool;
-                        
-                        // Remove active class from all tabs and demos
-                        toolTabs.forEach(t => t && t.classList.remove('active'));
-                        toolDemos.forEach(d => d && d.classList.remove('active'));
-                        
-                        // Add active class to clicked tab and corresponding demo
-                        tab.classList.add('active');
-                        const targetDemo = document.getElementById(`demo-${targetTool}`);
-                        if (targetDemo) {
-                            targetDemo.classList.add('active');
-                        }
-
-                        // Trigger specific demo animations
-                        this.triggerDemoAnimation(targetTool);
-                    });
+        toolTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTool = tab.dataset.tool;
+                
+                // Remove active class from all tabs and demos
+                toolTabs.forEach(t => t.classList.remove('active'));
+                toolDemos.forEach(d => d.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding demo
+                tab.classList.add('active');
+                const targetDemo = document.getElementById(`demo-${targetTool}`);
+                if (targetDemo) {
+                    targetDemo.classList.add('active');
                 }
-            });
 
-            // Start initial demo animations
-            this.startDemoAnimations();
-        }
+                // Trigger specific demo animations
+                this.triggerDemoAnimation(targetTool);
+            });
+        });
+
+        // Start initial demo animations
+        this.startDemoAnimations();
     }
 
     triggerDemoAnimation(toolType) {
@@ -407,18 +403,16 @@ class ModernHeroSystem {
         if (primaryBtn) {
             primaryBtn.addEventListener('click', (e) => {
                 const ripple = primaryBtn.querySelector('.btn-ripple');
-                if (ripple) {
-                    const rect = primaryBtn.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    
-                    ripple.style.width = ripple.style.height = size + 'px';
-                    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-                    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-                    
-                    ripple.style.animation = 'none';
-                    ripple.offsetHeight; // Trigger reflow
-                    ripple.style.animation = 'ripple-effect 0.6s ease-out';
-                }
+                const rect = primaryBtn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                
+                ripple.style.animation = 'none';
+                ripple.offsetHeight; // Trigger reflow
+                ripple.style.animation = 'ripple-effect 0.6s ease-out';
             });
         }
 
