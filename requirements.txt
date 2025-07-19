@@ -70,3 +70,8 @@ psycopg2-binary
 pdfplumber
 pymupdf
 reportlab
+email_validator
+flask
+flask-sqlalchemy
+gunicorn
+psycopg2-binary
