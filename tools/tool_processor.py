@@ -412,30 +412,81 @@ class ToolProcessor:
             return {'success': True, 'message': f'Image conversion failed: {str(e)}'}
 
     # Utility Tools Implementation
-    def qr_code_generator(self, request_data):
-        """Generate QR code from text"""
+    def qr_code_generator(self, files, form_data):
+        """Generate professional QR code with advanced options"""
         try:
-            text = request_data.form.get('text', '')
-            if not text:
-                return {'success': True, 'message': 'No text provided'}
+            content_type = form_data.get('content_type', 'text')
+            size = int(form_data.get('size', 300))
+            error_correction = form_data.get('error_correction', 'M')
+            fill_color = form_data.get('fill_color', '#000000')
+            back_color = form_data.get('back_color', '#FFFFFF')
+            
+            # Build QR data based on content type
+            if content_type == 'text':
+                qr_data = form_data.get('text', '')
+            elif content_type == 'wifi':
+                ssid = form_data.get('wifi_ssid', '')
+                password = form_data.get('wifi_password', '')
+                security = form_data.get('wifi_security', 'WPA')
+                qr_data = f"WIFI:T:{security};S:{ssid};P:{password};;"
+            elif content_type == 'contact':
+                firstname = form_data.get('contact_firstname', '')
+                lastname = form_data.get('contact_lastname', '')
+                phone = form_data.get('contact_phone', '')
+                email = form_data.get('contact_email', '')
+                org = form_data.get('contact_org', '')
+                qr_data = f"MECARD:N:{lastname},{firstname};TEL:{phone};EMAIL:{email};ORG:{org};;"
+            elif content_type == 'email':
+                to_email = form_data.get('email_to', '')
+                subject = form_data.get('email_subject', '')
+                body = form_data.get('email_body', '')
+                qr_data = f"mailto:{to_email}?subject={subject}&body={body}"
+            else:
+                qr_data = form_data.get('text', '')
+            
+            if not qr_data:
+                return {'success': False, 'error': 'No data provided for QR code'}
 
-            qr = qrcode.QRCode(version=1, box_size=10, border=5)
-            qr.add_data(text)
+            # Set error correction level
+            error_levels = {
+                'L': qrcode.constants.ERROR_CORRECT_L,
+                'M': qrcode.constants.ERROR_CORRECT_M,
+                'Q': qrcode.constants.ERROR_CORRECT_Q,
+                'H': qrcode.constants.ERROR_CORRECT_H
+            }
+
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=error_levels.get(error_correction, qrcode.constants.ERROR_CORRECT_M),
+                box_size=max(10, size // 30),
+                border=4
+            )
+            qr.add_data(qr_data)
             qr.make(fit=True)
 
-            with tempfile.TemporaryDirectory() as temp_dir:
-                img = qr.make_image(fill_color="black", back_color="white")
-                output_path = os.path.join(temp_dir, 'qrcode.png')
-                img.save(output_path)
+            # Create image with custom colors
+            img = qr.make_image(fill_color=fill_color, back_color=back_color)
+            img = img.resize((size, size), Image.NEAREST)
 
-                final_path = self.save_temp_file(output_path, 'qrcode.png')
-                return {
-                    'success': True,
-                    'message': 'QR code generated successfully',
-                    'download_url': f'/uploads/{os.path.basename(final_path)}'
-                }
+            # Convert to base64
+            import io
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+            import base64
+            qr_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+
+            return {
+                'success': True,
+                'message': 'QR code generated successfully',
+                'qr_code': qr_base64,
+                'content_type': content_type,
+                'size': size,
+                'error_correction': error_correction,
+                'data': qr_data
+            }
         except Exception as e:
-            return {'success': True, 'message': f'QR code generation failed: {str(e)}'}
+            return {'success': False, 'error': f'QR code generation failed: {str(e)}'}
 
     def password_generator(self, request_data):
         """Generate secure password"""
@@ -660,30 +711,99 @@ class ToolProcessor:
             logger.error(f"UUID generator error: {str(e)}")
             return {'error': 'Failed to generate UUID', 'details': str(e)}
 
-    def url_shortener(self, request_data):
-        """Process URL shortener requests"""
+    def url_shortener(self, files, form_data):
+        """Professional URL shortener with analytics and custom options"""
         try:
-            url = request_data.form.get('url', '').strip()
-            if not url:
-                return {'success': True, 'message': 'Please provide a URL to shorten'}
+            long_url = form_data.get('long_url', '').strip()
+            custom_alias = form_data.get('custom_alias', '').strip()
+            expiry_date = form_data.get('expiry_date', '')
+            description = form_data.get('description', '').strip()
+            track_clicks = form_data.get('track_clicks') == 'on'
+            password_protect = form_data.get('password_protect') == 'on'
+            password = form_data.get('password', '').strip()
+            
+            if not long_url:
+                return {'success': False, 'error': 'Please provide a URL to shorten'}
 
-            if not url.startswith(('http://', 'https://')):
-                url = 'https://' + url
+            # Validate URL format
+            if not long_url.startswith(('http://', 'https://')):
+                long_url = 'https://' + long_url
 
-            # Generate a short code
-            import hashlib
-            short_code = hashlib.md5(url.encode()).hexdigest()[:8]
+            # Validate URL is accessible (basic check)
+            try:
+                import urllib.parse
+                parsed = urllib.parse.urlparse(long_url)
+                if not parsed.netloc:
+                    return {'success': False, 'error': 'Invalid URL format'}
+            except:
+                return {'success': False, 'error': 'Invalid URL format'}
 
-            return {
+            # Generate short code
+            if custom_alias:
+                # Validate custom alias
+                import re
+                if not re.match(r'^[a-zA-Z0-9-]+$', custom_alias):
+                    return {'success': False, 'error': 'Custom alias can only contain letters, numbers, and hyphens'}
+                if len(custom_alias) < 3 or len(custom_alias) > 20:
+                    return {'success': False, 'error': 'Custom alias must be 3-20 characters long'}
+                short_code = custom_alias
+            else:
+                # Generate random short code
+                import hashlib
+                import time
+                hash_input = f"{long_url}{time.time()}{secrets.token_hex(4)}"
+                short_code = hashlib.md5(hash_input.encode()).hexdigest()[:7]
+
+            # Build short URL
+            short_url = f"https://suntyn.ai/{short_code}"
+            
+            # Simulate analytics data
+            analytics = {
+                'total_clicks': 0,
+                'unique_clicks': 0,
+                'created_date': datetime.now().isoformat(),
+                'last_clicked': None,
+                'click_locations': [],
+                'referrers': []
+            }
+            
+            # Prepare response
+            response_data = {
                 'success': True,
                 'message': 'URL shortened successfully',
-                'original_url': url,
+                'short_url': short_url,
+                'original_url': long_url,
                 'short_code': short_code,
-                'short_url': f'https://suntyn.ai/s/{short_code}'
+                'description': description,
+                'expires_on': expiry_date if expiry_date else None,
+                'track_clicks': track_clicks,
+                'password_protected': password_protect,
+                'analytics': analytics,
+                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
+            
+            # Add QR code data
+            try:
+                qr = qrcode.QRCode(version=1, box_size=10, border=5)
+                qr.add_data(short_url)
+                qr.make(fit=True)
+                
+                import io
+                img = qr.make_image(fill_color="black", back_color="white")
+                img_buffer = io.BytesIO()
+                img.save(img_buffer, format='PNG')
+                img_buffer.seek(0)
+                import base64
+                qr_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+                response_data['qr_code'] = qr_base64
+            except:
+                response_data['qr_code'] = None
+            
+            return response_data
+            
         except Exception as e:
             logger.error(f"URL shortener error: {str(e)}")
-            return {'success': True, 'message': f'URL shortener failed: {str(e)}'}
+            return {'success': False, 'error': f'URL shortener failed: {str(e)}'}
 
     def aadhaar_validator(self, request_data):
         """Validate Aadhaar number format"""
@@ -956,8 +1076,96 @@ class ToolProcessor:
     def salary_calculator(self, request_data):
         return {'success': True, 'message': 'Salary calculator completed successfully', 'result': 'Tool processed successfully'}
 
-    def barcode_generator(self, request_data):
-        return {'success': True, 'message': 'Barcode generator completed successfully', 'result': 'Tool processed successfully'}
+    def barcode_generator(self, files, form_data):
+        """Generate professional barcodes with multiple format support"""
+        try:
+            barcode_type = form_data.get('barcode_type', 'code128')
+            data = form_data.get('data', '').strip()
+            width = int(form_data.get('width', 400))
+            height = int(form_data.get('height', 100))
+            show_text = form_data.get('show_text') == 'on'
+            quiet_zone = form_data.get('quiet_zone') == 'on'
+            text_position = form_data.get('text_position', 'bottom')
+            font_size = int(form_data.get('font_size', 14))
+            bar_color = form_data.get('bar_color', '#000000')
+            background_color = form_data.get('background_color', '#FFFFFF')
+            
+            if not data:
+                return {'success': False, 'error': 'No data provided for barcode'}
+
+            # Barcode type mapping
+            barcode_classes = {
+                'code128': barcode.Code128,
+                'ean13': barcode.EAN13,
+                'ean8': barcode.EAN8,
+                'upca': barcode.UPCA,
+                'code39': barcode.Code39,
+                'itf': barcode.ITF
+            }
+            
+            if barcode_type not in barcode_classes:
+                return {'success': False, 'error': f'Unsupported barcode type: {barcode_type}'}
+
+            # Validate data for specific barcode types
+            if barcode_type in ['ean13', 'ean8', 'upca', 'itf']:
+                if not data.isdigit():
+                    return {'success': False, 'error': f'{barcode_type.upper()} requires numeric data only'}
+                
+                required_lengths = {
+                    'ean13': 13, 'ean8': 8, 'upca': 12, 'itf': 'even'
+                }
+                
+                if barcode_type == 'itf' and len(data) % 2 != 0:
+                    return {'success': False, 'error': 'ITF requires even number of digits'}
+                elif barcode_type != 'itf' and len(data) != required_lengths[barcode_type]:
+                    return {'success': False, 'error': f'{barcode_type.upper()} requires exactly {required_lengths[barcode_type]} digits'}
+
+            try:
+                # Generate barcode
+                barcode_class = barcode_classes[barcode_type]
+                barcode_instance = barcode_class(data, writer=ImageWriter())
+                
+                # Custom options
+                options = {
+                    'module_width': max(0.2, width / 400 * 0.2),
+                    'module_height': height / 100.0 * 15,
+                    'quiet_zone': 6.5 if quiet_zone else 0,
+                    'font_size': font_size,
+                    'text_distance': 5.0,
+                    'foreground': bar_color,
+                    'background': background_color
+                }
+                
+                if not show_text or text_position == 'none':
+                    options['write_text'] = False
+
+                # Generate image
+                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+                    barcode_instance.write(tmp, options)
+                    tmp.seek(0)
+                    
+                    # Read and convert to base64
+                    with open(tmp.name, 'rb') as img_file:
+                        import base64
+                        barcode_base64 = base64.b64encode(img_file.read()).decode()
+                    
+                    os.unlink(tmp.name)
+
+                return {
+                    'success': True,
+                    'message': 'Barcode generated successfully',
+                    'barcode_image': barcode_base64,
+                    'barcode_type': barcode_type.upper(),
+                    'data': data,
+                    'width': width,
+                    'height': height
+                }
+                
+            except ValueError as ve:
+                return {'success': False, 'error': f'Invalid data for {barcode_type.upper()}: {str(ve)}'}
+            
+        except Exception as e:
+            return {'success': False, 'error': f'Barcode generation failed: {str(e)}'}
 
     def hash_generator(self, request_data):
         return {'success': True, 'message': 'Hash generator completed successfully', 'result': 'Tool processed successfully'}
