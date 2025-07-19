@@ -216,32 +216,65 @@ function initializeAnimations() {
         const animationElements = document.querySelectorAll('.floating-icon, .hero-animation');
         if (animationElements.length === 0) return;
 
-        // Load GSAP only when needed
-        if (typeof gsap !== 'undefined') {
-            // Check if floating-icon elements exist before animating
+        // Improved floating icon animations with timeout safety
+        const initFloatingIconAnimations = () => {
             const floatingIcons = document.querySelectorAll('.floating-icon');
-            if (floatingIcons.length > 0) {
+            if (floatingIcons.length > 0 && typeof gsap !== 'undefined') {
+                // Initial entrance animation
                 gsap.from('.floating-icon', {
                     duration: 1,
                     y: 10,
                     opacity: 0,
                     stagger: 0.1,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    onComplete: () => {
+                        // Start continuous floating animation after entrance
+                        gsap.to(".floating-icon", {
+                            y: -20,
+                            repeat: -1,
+                            yoyo: true,
+                            duration: 1.5,
+                            ease: "power2.inOut",
+                            stagger: 0.2
+                        });
+                    }
                 });
+                
+                console.log('🌟 Floating icon animations initialized');
             }
-            
+        };
+
+        // Load GSAP animations with proper timing
+        if (typeof gsap !== 'undefined') {
+            // GSAP is already loaded, initialize immediately
+            initFloatingIconAnimations();
             console.log('✨ GSAP animations initialized');
         } else {
-            // Fallback CSS animations
-            animationElements.forEach((el, i) => {
-                el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
-            });
+            // Wait for GSAP to load with timeout fallback
+            let gsapCheckAttempts = 0;
+            const maxAttempts = 20;
+            
+            const checkGSAP = setInterval(() => {
+                gsapCheckAttempts++;
+                if (typeof gsap !== 'undefined') {
+                    clearInterval(checkGSAP);
+                    setTimeout(initFloatingIconAnimations, 300);
+                    console.log('✨ GSAP loaded and animations initialized');
+                } else if (gsapCheckAttempts >= maxAttempts) {
+                    clearInterval(checkGSAP);
+                    // Fallback CSS animations
+                    animationElements.forEach((el, i) => {
+                        el.style.animation = `fadeInUp 0.6s ease-out ${i * 0.1}s both`;
+                    });
+                    console.log('✅ Using CSS animation fallback');
+                }
+            }, 100);
         }
 
         window.animationsInitialized = true;
         console.log('✅ Animations initialized successfully');
     } catch (error) {
-        console.warn('⚠️ Animation initialization failed');
+        console.warn('⚠️ Animation initialization failed:', error.message);
     }
 }
 
@@ -1010,7 +1043,7 @@ SuntynAI.prototype.createFloatingIcons = function() {
     // Create floating background icons if hero section exists
     const heroSection = document.querySelector('.hero-section');
     if (heroSection && !document.querySelector('.floating-icon')) {
-        const icons = ['🚀', '💡', '⚡', '🎯', '🔧', '📊'];
+        const icons = ['🚀', '💡', '⚡', '🎯', '🔧', '📊', '🌟', '✨'];
 
         icons.forEach((icon, index) => {
             const iconEl = document.createElement('div');
@@ -1019,14 +1052,63 @@ SuntynAI.prototype.createFloatingIcons = function() {
             iconEl.style.cssText = `
                 position: absolute;
                 font-size: 2rem;
-                opacity: 0.1;
+                opacity: 0.15;
                 pointer-events: none;
                 z-index: 0;
                 top: ${Math.random() * 80 + 10}%;
                 left: ${Math.random() * 80 + 10}%;
+                will-change: transform;
             `;
             heroSection.appendChild(iconEl);
         });
+
+        // Initialize floating animations after icons are created
+        setTimeout(() => {
+            this.initializeFloatingIconAnimations();
+        }, 500);
+    }
+}
+
+// Enhanced floating icon animation method
+SuntynAI.prototype.initializeFloatingIconAnimations = function() {
+    const floatingIcons = document.querySelectorAll('.floating-icon');
+    
+    if (floatingIcons.length === 0) return;
+
+    // Check if GSAP is available
+    if (typeof gsap !== 'undefined') {
+        // Set initial state
+        gsap.set('.floating-icon', { y: 0, opacity: 0.15 });
+        
+        // Continuous floating animation
+        floatingIcons.forEach((icon, index) => {
+            gsap.to(icon, {
+                y: -20,
+                repeat: -1,
+                yoyo: true,
+                duration: 1.5 + (index * 0.1), // Varied duration for natural feel
+                ease: "power2.inOut",
+                delay: index * 0.2 // Staggered start
+            });
+            
+            // Add subtle rotation
+            gsap.to(icon, {
+                rotation: 5,
+                repeat: -1,
+                yoyo: true,
+                duration: 2 + (index * 0.1),
+                ease: "power2.inOut",
+                delay: index * 0.3
+            });
+        });
+        
+        console.log('🌟 Enhanced floating icon animations started');
+    } else {
+        // CSS fallback animation
+        floatingIcons.forEach((icon, index) => {
+            icon.style.animation = `float 3s ease-in-out infinite ${index * 0.2}s`;
+        });
+        console.log('✅ CSS floating animation fallback applied');
     }
 }
 
