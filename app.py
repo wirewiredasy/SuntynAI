@@ -96,14 +96,25 @@ def create_app():
     # PDF Toolkit Configuration - Clean and focused
     app.config['PDF_TOOLKIT'] = True
 
-    # Routes
+    # Main route - clean PDF toolkit homepage
     @app.route('/')
     def index():
-        # Get PDF tools for the main page
-        from pdf_tools import get_pdf_tools, get_tool_categories
-        tools = get_pdf_tools()
-        categories = get_tool_categories()
-        return render_template('index.html', tools=tools, categories=categories, pdf_tools=True)
+        # Simple PDF toolkit data structure
+        tools_data = {
+            'merge': {'name': 'PDF Merger', 'icon': 'ti ti-files', 'desc': 'Merge multiple PDFs into one'},
+            'split': {'name': 'PDF Splitter', 'icon': 'ti ti-cut', 'desc': 'Split PDF into separate files'},
+            'compress': {'name': 'PDF Compressor', 'icon': 'ti ti-package', 'desc': 'Reduce PDF file size'},
+            'pdf-to-word': {'name': 'PDF to Word', 'icon': 'ti ti-file-word', 'desc': 'Convert PDF to Word document'},
+            'pdf-to-excel': {'name': 'PDF to Excel', 'icon': 'ti ti-file-excel', 'desc': 'Extract tables to Excel'},
+            'word-to-pdf': {'name': 'Word to PDF', 'icon': 'ti ti-file-text', 'desc': 'Convert Word to PDF'},
+            'image-to-pdf': {'name': 'Image to PDF', 'icon': 'ti ti-photo', 'desc': 'Convert images to PDF'},
+            'pdf-to-image': {'name': 'PDF to Image', 'icon': 'ti ti-camera', 'desc': 'Extract images from PDF'},
+            'unlock-pdf': {'name': 'Unlock PDF', 'icon': 'ti ti-lock-open', 'desc': 'Remove PDF password'},
+            'protect-pdf': {'name': 'Protect PDF', 'icon': 'ti ti-shield', 'desc': 'Add password to PDF'},
+            'rotate-pdf': {'name': 'Rotate PDF', 'icon': 'ti ti-rotate', 'desc': 'Rotate PDF pages'},
+            'watermark': {'name': 'Add Watermark', 'icon': 'ti ti-droplet', 'desc': 'Add watermark to PDF'},
+        }
+        return render_template('index.html', tools=tools_data)
 
     @app.route('/service-worker.js')
     def service_worker():
@@ -127,7 +138,141 @@ def create_app():
     def faq():
         return render_template('faq.html')
 
-    # Clean PDF toolkit routes - redirect old paths
+    # === MODULAR PDF TOOL ROUTES ===
+    
+    # PDF Merger Routes
+    @app.route('/merge')
+    def merge_page():
+        return render_template('tools/merge.html', tool_name='merge')
+    
+    @app.route('/merge', methods=['POST'])
+    def merge_pdf():
+        from tools.merger import merge_pdfs
+        try:
+            files = request.files.getlist('pdfs')
+            if not files or not files[0].filename:
+                return jsonify({'success': False, 'error': 'No files provided'})
+            
+            success, output_path, message = merge_pdfs(files)
+            
+            if success:
+                return send_file(output_path, as_attachment=True, download_name='merged.pdf')
+            else:
+                return jsonify({'success': False, 'error': message})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
+    
+    # PDF Splitter Routes
+    @app.route('/split')
+    def split_page():
+        return render_template('tools/split.html', tool_name='split')
+    
+    @app.route('/split', methods=['POST'])
+    def split_pdf():
+        from tools.splitter import split_pdf_by_pages, split_pdf_every_n_pages
+        try:
+            file = request.files['pdf']
+            split_type = request.form.get('split_type', 'pages')
+            
+            if split_type == 'pages':
+                page_ranges = request.form.get('page_ranges', '1-1')
+                success, output_files, message = split_pdf_by_pages(file, page_ranges)
+            else:  # every_n
+                n_pages = int(request.form.get('every_n', 5))
+                success, output_files, message = split_pdf_every_n_pages(file, n_pages)
+            
+            if success and output_files:
+                # Return first file for now (in production, create zip)
+                return send_file(output_files[0]['path'], as_attachment=True, 
+                               download_name=output_files[0]['filename'])
+            else:
+                return jsonify({'success': False, 'error': message})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
+    
+    # PDF Compressor Routes
+    @app.route('/compress')
+    def compress_page():
+        return render_template('tools/compress.html', tool_name='compress')
+    
+    @app.route('/compress', methods=['POST'])
+    def compress_pdf():
+        from tools.compressor import compress_pdf
+        try:
+            file = request.files['pdf']
+            compression_level = request.form.get('compression_level', 'medium')
+            
+            success, output_path, compression_info, message = compress_pdf(file, compression_level)
+            
+            if success:
+                return send_file(output_path, as_attachment=True, download_name='compressed.pdf')
+            else:
+                return jsonify({'success': False, 'error': message})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
+    
+    # PDF to Word Converter
+    @app.route('/pdf-to-word')
+    def pdf_to_word_page():
+        return render_template('tools/pdf-to-word.html', tool_name='pdf-to-word')
+    
+    @app.route('/pdf-to-word', methods=['POST'])
+    def pdf_to_word():
+        from tools.converter import pdf_to_word
+        try:
+            file = request.files['pdf']
+            success, output_path, message = pdf_to_word(file)
+            
+            if success:
+                return send_file(output_path, as_attachment=True, download_name='converted.txt')
+            else:
+                return jsonify({'success': False, 'error': message})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
+    
+    # PDF to Images Converter
+    @app.route('/pdf-to-image')
+    def pdf_to_image_page():
+        return render_template('tools/pdf-to-image.html', tool_name='pdf-to-image')
+    
+    @app.route('/pdf-to-image', methods=['POST'])
+    def pdf_to_image():
+        from tools.converter import pdf_to_images
+        try:
+            file = request.files['pdf']
+            image_format = request.form.get('format', 'png')
+            
+            success, image_files, message = pdf_to_images(file, image_format)
+            
+            if success and image_files:
+                # Return first image for now (in production, create zip)
+                return send_file(image_files[0]['path'], as_attachment=True, 
+                               download_name=image_files[0]['filename'])
+            else:
+                return jsonify({'success': False, 'error': message})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
+    
+    # Images to PDF Converter
+    @app.route('/image-to-pdf')
+    def image_to_pdf_page():
+        return render_template('tools/image-to-pdf.html', tool_name='image-to-pdf')
+    
+    @app.route('/image-to-pdf', methods=['POST'])
+    def image_to_pdf():
+        from tools.converter import images_to_pdf
+        try:
+            files = request.files.getlist('images')
+            success, output_path, message = images_to_pdf(files)
+            
+            if success:
+                return send_file(output_path, as_attachment=True, download_name='images_to_pdf.pdf')
+            else:
+                return jsonify({'success': False, 'error': message})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
+    
+    # Redirect old tool routes
     @app.route('/all-tools')
     def all_tools():
         return redirect(url_for('index'))
@@ -138,11 +283,7 @@ def create_app():
 
     @app.route('/tool/<tool_name>')
     def tool_page(tool_name):
-        # Redirect to PDF toolkit if it's a PDF tool, otherwise to home
-        if 'pdf' in tool_name.lower():
-            return redirect(f'/pdf/tool/{tool_name}')
-        else:
-            return redirect(url_for('index'))
+        return redirect(url_for('index'))
 
     @app.route('/dashboard')
     @login_required

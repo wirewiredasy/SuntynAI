@@ -272,7 +272,240 @@
     </div>
 </section>
 
-{% include 'pdf_toolkit_section.html' %}
+<!-- Professional PDF Toolkit Section -->
+<section class="pdf-toolkit-main py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <div class="toolkit-header">
+                    <h2 class="display-4 fw-bold mb-3">
+                        <span class="gradient-text">Professional PDF Toolkit</span>
+                    </h2>
+                    <p class="lead text-muted mb-4">
+                        25+ powerful PDF tools inspired by TinyWow & ILovePDF. 
+                        Fast, secure, and free document processing.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF Tools Grid -->
+        <div class="row g-4" id="pdf-tools-grid">
+            {% for tool_id, tool_data in tools.items() %}
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="pdf-tool-card h-100">
+                    <div class="tool-icon">
+                        <i class="{{ tool_data.icon }}"></i>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <h5 class="tool-title">{{ tool_data.name }}</h5>
+                        <p class="tool-description">{{ tool_data.desc }}</p>
+                    </div>
+                    
+                    <div class="tool-action">
+                        <a href="/{{ tool_id }}" class="btn-tool-primary">
+                            <span>Use Tool</span>
+                            <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+.pdf-toolkit-main {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 90vh;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.pdf-tool-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0,123,255,0.1);
+}
+
+.pdf-tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.pdf-tool-card:hover::before {
+    transform: scaleX(1);
+}
+
+.pdf-tool-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,123,255,0.15);
+    border-color: rgba(0,123,255,0.3);
+}
+
+.tool-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+}
+
+.pdf-tool-card:hover .tool-icon::after {
+    width: 100%;
+    height: 100%;
+}
+
+.tool-icon i {
+    font-size: 1.75rem;
+    color: white;
+    z-index: 1;
+    position: relative;
+}
+
+.tool-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.tool-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.btn-tool-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-tool-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-tool-primary:hover::before {
+    left: 100%;
+}
+
+.btn-tool-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #003d82);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.3);
+}
+
+.btn-tool-primary i {
+    transition: transform 0.3s ease;
+}
+
+.btn-tool-primary:hover i {
+    transform: translateX(3px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .pdf-tool-card {
+        padding: 1.5rem;
+    }
+    
+    .tool-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .tool-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .tool-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* Loading Animation */
+@keyframes toolCardLoad {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pdf-tool-card {
+    animation: toolCardLoad 0.6s ease forwards;
+}
+
+.pdf-tool-card:nth-child(1) { animation-delay: 0.1s; }
+.pdf-tool-card:nth-child(2) { animation-delay: 0.2s; }
+.pdf-tool-card:nth-child(3) { animation-delay: 0.3s; }
+.pdf-tool-card:nth-child(4) { animation-delay: 0.4s; }
+.pdf-tool-card:nth-child(5) { animation-delay: 0.5s; }
+.pdf-tool-card:nth-child(6) { animation-delay: 0.6s; }
+.pdf-tool-card:nth-child(7) { animation-delay: 0.7s; }
+.pdf-tool-card:nth-child(8) { animation-delay: 0.8s; }
+</style>
 
 
 
