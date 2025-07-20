@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tool.name }} - Suntyn AI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #a855f7;
+            --dark-bg: #0f0f23;
+            --dark-surface: #1a1a2e;
+            --text-light: #e2e8f0;
+            --gradient: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+        }
+        
+        .tool-header {
+            background: var(--gradient);
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .upload-zone {
+            background: var(--dark-surface);
+            border: 2px dashed var(--primary);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--secondary);
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--secondary);
+            background: rgba(139, 92, 246, 0.2);
+            transform: scale(1.02);
+        }
+        
+        .options-panel {
+            background: var(--dark-surface);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .result-panel {
+            background: var(--dark-surface);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            display: none;
+        }
+        
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner-border {
+            color: var(--primary);
+        }
+        
+        .btn-process {
+            background: var(--gradient);
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-process:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+        
+        .form-control, .form-select {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--text-light);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(139, 92, 246, 0.25);
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <span style="font-size: 1.5rem;">🧠</span>
+                Suntyn AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tools">Tools</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tools/{{ category }}">{{ category_data.name }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">{{ tool.name }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Tool Header -->
+    <div class="tool-header">
+        <div class="container">
+            <div style="font-size: 4rem; color: white; margin-bottom: 1rem;">
+                <i class="{{ tool.icon }}"></i>
+            </div>
+            <h1 style="color: white; font-weight: 700; font-size: 3rem; margin-bottom: 1rem;">
+                {{ tool.name }}
+            </h1>
+            <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">
+                {{ tool.desc }}
+            </p>
+        </div>
+    </div>
+    
+    <!-- Tool Interface -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Upload Section -->
+            <div class="col-lg-8">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="mb-3">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 4rem; color: var(--primary);"></i>
+                    </div>
+                    <h4>Drop files here or click to upload</h4>
+                    <p class="text-muted">
+                        {% if category == 'pdf' %}
+                        Supports: PDF files (up to 100MB)
+                        {% elif category == 'image' %}
+                        Supports: JPG, PNG, WEBP, GIF (up to 50MB)
+                        {% elif category == 'ai' %}
+                        Supports: Text files, PDFs, Images
+                        {% else %}
+                        Various file formats supported
+                        {% endif %}
+                    </p>
+                    <input type="file" id="fileInput" multiple style="display: none;" 
+                           {% if category == 'pdf' %}accept=".pdf"{% elif category == 'image' %}accept="image/*"{% endif %}>
+                </div>
+                
+                <div id="fileList" class="mt-3"></div>
+            </div>
+            
+            <!-- Options Panel -->
+            <div class="col-lg-4">
+                <div class="options-panel">
+                    <h5><i class="fas fa-cog me-2"></i>Options</h5>
+                    
+                    <div id="toolOptions">
+                        {% if tool.id == 'pdf-splitter' %}
+                        <div class="mb-3">
+                            <label class="form-label">Pages per split:</label>
+                            <input type="number" class="form-control" id="pages_per_split" value="1" min="1">
+                        </div>
+                        {% elif tool.id == 'pdf-to-images' %}
+                        <div class="mb-3">
+                            <label class="form-label">DPI Quality:</label>
+                            <select class="form-select" id="dpi">
+                                <option value="72">72 DPI (Low)</option>
+                                <option value="150" selected>150 DPI (Medium)</option>
+                                <option value="300">300 DPI (High)</option>
+                            </select>
+                        </div>
+                        {% elif tool.id == 'image-resize' %}
+                        <div class="mb-3">
+                            <label class="form-label">Width (px):</label>
+                            <input type="number" class="form-control" id="width" value="800">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Height (px):</label>
+                            <input type="number" class="form-control" id="height" value="600">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="maintain_aspect" checked>
+                                <label class="form-check-label">Maintain aspect ratio</label>
+                            </div>
+                        </div>
+                        {% elif tool.id == 'image-compress' %}
+                        <div class="mb-3">
+                            <label class="form-label">Quality (%):</label>
+                            <input type="range" class="form-range" id="quality" min="10" max="100" value="85">
+                            <div class="text-center"><span id="qualityValue">85</span>%</div>
+                        </div>
+                        {% elif tool.id == 'format-converter' %}
+                        <div class="mb-3">
+                            <label class="form-label">Convert to:</label>
+                            <select class="form-select" id="target_format">
+                                <option value="PNG">PNG</option>
+                                <option value="JPG">JPG</option>
+                                <option value="WEBP">WEBP</option>
+                            </select>
+                        </div>
+                        {% elif tool.id == 'qr-generator' %}
+                        <div class="mb-3">
+                            <label class="form-label">Text/URL:</label>
+                            <textarea class="form-control" id="qr_data" rows="3" placeholder="Enter text or URL to encode"></textarea>
+                        </div>
+                        {% elif tool.id == 'password-generator' %}
+                        <div class="mb-3">
+                            <label class="form-label">Length:</label>
+                            <input type="number" class="form-control" id="length" value="12" min="4" max="128">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include_symbols">
+                                <label class="form-check-label">Include symbols</label>
+                            </div>
+                        </div>
+                        {% elif tool.id == 'text-analyzer' %}
+                        <div class="mb-3">
+                            <label class="form-label">Enter text to analyze:</label>
+                            <textarea class="form-control" id="text" rows="5" placeholder="Enter your text here..."></textarea>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <button class="btn btn-process w-100" id="processBtn" disabled>
+                        <i class="fas fa-play me-2"></i>
+                        Process Files
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Processing Indicator -->
+        <div class="processing" id="processing">
+            <div class="spinner-border mb-3" style="width: 3rem; height: 3rem;"></div>
+            <h4>Processing your files...</h4>
+            <p class="text-muted">This may take a few moments depending on file size.</p>
+        </div>
+        
+        <!-- Results Panel -->
+        <div class="result-panel" id="resultPanel">
+            <h5><i class="fas fa-check-circle me-2" style="color: #10b981;"></i>Processing Complete!</h5>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const processBtn = document.getElementById('processBtn');
+        const processing = document.getElementById('processing');
+        const resultPanel = document.getElementById('resultPanel');
+        const qualitySlider = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        
+        let selectedFiles = [];
+        
+        // Quality slider update
+        if (qualitySlider) {
+            qualitySlider.oninput = function() {
+                qualityValue.textContent = this.value;
+            }
+        }
+        
+        // Upload zone click
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        // File input change
+        fileInput.addEventListener('change', handleFiles);
+        
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFiles({ target: { files: e.dataTransfer.files } });
+        });
+        
+        function handleFiles(e) {
+            selectedFiles = Array.from(e.target.files);
+            updateFileList();
+            processBtn.disabled = selectedFiles.length === 0;
+        }
+        
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = '';
+                return;
+            }
+            
+            let html = '<div class="mt-3"><h6>Selected Files:</h6><div class="list-group">';
+            selectedFiles.forEach((file, index) => {
+                html += `
+                    <div class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-file me-2"></i>
+                            <strong>${file.name}</strong>
+                            <small class="text-muted ms-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+            fileList.innerHTML = html;
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+            processBtn.disabled = selectedFiles.length === 0;
+        }
+        
+        // Process button click
+        processBtn.addEventListener('click', processFiles);
+        
+        async function processFiles() {
+            const formData = new FormData();
+            
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            // Add options based on tool
+            {% if tool.id == 'pdf-splitter' %}
+            formData.append('pages_per_split', document.getElementById('pages_per_split').value);
+            {% elif tool.id == 'pdf-to-images' %}
+            formData.append('dpi', document.getElementById('dpi').value);
+            {% elif tool.id == 'image-resize' %}
+            formData.append('width', document.getElementById('width').value);
+            formData.append('height', document.getElementById('height').value);
+            formData.append('maintain_aspect', document.getElementById('maintain_aspect').checked);
+            {% elif tool.id == 'image-compress' %}
+            formData.append('quality', document.getElementById('quality').value);
+            {% elif tool.id == 'format-converter' %}
+            formData.append('target_format', document.getElementById('target_format').value);
+            {% elif tool.id == 'qr-generator' %}
+            formData.append('data', document.getElementById('qr_data').value);
+            {% elif tool.id == 'password-generator' %}
+            formData.append('length', document.getElementById('length').value);
+            formData.append('include_symbols', document.getElementById('include_symbols').checked);
+            {% elif tool.id == 'text-analyzer' %}
+            formData.append('text', document.getElementById('text').value);
+            {% endif %}
+            
+            // Show processing
+            processing.style.display = 'block';
+            processBtn.disabled = true;
+            resultPanel.style.display = 'none';
+            
+            try {
+                const response = await fetch('/process/{{ category }}/{{ tool.id }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                processing.style.display = 'none';
+                resultPanel.style.display = 'block';
+                
+                if (result.success) {
+                    showResult(result);
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                processing.style.display = 'none';
+                showError('Network error: ' + error.message);
+            }
+            
+            processBtn.disabled = false;
+        }
+        
+        function showResult(result) {
+            let html = '<div class="alert alert-success">' + result.message + '</div>';
+            
+            if (result.output_file) {
+                html += `
+                    <div class="d-grid gap-2">
+                        <a href="/download/${result.output_file}" class="btn btn-primary btn-lg" download="${result.filename}">
+                            <i class="fas fa-download me-2"></i>
+                            Download ${result.filename}
+                        </a>
+                    </div>
+                `;
+            }
+            
+            if (result.output_files) {
+                html += '<div class="row g-2 mt-2">';
+                result.output_files.forEach((file, index) => {
+                    html += `
+                        <div class="col-md-6">
+                            <a href="/download/${file.output_file}" class="btn btn-outline-primary btn-sm w-100" download="${file.filename}">
+                                <i class="fas fa-download me-2"></i>
+                                ${file.filename}
+                            </a>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            if (result.text_preview) {
+                html += `
+                    <div class="mt-3">
+                        <h6>Text Preview:</h6>
+                        <div class="bg-dark p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                            <pre style="white-space: pre-wrap; margin: 0;">${result.text_preview}</pre>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (result.analysis) {
+                html += '<div class="mt-3"><h6>Analysis Results:</h6><div class="row">';
+                Object.entries(result.analysis).forEach(([key, value]) => {
+                    html += `
+                        <div class="col-md-4 mb-2">
+                            <div class="bg-dark p-2 rounded text-center">
+                                <div class="h5 text-primary mb-0">${value}</div>
+                                <small class="text-muted">${key.replace('_', ' ').toUpperCase()}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            if (result.password) {
+                html += `
+                    <div class="mt-3">
+                        <h6>Generated Password:</h6>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="${result.password}" readonly>
+                            <button class="btn btn-outline-primary" onclick="navigator.clipboard.writeText('${result.password}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('resultContent').innerHTML = html;
+        }
+        
+        function showError(error) {
+            const html = `<div class="alert alert-danger"><strong>Error:</strong> ${error}</div>`;
+            document.getElementById('resultContent').innerHTML = html;
+            resultPanel.style.display = 'block';
+        }
+        
+        // Enable processing for tools that don't require files
+        {% if tool.id in ['qr-generator', 'password-generator', 'text-analyzer'] %}
+        processBtn.disabled = false;
+        {% endif %}
+    </script>
+</body>
+</html>

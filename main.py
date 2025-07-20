@@ -442,4 +442,4 @@ def process_govt_tool(tool_id, input_file, form_data):
         return {'success': False, 'error': f'Government document processing failed: {str(e)}'}
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
