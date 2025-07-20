@@ -58,38 +58,161 @@
                 <div class="col-lg-6">
                     <div class="hero-content">
                         <h1 class="display-4 fw-bold mb-4 hero-title">
-                            Transform Your Ideas into 
-                            <span class="text-info">Reality</span>
+                            Professional <span class="text-info">AI Tools</span>
+                            <br>for Everyone
                         </h1>
                         <p class="lead mb-4 text-light-emphasis">
-                            Experience the power of cutting-edge technology with our innovative solutions. 
-                            Build, create, and scale your projects with confidence.
+                            80+ powerful tools for PDF processing, image editing, audio/video conversion, 
+                            and government documents. All free, secure, and easy to use.
                         </p>
                         <div class="hero-buttons">
-                            <a href="#get-started" class="btn btn-info btn-lg me-3 smooth-scroll">
-                                <i class="fas fa-rocket me-2"></i>Get Started
+                            <a href="#tools" class="btn btn-info btn-lg me-3 smooth-scroll">
+                                <i class="fas fa-tools me-2"></i>Explore Tools
                             </a>
-                            <a href="#features" class="btn btn-outline-light btn-lg smooth-scroll">
-                                <i class="fas fa-play me-2"></i>Learn More
+                            <a href="/tools" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-th-large me-2"></i>All Tools
                             </a>
+                        </div>
+                        <div class="hero-stats mt-4">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h3 class="text-info mb-0">80+</h3>
+                                    <small class="text-light-emphasis">Tools</small>
+                                </div>
+                                <div class="col-4">
+                                    <h3 class="text-success mb-0">100%</h3>
+                                    <small class="text-light-emphasis">Free</small>
+                                </div>
+                                <div class="col-4">
+                                    <h3 class="text-warning mb-0">Fast</h3>
+                                    <small class="text-light-emphasis">Processing</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-illustration">
                         <div class="floating-card">
-                            <i class="fas fa-code text-info fa-3x mb-3"></i>
-                            <h5>Innovation</h5>
+                            <i class="fas fa-file-pdf text-danger fa-3x mb-3"></i>
+                            <h5>PDF Tools</h5>
+                            <small>25+ Tools</small>
                         </div>
                         <div class="floating-card delay-1">
-                            <i class="fas fa-lightbulb text-warning fa-3x mb-3"></i>
-                            <h5>Creativity</h5>
+                            <i class="fas fa-image text-primary fa-3x mb-3"></i>
+                            <h5>Image Tools</h5>
+                            <small>20+ Tools</small>
                         </div>
                         <div class="floating-card delay-2">
-                            <i class="fas fa-chart-line text-success fa-3x mb-3"></i>
-                            <h5>Growth</h5>
+                            <i class="fas fa-music text-success fa-3x mb-3"></i>
+                            <h5>Audio/Video</h5>
+                            <small>20+ Tools</small>
+                        </div>
+                        <div class="floating-card delay-3">
+                            <i class="fas fa-landmark text-warning fa-3x mb-3"></i>
+                            <h5>Govt Tools</h5>
+                            <small>15+ Tools</small>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tool Categories Section -->
+    <section id="tools" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">Choose Your Tool Category</h2>
+                    <p class="lead text-light-emphasis">Professional tools for all your needs</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for category_key, category_data in categories.items() %}
+                <div class="col-lg-6 col-md-6">
+                    <div class="category-card h-100" data-category="{{ category_key }}">
+                        <div class="category-header">
+                            <div class="category-icon {{ category_data.color }}">
+                                <i class="{{ category_data.icon }}"></i>
+                            </div>
+                            <div class="category-info">
+                                <h4 class="mb-2">{{ category_data.name }}</h4>
+                                <p class="text-light-emphasis mb-3">{{ category_data.tools|length }} professional tools</p>
+                                <a href="/tools/{{ category_key }}" class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-arrow-right me-2"></i>View Tools
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="category-preview">
+                            <div class="row g-2">
+                                {% for tool in category_data.tools[:6] %}
+                                <div class="col-6">
+                                    <div class="preview-tool">
+                                        <i class="{{ tool.icon }} me-2"></i>
+                                        <span class="tool-name">{{ tool.name }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if category_data.tools|length > 6 %}
+                            <div class="text-center mt-3">
+                                <small class="text-light-emphasis">+{{ category_data.tools|length - 6 }} more tools</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Quick Access Tools -->
+            <div class="row mt-5">
+                <div class="col-12 text-center mb-4">
+                    <h3>Popular Tools</h3>
+                    <p class="text-light-emphasis">Most used tools across all categories</p>
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <!-- Featured tools from each category -->
+                <div class="col-lg-3 col-md-6">
+                    <a href="/tool/pdf-merger" class="tool-card small">
+                        <div class="tool-icon red">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <h6>PDF Merger</h6>
+                        <p>Merge multiple PDF files</p>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="/tool/image-resize" class="tool-card small">
+                        <div class="tool-icon blue">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </div>
+                        <h6>Image Resizer</h6>
+                        <p>Resize images easily</p>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="/tool/audio-convert" class="tool-card small">
+                        <div class="tool-icon green">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h6>Audio Converter</h6>
+                        <p>Convert audio formats</p>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="/tool/pan-validator" class="tool-card small">
+                        <div class="tool-icon orange">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h6>PAN Validator</h6>
+                        <p>Validate PAN card format</p>
+                    </a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tool.name }} - SuntynAI Professional Toolkit</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-tools me-2"></i>SuntynAI
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tools">All Tools</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tools/{{ category }}">{{ category_data.name }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="pt-5 mt-5">
+        <div class="container">
+            <div class="breadcrumb-custom">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="/" class="text-info">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/tools" class="text-info">All Tools</a></li>
+                        <li class="breadcrumb-item"><a href="/tools/{{ category }}" class="text-info">{{ category_data.name }}</a></li>
+                        <li class="breadcrumb-item active">{{ tool.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-4 mb-4">
+                        <div class="tool-icon-large {{ category_data.color }}">
+                            <i class="{{ tool.icon }}"></i>
+                        </div>
+                        <div>
+                            <h1 class="display-5 fw-bold mb-2">{{ tool.name }}</h1>
+                            <p class="lead text-light-emphasis mb-3">{{ tool.desc }}</p>
+                            <div class="d-flex gap-3 align-items-center">
+                                <span class="badge bg-{{ category_data.color }} px-3 py-2">{{ category_data.name }}</span>
+                                <div class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>Free
+                                </div>
+                                <div class="text-info">
+                                    <i class="fas fa-shield-alt me-1"></i>Secure
+                                </div>
+                                <div class="text-warning">
+                                    <i class="fas fa-bolt me-1"></i>Fast
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tool Interface -->
+    <section class="pb-5">
+        <div class="container">
+            <div class="row">
+                <!-- Main Tool Area -->
+                <div class="col-lg-8">
+                    <div class="tool-interface">
+                        <!-- Step 1: Upload -->
+                        <div class="step-card mb-4">
+                            <div class="step-header">
+                                <div class="step-number">1</div>
+                                <h4>Upload Your File</h4>
+                            </div>
+                            <div class="upload-zone" id="uploadZone">
+                                <div class="upload-content">
+                                    <i class="fas fa-cloud-upload-alt upload-icon text-info"></i>
+                                    <h5>Drag and drop your file here</h5>
+                                    <p class="text-light-emphasis">or click to browse</p>
+                                    <input type="file" id="fileInput" class="d-none" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp3,.mp4,.wav">
+                                    <button class="btn btn-outline-info mt-3" onclick="document.getElementById('fileInput').click()">
+                                        <i class="fas fa-folder-open me-2"></i>Choose File
+                                    </button>
+                                </div>
+                                <div class="file-info d-none" id="fileInfo">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <i class="fas fa-file fa-2x text-success"></i>
+                                            <div>
+                                                <h6 class="mb-0" id="fileName"></h6>
+                                                <small class="text-light-emphasis" id="fileSize"></small>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="removeFile()">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Configure -->
+                        <div class="step-card mb-4 d-none" id="configStep">
+                            <div class="step-header">
+                                <div class="step-number">2</div>
+                                <h4>Configure Settings</h4>
+                            </div>
+                            <div class="config-options" id="configOptions">
+                                <!-- Dynamic options based on tool -->
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Process -->
+                        <div class="step-card mb-4 d-none" id="processStep">
+                            <div class="step-header">
+                                <div class="step-number">3</div>
+                                <h4>Process File</h4>
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-info btn-lg process-btn" id="processBtn" onclick="processFile()">
+                                    <i class="fas fa-cogs me-2"></i>Process {{ tool.name }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress -->
+                        <div class="progress-section d-none" id="progressSection">
+                            <div class="progress-custom mb-3">
+                                <div class="progress-bar-custom" id="progressBar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-center text-light-emphasis" id="progressText">Processing your file...</p>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="result-card d-none" id="resultSection">
+                            <div class="result-content">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h4>Processing Complete!</h4>
+                                <p class="text-light-emphasis mb-4">Your file has been processed successfully.</p>
+                                <div class="d-flex gap-3 justify-content-center">
+                                    <button class="btn btn-success btn-lg" id="downloadBtn">
+                                        <i class="fas fa-download me-2"></i>Download Result
+                                    </button>
+                                    <button class="btn btn-outline-light" onclick="resetTool()">
+                                        <i class="fas fa-redo me-2"></i>Process Another
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- How to Use -->
+                    <div class="sidebar-card mb-4">
+                        <h5><i class="fas fa-question-circle me-2 text-info"></i>How to Use</h5>
+                        <div class="how-to-steps">
+                            <div class="how-to-step">
+                                <div class="step-dot">1</div>
+                                <p>Upload your file using drag & drop or file browser</p>
+                            </div>
+                            <div class="how-to-step">
+                                <div class="step-dot">2</div>
+                                <p>Configure settings according to your needs</p>
+                            </div>
+                            <div class="how-to-step">
+                                <div class="step-dot">3</div>
+                                <p>Click process and download your result</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supported Formats -->
+                    <div class="sidebar-card mb-4">
+                        <h5><i class="fas fa-file-alt me-2 text-success"></i>Supported Formats</h5>
+                        <div class="format-list">
+                            {% if category == 'pdf' %}
+                            <span class="format-badge">PDF</span>
+                            <span class="format-badge">DOC</span>
+                            <span class="format-badge">DOCX</span>
+                            <span class="format-badge">TXT</span>
+                            {% elif category == 'image' %}
+                            <span class="format-badge">JPG</span>
+                            <span class="format-badge">PNG</span>
+                            <span class="format-badge">GIF</span>
+                            <span class="format-badge">BMP</span>
+                            <span class="format-badge">WEBP</span>
+                            {% elif category == 'audio' %}
+                            <span class="format-badge">MP3</span>
+                            <span class="format-badge">WAV</span>
+                            <span class="format-badge">MP4</span>
+                            <span class="format-badge">AVI</span>
+                            <span class="format-badge">MOV</span>
+                            {% elif category == 'govt' %}
+                            <span class="format-badge">PDF</span>
+                            <span class="format-badge">JPG</span>
+                            <span class="format-badge">PNG</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="sidebar-card">
+                        <h5><i class="fas fa-star me-2 text-warning"></i>Features</h5>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check text-success me-2"></i>100% Free to use</li>
+                            <li><i class="fas fa-check text-success me-2"></i>No registration required</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Secure processing</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Fast results</li>
+                            <li><i class="fas fa-check text-success me-2"></i>High quality output</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Tools -->
+    <section class="py-5 bg-dark">
+        <div class="container">
+            <h3 class="text-center mb-4">Related {{ category_data.name }}</h3>
+            <div class="row g-3">
+                {% for related_tool in category_data.tools[:4] %}
+                {% if related_tool.id != tool.id %}
+                <div class="col-lg-3 col-md-6">
+                    <a href="/tool/{{ related_tool.id }}" class="tool-card small">
+                        <div class="tool-icon {{ category_data.color }}">
+                            <i class="{{ related_tool.icon }}"></i>
+                        </div>
+                        <h6>{{ related_tool.name }}</h6>
+                        <p class="small">{{ related_tool.desc }}</p>
+                    </a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand">
+                        <i class="fas fa-tools me-2"></i>
+                        <span class="fw-bold">SuntynAI</span>
+                    </div>
+                    <p class="text-light-emphasis mb-0">Professional AI tools for everyone.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-light-emphasis mb-0">&copy; 2024 SuntynAI. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category_data.name }} - SuntynAI Professional Toolkit</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-tools me-2"></i>SuntynAI
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tools">All Tools</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/tools/{{ category }}">{{ category_data.name }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="pt-5 mt-5">
+        <div class="container">
+            <div class="breadcrumb-custom">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="/" class="text-info">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/tools" class="text-info">All Tools</a></li>
+                        <li class="breadcrumb-item active">{{ category_data.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-4 mb-4">
+                        <div class="category-icon {{ category_data.color }}" style="width: 100px; height: 100px; font-size: 3rem;">
+                            <i class="{{ category_data.icon }}"></i>
+                        </div>
+                        <div>
+                            <h1 class="display-5 fw-bold mb-2">{{ category_data.name }}</h1>
+                            <p class="lead text-light-emphasis mb-0">{{ category_data.tools|length }} professional tools for your needs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-secondary">
+                            <i class="fas fa-search text-info"></i>
+                        </span>
+                        <input type="text" class="form-control bg-transparent border-secondary" 
+                               placeholder="Search tools..." id="toolSearch">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Category Description -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="category-description p-4 rounded-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        {% if category == 'pdf' %}
+                        <p class="mb-0">Complete PDF toolkit with 25+ tools for merging, splitting, converting, compressing, and editing PDF files. Professional-grade tools for all your document needs.</p>
+                        {% elif category == 'image' %}
+                        <p class="mb-0">Comprehensive image editing suite with 20+ tools for resizing, format conversion, filters, background removal, and enhancement. Perfect for designers and content creators.</p>
+                        {% elif category == 'audio' %}
+                        <p class="mb-0">Audio and video processing toolkit with 20+ tools for conversion, editing, trimming, merging, and enhancement. Professional media tools for creators.</p>
+                        {% elif category == 'govt' %}
+                        <p class="mb-0">Government document tools with 15+ utilities for PAN validation, Aadhaar masking, certificate generation, and official form processing. Designed for Indian government documents.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Grid -->
+    <section class="pb-5">
+        <div class="container">
+            <div class="tool-grid">
+                {% for tool in category_data.tools %}
+                <a href="/tool/{{ tool.id }}" class="tool-card fade-in" data-tool-name="{{ tool.name.lower() }}">
+                    <div class="tool-icon {{ category_data.color }}">
+                        <i class="{{ tool.icon }}"></i>
+                    </div>
+                    <h5>{{ tool.name }}</h5>
+                    <p>{{ tool.desc }}</p>
+                    <div class="mt-auto pt-3">
+                        <div class="btn btn-outline-light btn-sm w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Use Tool
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5 bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-6 fw-bold mb-3">How It Works</h2>
+                    <p class="lead text-light-emphasis">Simple 3-step process for all tools</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="text-center">
+                        <div class="step-icon mb-3">
+                            <div class="rounded-circle bg-info d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="fas fa-upload fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5>1. Upload File</h5>
+                        <p class="text-light-emphasis">Drag and drop your file or click to browse. Supports multiple formats.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="text-center">
+                        <div class="step-icon mb-3">
+                            <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="fas fa-cogs fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5>2. Configure & Process</h5>
+                        <p class="text-light-emphasis">Choose your settings and let our AI process your file securely.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="text-center">
+                        <div class="step-icon mb-3">
+                            <div class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="fas fa-download fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5>3. Download Result</h5>
+                        <p class="text-light-emphasis">Download your processed file instantly or share it directly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand">
+                        <i class="fas fa-tools me-2"></i>
+                        <span class="fw-bold">SuntynAI</span>
+                    </div>
+                    <p class="text-light-emphasis mb-0">Professional AI tools for everyone.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-light-emphasis mb-0">&copy; 2024 SuntynAI. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Search functionality
+        document.getElementById('toolSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const toolCards = document.querySelectorAll('.tool-card');
+            
+            toolCards.forEach(card => {
+                const toolName = card.getAttribute('data-tool-name');
+                if (toolName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
