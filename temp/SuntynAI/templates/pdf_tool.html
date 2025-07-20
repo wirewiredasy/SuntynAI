@@ -1,0 +1,578 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tool.name }} - PDF Toolkit{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">PDF Toolkit</a></li>
+                    <li class="breadcrumb-item active">{{ tool.name }}</li>
+                </ol>
+            </nav>
+
+            <!-- Tool Header -->
+            <div class="tool-header mb-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="tool-icon-large me-4">
+                                <i class="{{ tool.icon }}"></i>
+                            </div>
+                            <div>
+                                <h1 class="mb-2">{{ tool.name }}</h1>
+                                <p class="lead text-muted mb-0">{{ tool.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="tool-stats">
+                            <div class="stat-item">
+                                <strong>{{ range(100, 999) | random }}K+</strong>
+                                <span>Files Processed</span>
+                            </div>
+                            <div class="rating">
+                                <div class="stars">⭐⭐⭐⭐⭐</div>
+                                <span>4.9/5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="tool-workspace">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4">
+                                <div id="tool-interface">
+                                    <!-- Step 1: File Upload -->
+                                    <div class="step-container active" data-step="1">
+                                        <div class="step-header">
+                                            <h4><i class="ti ti-upload"></i> Step 1: Upload Files</h4>
+                                            <p class="text-muted">Select your PDF files to process</p>
+                                        </div>
+                                        
+                                        <div class="upload-zone" id="dropZone">
+                                            <div class="upload-content">
+                                                <i class="ti ti-cloud-upload upload-icon"></i>
+                                                <h5>Drag & Drop PDF Files Here</h5>
+                                                <p class="text-muted">or click to browse</p>
+                                                <input type="file" id="fileInput" multiple accept=".pdf" class="d-none">
+                                                <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                                    Choose Files
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="fileList" class="file-list mt-3" style="display: none;">
+                                            <!-- Selected files will appear here -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 2: Tool Options -->
+                                    <div class="step-container" data-step="2">
+                                        <div class="step-header">
+                                            <h4><i class="ti ti-settings"></i> Step 2: Configure Options</h4>
+                                            <p class="text-muted">Customize processing settings</p>
+                                        </div>
+                                        
+                                        <div id="toolOptions">
+                                            {% if tool.id == 'pdf-compressor' %}
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Compression Level</label>
+                                                <select class="form-select" id="compressionLevel">
+                                                    <option value="light">Light (20% reduction)</option>
+                                                    <option value="medium" selected>Medium (45% reduction)</option>
+                                                    <option value="heavy">Heavy (65% reduction)</option>
+                                                    <option value="maximum">Maximum (80% reduction)</option>
+                                                </select>
+                                            </div>
+                                            {% elif tool.id == 'pdf-splitter' %}
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Split Method</label>
+                                                <select class="form-select" id="splitMethod">
+                                                    <option value="pages">By Page Range</option>
+                                                    <option value="every_n">Every N Pages</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group mb-3" id="pageRangeInput">
+                                                <label class="form-label">Page Ranges (e.g., 1-5,6-10)</label>
+                                                <input type="text" class="form-control" id="pageRanges" placeholder="1-5,6-10">
+                                            </div>
+                                            <div class="form-group mb-3" id="everyNInput" style="display: none;">
+                                                <label class="form-label">Pages per File</label>
+                                                <input type="number" class="form-control" id="everyN" value="5" min="1">
+                                            </div>
+                                            {% elif tool.id == 'pdf-watermark' %}
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Watermark Text</label>
+                                                <input type="text" class="form-control" id="watermarkText" placeholder="CONFIDENTIAL">
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Opacity</label>
+                                                    <input type="range" class="form-range" id="opacity" min="0.1" max="1" step="0.1" value="0.3">
+                                                    <span id="opacityValue">30%</span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Rotation</label>
+                                                    <input type="range" class="form-range" id="rotation" min="0" max="90" value="45">
+                                                    <span id="rotationValue">45°</span>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="alert alert-info">
+                                                <i class="ti ti-info-circle"></i>
+                                                No additional options needed. Click Process to continue.
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 3: Process -->
+                                    <div class="step-container" data-step="3">
+                                        <div class="step-header">
+                                            <h4><i class="ti ti-play"></i> Step 3: Process Files</h4>
+                                            <p class="text-muted">Process your PDF files</p>
+                                        </div>
+                                        
+                                        <div class="text-center">
+                                            <button id="processBtn" class="btn btn-success btn-lg">
+                                                <i class="ti ti-play"></i>
+                                                Process Files
+                                            </button>
+                                        </div>
+                                        
+                                        <div id="processingIndicator" class="processing-indicator mt-4" style="display: none;">
+                                            <div class="progress mb-3">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                     style="width: 0%"></div>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="spinner-border text-primary" role="status"></div>
+                                                <p class="mt-2">Processing your files...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 4: Download Results -->
+                                    <div class="step-container" data-step="4">
+                                        <div class="step-header">
+                                            <h4><i class="ti ti-download"></i> Step 4: Download Results</h4>
+                                            <p class="text-muted">Your processed files are ready</p>
+                                        </div>
+                                        
+                                        <div id="results" class="results-container">
+                                            <!-- Results will appear here -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation -->
+                                <div class="step-navigation mt-4">
+                                    <button id="prevBtn" class="btn btn-outline-secondary" style="display: none;">
+                                        <i class="ti ti-arrow-left"></i> Previous
+                                    </button>
+                                    <button id="nextBtn" class="btn btn-primary" style="display: none;">
+                                        Next <i class="ti ti-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="tool-sidebar">
+                        <!-- Tool Info -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <h5>About This Tool</h5>
+                                <p class="small text-muted">{{ tool.description }}</p>
+                                
+                                <div class="feature-list">
+                                    <div class="feature-item">
+                                        <i class="ti ti-check text-success"></i>
+                                        Fast Processing
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="ti ti-check text-success"></i>
+                                        High Quality Output
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="ti ti-check text-success"></i>
+                                        Secure & Private
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="ti ti-check text-success"></i>
+                                        No File Size Limits
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Related Tools -->
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Related Tools</h5>
+                                <div class="related-tools">
+                                    <a href="/pdf/tool/pdf-merger" class="related-tool">
+                                        <i class="ti ti-files"></i>
+                                        PDF Merger
+                                    </a>
+                                    <a href="/pdf/tool/pdf-splitter" class="related-tool">
+                                        <i class="ti ti-cut"></i>
+                                        PDF Splitter
+                                    </a>
+                                    <a href="/pdf/tool/pdf-compressor" class="related-tool">
+                                        <i class="ti ti-package"></i>
+                                        PDF Compressor
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2rem;
+    color: white;
+}
+
+.tool-stats {
+    text-align: center;
+}
+
+.stat-item {
+    margin-bottom: 1rem;
+}
+
+.stat-item strong {
+    display: block;
+    font-size: 1.5rem;
+    color: #007bff;
+}
+
+.upload-zone {
+    border: 2px dashed #007bff;
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    background: #f8f9fa;
+    border-color: #0056b3;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.step-container {
+    display: none;
+    padding: 2rem 0;
+}
+
+.step-container.active {
+    display: block;
+}
+
+.processing-indicator {
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.feature-item i {
+    margin-right: 0.5rem;
+}
+
+.related-tool {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    text-decoration: none;
+    color: #495057;
+    transition: color 0.3s ease;
+}
+
+.related-tool:hover {
+    color: #007bff;
+}
+
+.related-tool i {
+    margin-right: 0.75rem;
+    width: 1.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toolId = '{{ tool.id }}';
+    let currentStep = 1;
+    let uploadedFiles = [];
+
+    // File upload handling
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+        uploadedFiles = Array.from(files);
+        displayFiles();
+        showNextButton();
+    }
+
+    function displayFiles() {
+        fileList.innerHTML = '';
+        uploadedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item d-flex justify-content-between align-items-center p-3 border rounded mb-2';
+            fileItem.innerHTML = `
+                <div>
+                    <i class="ti ti-file-type-pdf text-danger me-2"></i>
+                    <span>${file.name}</span>
+                    <small class="text-muted ms-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                    <i class="ti ti-x"></i>
+                </button>
+            `;
+            fileList.appendChild(fileItem);
+        });
+        fileList.style.display = uploadedFiles.length > 0 ? 'block' : 'none';
+    }
+
+    // Step navigation
+    function showStep(step) {
+        document.querySelectorAll('.step-container').forEach(container => {
+            container.classList.remove('active');
+        });
+        document.querySelector(`[data-step="${step}"]`).classList.add('active');
+        
+        currentStep = step;
+        updateNavigation();
+    }
+
+    function showNextButton() {
+        if (currentStep === 1 && uploadedFiles.length > 0) {
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+    }
+
+    function updateNavigation() {
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+        nextBtn.style.display = currentStep < 3 ? 'inline-block' : 'none';
+    }
+
+    // Navigation event listeners
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentStep < 4) {
+            showStep(currentStep + 1);
+        }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentStep > 1) {
+            showStep(currentStep - 1);
+        }
+    });
+
+    // Process button
+    document.getElementById('processBtn').addEventListener('click', async () => {
+        const formData = new FormData();
+        
+        // Add files
+        uploadedFiles.forEach(file => {
+            if (toolId === 'pdf-merger') {
+                formData.append('pdfs', file);
+            } else {
+                formData.append('pdf', file);
+            }
+        });
+        
+        // Add tool-specific options
+        if (toolId === 'pdf-compressor') {
+            formData.append('compression_level', document.getElementById('compressionLevel').value);
+        } else if (toolId === 'pdf-splitter') {
+            const method = document.getElementById('splitMethod').value;
+            formData.append('split_type', method);
+            if (method === 'pages') {
+                formData.append('page_ranges', document.getElementById('pageRanges').value);
+            } else {
+                formData.append('every_n', document.getElementById('everyN').value);
+            }
+        } else if (toolId === 'pdf-watermark') {
+            formData.append('watermark_text', document.getElementById('watermarkText').value);
+            formData.append('opacity', document.getElementById('opacity').value);
+            formData.append('rotation', document.getElementById('rotation').value);
+        }
+
+        // Show processing indicator
+        document.getElementById('processingIndicator').style.display = 'block';
+        document.getElementById('processBtn').disabled = true;
+
+        try {
+            const endpoint = `/pdf/${toolId.replace('pdf-', '')}`;
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showResults(result);
+                showStep(4);
+            } else {
+                showError(result.error);
+            }
+        } catch (error) {
+            showError('Processing failed. Please try again.');
+        } finally {
+            document.getElementById('processingIndicator').style.display = 'none';
+            document.getElementById('processBtn').disabled = false;
+        }
+    });
+
+    function showResults(result) {
+        const resultsContainer = document.getElementById('results');
+        
+        if (result.download_urls) {
+            // Multiple files (splitter)
+            resultsContainer.innerHTML = result.download_urls.map((url, index) => `
+                <div class="result-item mb-3">
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>Split File ${index + 1}</h6>
+                                <small class="text-muted">Ready for download</small>
+                            </div>
+                            <a href="${url}" class="btn btn-primary">
+                                <i class="ti ti-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else if (result.download_url) {
+            // Single file
+            resultsContainer.innerHTML = `
+                <div class="result-item">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="ti ti-check-circle text-success" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">Processing Complete!</h5>
+                            <p class="text-muted">${result.message}</p>
+                            <a href="${result.download_url}" class="btn btn-success btn-lg">
+                                <i class="ti ti-download"></i> Download File
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function showError(error) {
+        const resultsContainer = document.getElementById('results');
+        resultsContainer.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="ti ti-exclamation-circle"></i>
+                <strong>Error:</strong> ${error}
+            </div>
+        `;
+        showStep(4);
+    }
+
+    // Tool-specific option handlers
+    if (document.getElementById('splitMethod')) {
+        document.getElementById('splitMethod').addEventListener('change', function() {
+            const method = this.value;
+            document.getElementById('pageRangeInput').style.display = method === 'pages' ? 'block' : 'none';
+            document.getElementById('everyNInput').style.display = method === 'every_n' ? 'block' : 'none';
+        });
+    }
+
+    if (document.getElementById('opacity')) {
+        document.getElementById('opacity').addEventListener('input', function() {
+            document.getElementById('opacityValue').textContent = Math.round(this.value * 100) + '%';
+        });
+    }
+
+    if (document.getElementById('rotation')) {
+        document.getElementById('rotation').addEventListener('input', function() {
+            document.getElementById('rotationValue').textContent = this.value + '°';
+        });
+    }
+
+    // Global function for removing files
+    window.removeFile = function(index) {
+        uploadedFiles.splice(index, 1);
+        displayFiles();
+        if (uploadedFiles.length === 0) {
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+    };
+});
+</script>
+{% endblock %}

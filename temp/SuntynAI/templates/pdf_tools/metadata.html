@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Metadata Editor{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-tags me-2"></i>
+                        PDF Metadata
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if not show_result %}
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button type="submit" name="action" value="view" class="btn btn-info me-2">
+                                <i class="ti ti-eye me-2"></i>View Metadata
+                            </button>
+                            <button type="submit" name="action" value="edit" class="btn btn-secondary">
+                                <i class="ti ti-edit me-2"></i>Edit Metadata
+                            </button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <h5>PDF Metadata:</h5>
+                        <ul>
+                        {% for key, value in metadata.items() %}
+                            <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

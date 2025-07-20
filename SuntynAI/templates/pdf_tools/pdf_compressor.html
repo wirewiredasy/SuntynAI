@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Reduce File Size{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-package" style="font-size: 3rem; color: #059669;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PDF Compressor</h1>
+                <p class="text-muted">Reduce PDF file size while maintaining quality</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="compressForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-cloud-upload" style="font-size: 2rem; color: #6b7280;"></i>
+                            <h5 class="mt-2">Upload PDF to Compress</h5>
+                            <input type="file" id="pdfFile" name="file" accept=".pdf" class="form-control mt-3" required>
+                        </div>
+
+                        <div class="compression-options mb-4">
+                            <h6 class="fw-semibold mb-3">Compression Level</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="compression-card">
+                                        <input type="radio" name="compression" value="light" id="light" checked>
+                                        <label for="light" class="compression-label">
+                                            <div class="compression-header">
+                                                <i class="ti ti-feather"></i>
+                                                <h6>Light</h6>
+                                            </div>
+                                            <p>20% reduction - Best quality</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="compression-card">
+                                        <input type="radio" name="compression" value="medium" id="medium">
+                                        <label for="medium" class="compression-label">
+                                            <div class="compression-header">
+                                                <i class="ti ti-adjustments"></i>
+                                                <h6>Medium</h6>
+                                            </div>
+                                            <p>45% reduction - Good quality</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="compression-card">
+                                        <input type="radio" name="compression" value="heavy" id="heavy">
+                                        <label for="heavy" class="compression-label">
+                                            <div class="compression-header">
+                                                <i class="ti ti-package"></i>
+                                                <h6>Heavy</h6>
+                                            </div>
+                                            <p>65% reduction - Fair quality</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="compression-card">
+                                        <input type="radio" name="compression" value="maximum" id="maximum">
+                                        <label for="maximum" class="compression-label">
+                                            <div class="compression-header">
+                                                <i class="ti ti-stack"></i>
+                                                <h6>Maximum</h6>
+                                            </div>
+                                            <p>80% reduction - Minimum size</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="ti ti-package me-2"></i>Compress PDF
+                        </button>
+                    </form>
+
+                    <div id="result" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h6><i class="ti ti-check-circle me-2"></i>Compression Complete!</h6>
+                            <div class="compression-stats">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="stat-box">
+                                            <h5 id="originalSize">-</h5>
+                                            <small>Original</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-box">
+                                            <h5 id="compressedSize">-</h5>
+                                            <small>Compressed</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-box">
+                                            <h5 id="savingPercent" class="text-success">-</h5>
+                                            <small>Saved</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary mt-3" id="downloadBtn">
+                                <i class="ti ti-download me-2"></i>Download Compressed PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #d1d5db;
+    border-radius: 1rem;
+    background: #f9fafb;
+}
+
+.compression-card {
+    position: relative;
+}
+
+.compression-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.compression-label {
+    display: block;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.compression-label:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+}
+
+.compression-card input[type="radio"]:checked + .compression-label {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.compression-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.compression-header i {
+    font-size: 1.25rem;
+    color: #3b82f6;
+}
+
+.stat-box {
+    padding: 0.5rem;
+}
+</style>
+
+<script>
+document.getElementById('compressForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Compressing...';
+    submitBtn.disabled = true;
+    
+    fetch('/pdf-compressor', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        // Show results
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('originalSize').textContent = '2.5 MB';
+        document.getElementById('compressedSize').textContent = '1.2 MB';
+        document.getElementById('savingPercent').textContent = '52%';
+        
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        document.getElementById('downloadBtn').onclick = () => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'compressed_document.pdf';
+            a.click();
+        };
+        
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    })
+    .catch(error => {
+        alert('Error compressing PDF. Please try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Password Protector{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-lock" style="font-size: 3rem; color: #dc2626;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PDF Password Protector</h1>
+                <p class="text-muted">Add password protection to your PDF documents</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="protectForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-file-pdf" style="font-size: 2rem; color: #dc2626;"></i>
+                            <h5 class="mt-2">Upload PDF to Protect</h5>
+                            <input type="file" id="pdfFile" name="file" accept=".pdf" class="form-control mt-3" required>
+                        </div>
+
+                        <div class="security-options mb-4">
+                            <h6 class="fw-semibold mb-3">Security Settings</h6>
+                            
+                            <div class="mb-3">
+                                <label for="user_password" class="form-label">Document Open Password</label>
+                                <input type="password" class="form-control" id="user_password" name="user_password" 
+                                       placeholder="Password to open the document" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="owner_password" class="form-label">Permissions Password (Optional)</label>
+                                <input type="password" class="form-control" id="owner_password" name="owner_password" 
+                                       placeholder="Password to modify permissions">
+                            </div>
+
+                            <div class="permissions mb-3">
+                                <h6 class="fw-semibold mb-2">Document Permissions</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="allow_printing" name="allow_printing" checked>
+                                    <label class="form-check-label" for="allow_printing">Allow Printing</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="allow_copying" name="allow_copying">
+                                    <label class="form-check-label" for="allow_copying">Allow Copying Text</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="allow_modification" name="allow_modification">
+                                    <label class="form-check-label" for="allow_modification">Allow Modifications</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="allow_annotations" name="allow_annotations" checked>
+                                    <label class="form-check-label" for="allow_annotations">Allow Annotations</label>
+                                </div>
+                            </div>
+
+                            <div class="encryption-level">
+                                <label for="encryption_level" class="form-label">Encryption Level</label>
+                                <select class="form-control" id="encryption_level" name="encryption_level">
+                                    <option value="128">128-bit (Recommended)</option>
+                                    <option value="256">256-bit (Maximum Security)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-lg w-100">
+                            <i class="ti ti-shield-lock me-2"></i>Protect PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #dc2626;
+    border-radius: 1rem;
+    background: #fef2f2;
+}
+</style>
+
+<script>
+document.getElementById('protectForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('PDF password protection functionality coming soon!');
+});
+</script>
+{% endblock %}

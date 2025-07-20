@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Redaction{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-eraser me-2"></i>
+                        PDF Redaction
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Text to Redact</label>
+                            <input type="text" name="redact_text" class="form-control" 
+                                   placeholder="Enter text to redact" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger">
+                            <i class="ti ti-eraser me-2"></i>Redact Text
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

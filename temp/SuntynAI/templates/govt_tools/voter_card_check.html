@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Voter Card Validator{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-id-badge" style="font-size: 3rem; color: #f59e0b;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Voter Card Validator</h1>
+                <p class="text-muted">Validate and verify voter ID card details</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="voterCardForm" method="POST">
+                        <div class="mb-4">
+                            <label for="voter_id" class="form-label fw-semibold">
+                                <i class="ti ti-id me-2"></i>Voter ID Number
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="voter_id" name="voter_id" 
+                                   placeholder="Enter Voter ID (e.g., ABC1234567)" maxlength="10" required>
+                            <div class="form-text">Enter your 10-character Voter ID number</div>
+                        </div>
+
+                        <div class="validation-options mb-4">
+                            <h6 class="fw-semibold mb-3">Validation Options</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="format_check" name="format_check" checked>
+                                <label class="form-check-label" for="format_check">
+                                    Format Validation
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="constituency_check" name="constituency_check">
+                                <label class="form-check-label" for="constituency_check">
+                                    Constituency Information
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="status_check" name="status_check">
+                                <label class="form-check-label" for="status_check">
+                                    Active Status Check
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning btn-lg w-100">
+                            <i class="ti ti-shield-check me-2"></i>Validate Voter ID
+                        </button>
+                    </form>
+
+                    <div id="validationResult" class="mt-4" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6><i class="ti ti-info-circle me-2"></i>Validation Results</h6>
+                            <div id="resultContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information Section -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="info-card text-center p-3">
+                        <i class="ti ti-shield" style="font-size: 2rem; color: #f59e0b;"></i>
+                        <h6 class="mt-2">Secure Validation</h6>
+                        <p class="small text-muted">Privacy-protected verification</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-card text-center p-3">
+                        <i class="ti ti-clock" style="font-size: 2rem; color: #10b981;"></i>
+                        <h6 class="mt-2">Instant Results</h6>
+                        <p class="small text-muted">Real-time validation</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-card text-center p-3">
+                        <i class="ti ti-database" style="font-size: 2rem; color: #3b82f6;"></i>
+                        <h6 class="mt-2">Updated Database</h6>
+                        <p class="small text-muted">Latest electoral data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.getElementById('voterCardForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const voterID = document.getElementById('voter_id').value;
+    const resultDiv = document.getElementById('validationResult');
+    const contentDiv = document.getElementById('resultContent');
+    
+    // Simple format validation
+    const voterIdPattern = /^[A-Z]{3}[0-9]{7}$/;
+    
+    if (voterIdPattern.test(voterID)) {
+        contentDiv.innerHTML = `
+            <p><strong>Voter ID:</strong> ${voterID}</p>
+            <p><strong>Format:</strong> ✅ Valid</p>
+            <p><strong>State Code:</strong> ${voterID.substring(0, 3)}</p>
+            <p class="text-muted small">Note: This is a format validation only. For full verification, please contact Election Commission.</p>
+        `;
+        resultDiv.style.display = 'block';
+    } else {
+        contentDiv.innerHTML = `
+            <p><strong>Voter ID:</strong> ${voterID}</p>
+            <p><strong>Format:</strong> ❌ Invalid</p>
+            <p class="text-muted">Please enter a valid Voter ID in the format: ABC1234567</p>
+        `;
+        resultDiv.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

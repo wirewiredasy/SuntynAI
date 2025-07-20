@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+{% block title %}Text to PDF Converter{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h2><i class="ti ti-writing me-2"></i>Text to PDF Converter</h2>
+                    <p class="mb-0">Convert plain text to formatted PDF</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="text" class="form-label fw-bold">Enter Text Content</label>
+                            <textarea class="form-control" id="text" name="text" rows="10" placeholder="Enter your text here..." required></textarea>
+                            <div class="invalid-feedback">Please enter some text.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="font_size" class="form-label fw-bold">Font Size</label>
+                            <select class="form-select" id="font_size" name="font_size">
+                                <option value="10">10pt</option>
+                                <option value="12" selected>12pt</option>
+                                <option value="14">14pt</option>
+                                <option value="16">16pt</option>
+                                <option value="18">18pt</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-lg">
+                                <i class="ti ti-download me-2"></i>Generate PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Professional PDF Toolkit{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-4">
+                <div class="tool-icon-large mx-auto mb-3">
+                    <i class="ti ti-cut"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-2">PDF Splitter</h1>
+                <p class="lead text-muted">Split PDF files into separate documents by pages</p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control form-control-lg" 
+                                   accept=".pdf" required>
+                            <div class="form-text">Select a PDF file to split into pages</div>
+                        </div>
+
+                        <!-- Split Options -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Split Method</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="split_method" value="all_pages" id="allPages" checked>
+                                <label class="form-check-label" for="allPages">
+                                    Split into individual pages
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="split_method" value="page_range" id="pageRange">
+                                <label class="form-check-label" for="pageRange">
+                                    Extract specific page range
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Page Range Input -->
+                        <div class="mb-4" id="rangeInput" style="display: none;">
+                            <label class="form-label fw-bold">Page Range</label>
+                            <input type="text" name="page_range" class="form-control form-control-lg" 
+                                   placeholder="e.g., 1-5 or 2,4,6-8">
+                            <div class="form-text">Enter page numbers or ranges (e.g., 1-5, 2,4, 6-8)</div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">
+                                <i class="ti ti-cut me-2"></i>Split PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('input[name="split_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const rangeInput = document.getElementById('rangeInput');
+        if (this.value === 'page_range') {
+            rangeInput.style.display = 'block';
+        } else {
+            rangeInput.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-control-lg {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.form-control-lg:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+}
+</style>
+{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Split PDF into Multiple Files{% endblock %}
+
+{% block content %}
+<div class="tool-container">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Tool Header -->
+            <div class="col-12">
+                <div class="tool-header">
+                    <div class="tool-icon-large">
+                        <i class="ti ti-cut"></i>
+                    </div>
+                    <h1 class="tool-title">PDF Splitter</h1>
+                    <p class="tool-description">Split PDF files by pages, ranges, or intervals</p>
+                </div>
+            </div>
+            
+            <!-- Main Tool Content -->
+            <div class="col-lg-8">
+                <div class="tool-card">
+                    <form method="POST" enctype="multipart/form-data" class="tool-form">
+                        <!-- File Upload Section -->
+                        <div class="upload-section">
+                            <div class="upload-zone" id="uploadZone">
+                                <i class="ti ti-cloud-upload upload-icon"></i>
+                                <h3>Drop PDF file here</h3>
+                                <p>or click to browse</p>
+                                <input type="file" name="pdf" accept=".pdf" required class="file-input" id="pdfFile">
+                            </div>
+                        </div>
+                        
+                        <!-- Split Options -->
+                        <div class="options-section">
+                            <h4>Split Options</h4>
+                            <div class="split-options">
+                                <div class="option-card active" data-type="pages">
+                                    <i class="ti ti-file-text"></i>
+                                    <h5>Specific Pages</h5>
+                                    <p>Extract specific pages</p>
+                                    <input type="text" name="pages" placeholder="e.g., 1,3,5-10" class="form-control">
+                                </div>
+                                
+                                <div class="option-card" data-type="range">
+                                    <i class="ti ti-arrows-horizontal"></i>
+                                    <h5>Page Range</h5>
+                                    <p>Extract a range of pages</p>
+                                    <div class="range-inputs">
+                                        <input type="number" name="start_page" placeholder="Start" class="form-control">
+                                        <input type="number" name="end_page" placeholder="End" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="option-card" data-type="interval">
+                                    <i class="ti ti-stack-2"></i>
+                                    <h5>Every N Pages</h5>
+                                    <p>Split every N pages</p>
+                                    <input type="number" name="every_n" placeholder="Pages per file" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="split_type" value="pages">
+                        
+                        <button type="submit" class="btn-process">
+                            <i class="ti ti-cut"></i>
+                            Split PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tool Info Sidebar -->
+            <div class="col-lg-4">
+                <div class="tool-sidebar">
+                    <div class="info-card">
+                        <h4>How it works</h4>
+                        <ul>
+                            <li>Upload your PDF file</li>
+                            <li>Choose split method</li>
+                            <li>Download individual files</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="features-card">
+                        <h4>Features</h4>
+                        <div class="feature-list">
+                            <span class="feature-tag">Page Ranges</span>
+                            <span class="feature-tag">Specific Pages</span>
+                            <span class="feature-tag">Interval Split</span>
+                            <span class="feature-tag">Batch Download</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+}
+
+.tool-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+}
+
+.tool-icon-large {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.tool-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.tool-description {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.tool-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.upload-zone {
+    border: 3px dashed #667eea;
+    border-radius: 15px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+
+.upload-zone:hover {
+    border-color: #764ba2;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.split-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.option-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-card:hover,
+.option-card.active {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-2px);
+}
+
+.option-card i {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.range-inputs {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-process {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-process:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.tool-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-card,
+.features-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h4,
+.features-card h4 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 2rem;
+}
+
+.info-card li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.feature-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.feature-tag {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('pdfFile');
+    const optionCards = document.querySelectorAll('.option-card');
+    const splitTypeInput = document.querySelector('input[name="split_type"]');
+    
+    // File upload handling
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.style.background = 'rgba(102, 126, 234, 0.1)';
+    });
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.style.background = '';
+    });
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        uploadZone.style.background = '';
+    });
+    
+    // Option selection
+    optionCards.forEach(card => {
+        card.addEventListener('click', function() {
+            optionCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            splitTypeInput.value = this.dataset.type;
+        });
+    });
+});
+</script>
+{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Split PDF Pages{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center">
+                    <h2><i class="ti ti-cut"></i> PDF Splitter</h2>
+                    <p class="mb-0">Split PDF into separate pages or ranges</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Split Type</label>
+                            <select name="split_type" class="form-select">
+                                <option value="pages">Specific Pages (e.g., 1,3,5-10)</option>
+                                <option value="range">Page Range</option>
+                                <option value="every_n">Every N Pages</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4" id="pages-input">
+                            <label class="form-label">Pages</label>
+                            <input type="text" name="pages" class="form-control" placeholder="1,3,5-10">
+                        </div>
+                        
+                        <div class="mb-4" id="range-input" style="display:none;">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">Start Page</label>
+                                    <input type="number" name="start_page" class="form-control" min="1">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">End Page</label>
+                                    <input type="number" name="end_page" class="form-control" min="1">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4" id="every-n-input" style="display:none;">
+                            <label class="form-label">Every N Pages</label>
+                            <input type="number" name="every_n" class="form-control" min="1" value="1">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="ti ti-cut"></i> Split PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('select[name="split_type"]').addEventListener('change', function() {
+    document.getElementById('pages-input').style.display = 'none';
+    document.getElementById('range-input').style.display = 'none';
+    document.getElementById('every-n-input').style.display = 'none';
+    
+    if (this.value === 'pages') {
+        document.getElementById('pages-input').style.display = 'block';
+    } else if (this.value === 'range') {
+        document.getElementById('range-input').style.display = 'block';
+    } else if (this.value === 'every_n') {
+        document.getElementById('every-n-input').style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Grayscale Converter - Black & White Images{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-palette" style="font-size: 3rem; color: #6b7280;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Grayscale Converter</h1>
+                <p class="text-muted">Convert colorful images to beautiful black and white</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="grayscaleForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-photo" style="font-size: 2rem; color: #6b7280;"></i>
+                            <h5 class="mt-2">Upload Images</h5>
+                            <input type="file" id="imageFiles" name="files" accept="image/*" class="form-control mt-3" multiple required>
+                            <div class="form-text">Select one or multiple images to convert</div>
+                        </div>
+
+                        <div class="conversion-options mb-4">
+                            <h6 class="fw-semibold mb-3">Conversion Method</h6>
+                            
+                            <div class="method-cards">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="method-card">
+                                            <input type="radio" name="method" value="luminance" id="luminance" checked>
+                                            <label for="luminance" class="method-label">
+                                                <i class="ti ti-sun"></i>
+                                                <h6>Luminance</h6>
+                                                <p>Standard grayscale conversion</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="method-card">
+                                            <input type="radio" name="method" value="average" id="average">
+                                            <label for="average" class="method-label">
+                                                <i class="ti ti-chart-line"></i>
+                                                <h6>Average</h6>
+                                                <p>Simple RGB averaging</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="method-card">
+                                            <input type="radio" name="method" value="desaturate" id="desaturate">
+                                            <label for="desaturate" class="method-label">
+                                                <i class="ti ti-droplet-off"></i>
+                                                <h6>Desaturate</h6>
+                                                <p>Remove color saturation</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="method-card">
+                                            <input type="radio" name="method" value="channel" id="channel">
+                                            <label for="channel" class="method-label">
+                                                <i class="ti ti-color-filter"></i>
+                                                <h6>Single Channel</h6>
+                                                <p>Use specific color channel</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="channelOptions" style="display: none;" class="mt-3">
+                                <label for="color_channel" class="form-label">Color Channel</label>
+                                <select class="form-control" id="color_channel" name="color_channel">
+                                    <option value="red">Red Channel</option>
+                                    <option value="green">Green Channel</option>
+                                    <option value="blue">Blue Channel</option>
+                                </select>
+                            </div>
+
+                            <div class="advanced-options mt-3">
+                                <h6 class="fw-semibold mb-2">Advanced Options</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="contrast" class="form-label">Contrast: <span id="contrastValue">0</span></label>
+                                        <input type="range" class="form-range" id="contrast" name="contrast" min="-50" max="50" value="0">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="brightness" class="form-label">Brightness: <span id="brightnessValue">0</span></label>
+                                        <input type="range" class="form-range" id="brightness" name="brightness" min="-50" max="50" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-lg w-100">
+                            <i class="ti ti-palette me-2"></i>Convert to Grayscale
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #6b7280;
+    border-radius: 1rem;
+    background: #f9fafb;
+}
+
+.method-card {
+    position: relative;
+}
+
+.method-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.method-label {
+    display: block;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.method-label:hover {
+    border-color: #6b7280;
+    background: #f9fafb;
+}
+
+.method-card input[type="radio"]:checked + .method-label {
+    border-color: #6b7280;
+    background: #f9fafb;
+    color: #6b7280;
+}
+
+.method-label i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.method-label h6 {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.method-label p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+</style>
+
+<script>
+document.querySelectorAll('input[name="method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById('channelOptions').style.display = 
+            this.value === 'channel' ? 'block' : 'none';
+    });
+});
+
+document.getElementById('contrast').addEventListener('input', function() {
+    document.getElementById('contrastValue').textContent = this.value;
+});
+
+document.getElementById('brightness').addEventListener('input', function() {
+    document.getElementById('brightnessValue').textContent = this.value;
+});
+
+document.getElementById('grayscaleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Grayscale conversion functionality coming soon!');
+});
+</script>
+{% endblock %}

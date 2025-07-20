@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Aadhaar Masker - Government Tools{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-shield-check" style="font-size: 3rem; color: #10b981;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Aadhaar Masker</h1>
+                <p class="text-muted">Mask Aadhaar number for secure sharing and privacy protection</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="aadhaarForm" method="POST">
+                        <div class="mb-4">
+                            <label for="aadhaar_number" class="form-label fw-semibold">
+                                <i class="ti ti-shield-check me-2"></i>Aadhaar Number
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="aadhaar_number" name="aadhaar_number" 
+                                   placeholder="Enter 12-digit Aadhaar number"
+                                   maxlength="14"
+                                   required>
+                            <div class="form-text">Enter 12-digit Aadhaar number (spaces/hyphens will be removed)</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="ti ti-mask me-2"></i>Mask Aadhaar
+                        </button>
+                    </form>
+
+                    <!-- Result Display -->
+                    <div id="result" class="mt-4 d-none">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h6 class="card-title text-success">
+                                    <i class="ti ti-check-circle me-2"></i>Masked Aadhaar Number
+                                </h6>
+                                <div class="masked-number p-3 bg-light rounded text-center">
+                                    <h4 class="mb-0 font-monospace" id="maskedNumber"></h4>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm mt-3" onclick="copyMasked()">
+                                    <i class="ti ti-copy me-1"></i>Copy Masked Number
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Notice -->
+            <div class="alert alert-info mt-4">
+                <i class="ti ti-info-circle me-2"></i>
+                <strong>Privacy Protection:</strong> This tool masks the first 8 digits of your Aadhaar number, 
+                showing only the last 4 digits for identification purposes while maintaining privacy.
+            </div>
+
+            <!-- How to Use -->
+            <div class="card mt-4 border-0" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-3">
+                        <i class="ti ti-info-circle me-2"></i>How to Use
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="step-number me-3">1</div>
+                                <div>
+                                    <h6 class="fw-semibold">Enter Aadhaar</h6>
+                                    <p class="text-muted small mb-0">Type your 12-digit Aadhaar number</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="step-number me-3">2</div>
+                                <div>
+                                    <h6 class="fw-semibold">Click Mask</h6>
+                                    <p class="text-muted small mb-0">Generate masked version instantly</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="step-number me-3">3</div>
+                                <div>
+                                    <h6 class="fw-semibold">Copy & Share</h6>
+                                    <p class="text-muted small mb-0">Use masked number safely</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('aadhaarForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const aadhaarNumber = document.getElementById('aadhaar_number').value;
+    const resultDiv = document.getElementById('result');
+    
+    try {
+        const response = await fetch('/aadhaar-mask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `aadhaar_number=${encodeURIComponent(aadhaarNumber)}`
+        });
+        
+        const data = await response.json();
+        
+        document.getElementById('maskedNumber').textContent = data.masked;
+        resultDiv.classList.remove('d-none');
+        
+        // Animate the result
+        gsap.from("#result", {duration: 0.5, opacity: 0, y: 20});
+        
+    } catch (error) {
+        alert('Error masking Aadhaar number. Please check the format and try again.');
+    }
+});
+
+function copyMasked() {
+    const maskedText = document.getElementById('maskedNumber').textContent;
+    navigator.clipboard.writeText(maskedText).then(function() {
+        // Show success feedback
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="ti ti-check me-1"></i>Copied!';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-outline-primary');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+        }, 2000);
+    });
+}
+
+// Format Aadhaar input
+document.getElementById('aadhaar_number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 12) value = value.slice(0, 12);
+    
+    // Add spaces for better readability
+    if (value.length > 4 && value.length <= 8) {
+        value = value.slice(0, 4) + ' ' + value.slice(4);
+    } else if (value.length > 8) {
+        value = value.slice(0, 4) + ' ' + value.slice(4, 8) + ' ' + value.slice(8);
+    }
+    
+    e.target.value = value;
+});
+</script>
+
+<style>
+.step-number {
+    width: 30px;
+    height: 30px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.tool-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
+}
+
+.masked-number {
+    border: 2px dashed #10b981;
+}
+</style>
+{% endblock %}

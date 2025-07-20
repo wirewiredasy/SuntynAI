@@ -1,0 +1,134 @@
+
+{% extends "base.html" %}
+
+{% block title %}Cookie Policy - Suntyn AI{% endblock %}
+{% block description %}Learn about how we use cookies to enhance your experience{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold gradient-text">
+                    <i class="ti ti-cookie me-3"></i>Cookie Policy
+                </h1>
+                <p class="lead text-muted">How we use cookies to improve your experience</p>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">What Are Cookies?</h2>
+                        <p>Cookies are small text files that are placed on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and analyzing how you use our site.</p>
+                    </div>
+
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Types of Cookies We Use</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-success">
+                                            <i class="ti ti-shield-check me-2"></i>Essential Cookies
+                                        </h5>
+                                        <p class="card-text">Required for basic website functionality. These cannot be disabled.</p>
+                                        <ul class="small">
+                                            <li>Session management</li>
+                                            <li>Security features</li>
+                                            <li>Basic functionality</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-info">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-info">
+                                            <i class="ti ti-chart-line me-2"></i>Analytics Cookies
+                                        </h5>
+                                        <p class="card-text">Help us understand how visitors interact with our website.</p>
+                                        <ul class="small">
+                                            <li>Page views</li>
+                                            <li>User behavior</li>
+                                            <li>Performance metrics</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-warning">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-warning">
+                                            <i class="ti ti-target me-2"></i>Marketing Cookies
+                                        </h5>
+                                        <p class="card-text">Used to deliver relevant advertisements and measure effectiveness.</p>
+                                        <ul class="small">
+                                            <li>Ad targeting</li>
+                                            <li>Campaign tracking</li>
+                                            <li>Conversion measurement</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary">
+                                            <i class="ti ti-settings me-2"></i>Functional Cookies
+                                        </h5>
+                                        <p class="card-text">Enable enhanced functionality and personalization.</p>
+                                        <ul class="small">
+                                            <li>User preferences</li>
+                                            <li>Language settings</li>
+                                            <li>Personalization</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Managing Your Cookie Preferences</h2>
+                        <p>You can control your cookie preferences at any time:</p>
+                        
+                        <div class="text-center mb-4">
+                            <button class="btn btn-primary btn-lg" onclick="showCookieSettings()">
+                                <i class="ti ti-settings me-2"></i>Manage Cookie Preferences
+                            </button>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="ti ti-info-circle me-2"></i>
+                            You can also manage cookies through your browser settings, but this may affect website functionality.
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Third-Party Cookies</h2>
+                        <p>We use trusted third-party services that may set their own cookies:</p>
+                        <ul>
+                            <li><strong>Google Analytics:</strong> For website analytics and performance monitoring</li>
+                            <li><strong>CDN Providers:</strong> For faster content delivery</li>
+                            <li><strong>Security Services:</strong> For protection against threats</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Contact Us</h2>
+                        <p>If you have questions about our cookie policy, please contact us:</p>
+                        <div class="card bg-light p-3">
+                            <p class="mb-1"><strong>Email:</strong> privacy@suntyn.ai</p>
+                            <p class="mb-0"><strong>Subject:</strong> Cookie Policy Inquiry</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

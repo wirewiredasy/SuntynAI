@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Digital Signature{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-signature me-2"></i>
+                        Digital Signature
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Signature Text</label>
+                            <input type="text" name="signature" class="form-control" 
+                                   placeholder="Your signature text" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Position</label>
+                            <select name="position" class="form-select">
+                                <option value="bottom-right">Bottom Right</option>
+                                <option value="bottom-left">Bottom Left</option>
+                                <option value="top-right">Top Right</option>
+                                <option value="top-left">Top Left</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-signature me-2"></i>Add Signature
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

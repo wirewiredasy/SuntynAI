@@ -1,0 +1,33 @@
+
+{% extends "base.html" %}
+{% block title %}Excel to PDF Converter{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center">
+                    <h2><i class="ti ti-table me-2"></i>Excel to PDF Converter</h2>
+                    <p class="mb-0">Convert Excel spreadsheets to PDF format</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="excel" class="form-label fw-bold">Select Excel File</label>
+                            <input type="file" class="form-control form-control-lg" id="excel" name="excel" accept=".xls,.xlsx" required>
+                            <div class="invalid-feedback">Please select an Excel file.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="ti ti-download me-2"></i>Convert to PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

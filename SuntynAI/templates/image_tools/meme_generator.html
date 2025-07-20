@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Meme Generator - Create Funny Memes{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-mood-smile" style="font-size: 3rem; color: #f59e0b;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Meme Generator</h1>
+                <p class="text-muted">Create hilarious memes with custom text and images</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-4">
+                            <form id="memeForm" method="POST" enctype="multipart/form-data">
+                                <div class="meme-source mb-4">
+                                    <h6 class="fw-semibold mb-3">Choose Meme Source</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="source_type" value="upload" id="uploadSource" checked>
+                                                <label class="form-check-label" for="uploadSource">
+                                                    <i class="ti ti-upload me-2"></i>Upload Image
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="source_type" value="template" id="templateSource">
+                                                <label class="form-check-label" for="templateSource">
+                                                    <i class="ti ti-template me-2"></i>Use Template
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="uploadSection" class="upload-section mb-4">
+                                    <div class="upload-area text-center p-4">
+                                        <i class="ti ti-photo" style="font-size: 2rem; color: #f59e0b;"></i>
+                                        <h5 class="mt-2">Upload Your Image</h5>
+                                        <input type="file" id="imageFile" name="file" accept="image/*" class="form-control mt-3">
+                                    </div>
+                                </div>
+
+                                <div id="templateSection" class="template-section mb-4" style="display: none;">
+                                    <label for="meme_template" class="form-label">Choose Template</label>
+                                    <select class="form-control" id="meme_template" name="meme_template">
+                                        <option value="">Select a popular meme template</option>
+                                        <option value="drake">Drake Pointing</option>
+                                        <option value="distracted_boyfriend">Distracted Boyfriend</option>
+                                        <option value="woman_yelling_cat">Woman Yelling at Cat</option>
+                                        <option value="expanding_brain">Expanding Brain</option>
+                                        <option value="change_my_mind">Change My Mind</option>
+                                        <option value="this_is_fine">This is Fine</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-options mb-4">
+                                    <h6 class="fw-semibold mb-3">Add Text</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label for="top_text" class="form-label">Top Text</label>
+                                        <input type="text" class="form-control" id="top_text" name="top_text" 
+                                               placeholder="Enter top text" maxlength="100">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="bottom_text" class="form-label">Bottom Text</label>
+                                        <input type="text" class="form-control" id="bottom_text" name="bottom_text" 
+                                               placeholder="Enter bottom text" maxlength="100">
+                                    </div>
+
+                                    <div class="text-styling">
+                                        <h6 class="fw-semibold mb-2">Text Styling</h6>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="font_size" class="form-label">Font Size</label>
+                                                <select class="form-control" id="font_size" name="font_size">
+                                                    <option value="small">Small</option>
+                                                    <option value="medium" selected>Medium</option>
+                                                    <option value="large">Large</option>
+                                                    <option value="xlarge">Extra Large</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="text_color" class="form-label">Text Color</label>
+                                                <select class="form-control" id="text_color" name="text_color">
+                                                    <option value="white" selected>White</option>
+                                                    <option value="black">Black</option>
+                                                    <option value="red">Red</option>
+                                                    <option value="blue">Blue</option>
+                                                    <option value="yellow">Yellow</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="text_style" class="form-label">Style</label>
+                                                <select class="form-control" id="text_style" name="text_style">
+                                                    <option value="normal" selected>Normal</option>
+                                                    <option value="bold">Bold</option>
+                                                    <option value="outline">Outline</option>
+                                                    <option value="shadow">Shadow</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-warning btn-lg w-100">
+                                    <i class="ti ti-wand me-2"></i>Generate Meme
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="preview-section">
+                        <h6 class="fw-semibold mb-3">Preview</h6>
+                        <div class="meme-preview">
+                            <div class="preview-placeholder">
+                                <i class="ti ti-photo" style="font-size: 4rem; color: #d1d5db;"></i>
+                                <p class="text-muted">Meme preview will appear here</p>
+                            </div>
+                        </div>
+                        
+                        <div class="popular-templates mt-4">
+                            <h6 class="fw-semibold mb-3">Popular Templates</h6>
+                            <div class="template-grid">
+                                <div class="template-thumb" data-template="drake">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzk5OTk5OSI+RHJha2U8L3RleHQ+PC9zdmc+" alt="Drake">
+                                    <span>Drake</span>
+                                </div>
+                                <div class="template-thumb" data-template="distracted_boyfriend">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzk5OTk5OSI+RGlzdHJhY3RlZDwvdGV4dD48L3N2Zz4=" alt="Distracted">
+                                    <span>Distracted</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #f59e0b;
+    border-radius: 1rem;
+    background: #fffbeb;
+}
+
+.meme-preview {
+    aspect-ratio: 1;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    min-height: 300px;
+}
+
+.preview-placeholder {
+    text-align: center;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.template-thumb {
+    cursor: pointer;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.template-thumb:hover {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.template-thumb img {
+    width: 100%;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.template-thumb span {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+</style>
+
+<script>
+document.querySelectorAll('input[name="source_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById('uploadSection').style.display = this.value === 'upload' ? 'block' : 'none';
+        document.getElementById('templateSection').style.display = this.value === 'template' ? 'block' : 'none';
+    });
+});
+
+document.querySelectorAll('.template-thumb').forEach(thumb => {
+    thumb.addEventListener('click', function() {
+        const template = this.dataset.template;
+        document.getElementById('templateSource').checked = true;
+        document.getElementById('meme_template').value = template;
+        document.getElementById('uploadSection').style.display = 'none';
+        document.getElementById('templateSection').style.display = 'block';
+    });
+});
+
+document.getElementById('memeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Meme generator functionality coming soon!');
+});
+</script>
+{% endblock %}

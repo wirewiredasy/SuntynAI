@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}PDF to Excel Converter{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-file-spreadsheet" style="font-size: 3rem; color: #059669;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PDF to Excel Converter</h1>
+                <p class="text-muted">Extract tables from PDF documents to Excel spreadsheets</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="pdfToExcelForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-file-pdf" style="font-size: 2rem; color: #dc2626;"></i>
+                            <h5 class="mt-2">Upload PDF with Tables</h5>
+                            <input type="file" id="pdfFile" name="file" accept=".pdf" class="form-control mt-3" required>
+                        </div>
+
+                        <div class="extraction-options mb-4">
+                            <h6 class="fw-semibold mb-3">Extraction Options</h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="pages" class="form-label">Pages to Extract</label>
+                                    <input type="text" class="form-control" id="pages" name="pages" 
+                                           placeholder="e.g., 1-3,5 or leave blank for all">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="output_format" class="form-label">Output Format</label>
+                                    <select class="form-control" id="output_format" name="output_format">
+                                        <option value="xlsx">Excel (.xlsx)</option>
+                                        <option value="csv">CSV (.csv)</option>
+                                        <option value="json">JSON (.json)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="table-detection mb-3">
+                                <h6 class="fw-semibold">Table Detection Method</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="detection_method" value="lattice" id="lattice" checked>
+                                    <label class="form-check-label" for="lattice">
+                                        Lattice - For tables with visible borders
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="detection_method" value="stream" id="stream">
+                                    <label class="form-check-label" for="stream">
+                                        Stream - For tables without visible borders
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="multiple_tables" name="multiple_tables" checked>
+                                <label class="form-check-label" for="multiple_tables">
+                                    Extract multiple tables per page
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="ti ti-table me-2"></i>Extract Tables to Excel
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Benefits section -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="benefit-card text-center p-3">
+                        <i class="ti ti-table-import" style="font-size: 2rem; color: #059669;"></i>
+                        <h6 class="mt-2">Smart Detection</h6>
+                        <p class="small text-muted">Automatically finds table structures</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-card text-center p-3">
+                        <i class="ti ti-layout-grid" style="font-size: 2rem; color: #2563eb;"></i>
+                        <h6 class="mt-2">Preserves Format</h6>
+                        <p class="small text-muted">Maintains column alignment</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-card text-center p-3">
+                        <i class="ti ti-file-export" style="font-size: 2rem; color: #f59e0b;"></i>
+                        <h6 class="mt-2">Multiple Formats</h6>
+                        <p class="small text-muted">Excel, CSV, JSON output</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #059669;
+    border-radius: 1rem;
+    background: #f0fdf4;
+}
+
+.benefit-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.benefit-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.getElementById('pdfToExcelForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('PDF to Excel converter functionality coming soon!');
+});
+</script>
+{% endblock %}

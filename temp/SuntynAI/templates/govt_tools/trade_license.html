@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Trade License Application{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-license" style="font-size: 3rem; color: #f59e0b;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Trade License Application</h1>
+                <p class="text-muted">Generate trade license application documents</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="tradeLicenseForm" method="POST">
+                        <h5 class="mb-3">Business Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="business_name" class="form-label fw-semibold">Business Name</label>
+                                <input type="text" class="form-control" id="business_name" name="business_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="business_type" class="form-label fw-semibold">Business Type</label>
+                                <select class="form-control" id="business_type" name="business_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="retail">Retail</option>
+                                    <option value="wholesale">Wholesale</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="service">Service</option>
+                                    <option value="restaurant">Restaurant</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="business_address" class="form-label fw-semibold">Business Address</label>
+                            <textarea class="form-control" id="business_address" name="business_address" rows="3" required></textarea>
+                        </div>
+
+                        <h5 class="mb-3 mt-4">Owner Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="owner_name" class="form-label fw-semibold">Owner Name</label>
+                                <input type="text" class="form-control" id="owner_name" name="owner_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="owner_phone" class="form-label fw-semibold">Phone Number</label>
+                                <input type="tel" class="form-control" id="owner_phone" name="owner_phone" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="owner_email" class="form-label fw-semibold">Email Address</label>
+                                <input type="email" class="form-control" id="owner_email" name="owner_email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pan_number" class="form-label fw-semibold">PAN Number</label>
+                                <input type="text" class="form-control" id="pan_number" name="pan_number" 
+                                       pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" placeholder="ABCDE1234F">
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3 mt-4">License Details</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="license_type" class="form-label fw-semibold">License Category</label>
+                                <select class="form-control" id="license_type" name="license_type" required>
+                                    <option value="">Select Category</option>
+                                    <option value="small">Small Scale</option>
+                                    <option value="medium">Medium Scale</option>
+                                    <option value="large">Large Scale</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="license_period" class="form-label fw-semibold">License Period</label>
+                                <select class="form-control" id="license_period" name="license_period" required>
+                                    <option value="">Select Period</option>
+                                    <option value="1">1 Year</option>
+                                    <option value="3">3 Years</option>
+                                    <option value="5">5 Years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning btn-lg w-100">
+                            <i class="ti ti-download me-2"></i>Generate Trade License Application
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('tradeLicenseForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Trade license application generator functionality coming soon!');
+});
+</script>
+{% endblock %}

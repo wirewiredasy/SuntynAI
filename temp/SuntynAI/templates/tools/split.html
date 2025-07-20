@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Split PDF into Multiple Files{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">PDF Toolkit</a></li>
+                    <li class="breadcrumb-item active">PDF Splitter</li>
+                </ol>
+            </nav>
+
+            <!-- Tool Header -->
+            <div class="tool-header mb-5 text-center">
+                <div class="tool-icon-large mb-3">
+                    <i class="ti ti-cut"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-3">PDF Splitter</h1>
+                <p class="lead text-muted">Split PDF into multiple documents by page ranges</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            <form id="splitForm" enctype="multipart/form-data">
+                                <!-- Step 1: Upload File -->
+                                <div class="step-section mb-5">
+                                    <h4 class="mb-3">
+                                        <span class="step-number">1</span>
+                                        Select PDF File
+                                    </h4>
+                                    
+                                    <div class="upload-zone" id="dropZone">
+                                        <div class="upload-content">
+                                            <i class="ti ti-cloud-upload upload-icon"></i>
+                                            <h5>Drop PDF file here</h5>
+                                            <p class="text-muted mb-3">or click to browse</p>
+                                            <input type="file" id="pdfFile" name="pdf" accept=".pdf" class="d-none">
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('pdfFile').click()">
+                                                <i class="ti ti-plus"></i>
+                                                Choose File
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="fileInfo" class="file-info mt-4" style="display: none;">
+                                        <!-- File info will appear here -->
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Split Options -->
+                                <div class="step-section mb-5">
+                                    <h4 class="mb-3">
+                                        <span class="step-number">2</span>
+                                        Split Options
+                                    </h4>
+                                    
+                                    <div class="split-options">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="split-card active" data-type="pages">
+                                                    <input type="radio" name="split_type" value="pages" id="splitPages" checked>
+                                                    <label for="splitPages" class="split-label">
+                                                        <div class="split-icon">
+                                                            <i class="ti ti-layout-grid"></i>
+                                                        </div>
+                                                        <h6>By Page Ranges</h6>
+                                                        <p class="text-muted small">Split by specific page ranges<br>(e.g., 1-3,4-6,7-10)</p>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="split-card" data-type="every_n">
+                                                    <input type="radio" name="split_type" value="every_n" id="splitEveryN">
+                                                    <label for="splitEveryN" class="split-label">
+                                                        <div class="split-icon">
+                                                            <i class="ti ti-stack-2"></i>
+                                                        </div>
+                                                        <h6>Every N Pages</h6>
+                                                        <p class="text-muted small">Split every N pages<br>(e.g., every 5 pages)</p>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="split-inputs mt-4">
+                                            <div id="pageRangeInput" class="input-group">
+                                                <label class="form-label">Page Ranges (e.g., 1-3,4-6,7-10)</label>
+                                                <input type="text" class="form-control" name="page_ranges" placeholder="1-3,4-6" value="1-3">
+                                                <small class="text-muted">Use commas to separate multiple ranges</small>
+                                            </div>
+                                            <div id="everyNInput" class="input-group" style="display: none;">
+                                                <label class="form-label">Pages per File</label>
+                                                <input type="number" class="form-control" name="every_n" value="5" min="1">
+                                                <small class="text-muted">Number of pages in each split file</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Process -->
+                                <div class="step-section">
+                                    <h4 class="mb-3">
+                                        <span class="step-number">3</span>
+                                        Split PDF
+                                    </h4>
+                                    
+                                    <div class="text-center">
+                                        <button type="submit" id="splitBtn" class="btn btn-danger btn-lg px-5" disabled>
+                                            <i class="ti ti-cut"></i>
+                                            Split PDF
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="processingIndicator" class="mt-4" style="display: none;">
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 100%"></div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="spinner-border text-danger" role="status"></div>
+                                            <p class="mt-2">Splitting your PDF...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Split Options</h5>
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <span class="step-number-small">📄</span>
+                                    <strong>Page Ranges:</strong><br>
+                                    Split by specific pages like 1-3,4-6
+                                </div>
+                                <div class="feature-item">
+                                    <span class="step-number-small">📚</span>
+                                    <strong>Every N Pages:</strong><br>
+                                    Split into equal chunks of N pages
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <h6>Examples:</h6>
+                                <div class="examples">
+                                    <div class="example-item">
+                                        <code>1-5</code> - Pages 1 to 5
+                                    </div>
+                                    <div class="example-item">
+                                        <code>1-3,4-6,7-10</code> - Three separate files
+                                    </div>
+                                    <div class="example-item">
+                                        <code>Every 5 pages</code> - Equal chunks
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.split-card {
+    border: 2px solid #e9ecef;
+    border-radius: 1rem;
+    padding: 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.split-card:hover {
+    border-color: #dc3545;
+    transform: translateY(-2px);
+}
+
+.split-card.active {
+    border-color: #dc3545;
+    background: #f8d7da;
+}
+
+.split-card input[type="radio"] {
+    display: none;
+}
+
+.split-label {
+    display: block;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    margin: 0;
+}
+
+.split-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.split-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.example-item {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.example-item code {
+    background: transparent;
+    color: #dc3545;
+    font-weight: 600;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('pdfFile');
+    const fileInfo = document.getElementById('fileInfo');
+    const splitBtn = document.getElementById('splitBtn');
+    const splitForm = document.getElementById('splitForm');
+    const processingIndicator = document.getElementById('processingIndicator');
+    const splitCards = document.querySelectorAll('.split-card');
+    const pageRangeInput = document.getElementById('pageRangeInput');
+    const everyNInput = document.getElementById('everyNInput');
+    
+    let selectedFile = null;
+
+    // Drag and drop functionality
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0] && e.dataTransfer.files[0].type === 'application/pdf') {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        selectedFile = file;
+        displayFileInfo(file);
+        splitBtn.disabled = false;
+    }
+
+    function displayFileInfo(file) {
+        fileInfo.style.display = 'block';
+        fileInfo.innerHTML = `
+            <div class="file-item">
+                <div class="d-flex align-items-center">
+                    <i class="ti ti-file-type-pdf text-danger me-3"></i>
+                    <div>
+                        <div class="fw-medium">${file.name}</div>
+                        <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Split type selection
+    splitCards.forEach(card => {
+        card.addEventListener('click', function() {
+            splitCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            this.querySelector('input[type="radio"]').checked = true;
+            
+            const type = this.dataset.type;
+            if (type === 'pages') {
+                pageRangeInput.style.display = 'block';
+                everyNInput.style.display = 'none';
+            } else {
+                pageRangeInput.style.display = 'none';
+                everyNInput.style.display = 'block';
+            }
+        });
+    });
+
+    // Form submission
+    splitForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!selectedFile) {
+            alert('Please select a PDF file to split.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('pdf', selectedFile);
+        formData.append('split_type', document.querySelector('input[name="split_type"]:checked').value);
+        
+        if (document.querySelector('input[name="split_type"]:checked').value === 'pages') {
+            formData.append('page_ranges', document.querySelector('input[name="page_ranges"]').value);
+        } else {
+            formData.append('every_n', document.querySelector('input[name="every_n"]').value);
+        }
+
+        // Show processing indicator
+        processingIndicator.style.display = 'block';
+        splitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/split', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                // Download the first split file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'split_file.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                // Show success message
+                alert('PDF split successfully! First file downloaded.');
+            } else {
+                const error = await response.json();
+                alert('Error: ' + error.error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            processingIndicator.style.display = 'none';
+            splitBtn.disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

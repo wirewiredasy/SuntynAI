@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Passport Photo Creator - Government Tools{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-camera" style="font-size: 3rem; color: #3b82f6;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Passport Photo Creator</h1>
+                <p class="text-muted">Crop and resize photos for passport applications</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="passportForm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="photo" class="form-label fw-semibold">
+                                <i class="ti ti-upload me-2"></i>Upload Photo
+                            </label>
+                            <input type="file" class="form-control form-control-lg" 
+                                   id="photo" name="photo" accept="image/*" required>
+                            <div class="form-text">Accepted formats: JPG, PNG, JPEG</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="size" class="form-label fw-semibold">Photo Size</label>
+                                <select class="form-control" id="size" name="size" required>
+                                    <option value="passport">Passport (2x2 inches)</option>
+                                    <option value="visa">Visa (2x2 inches)</option>
+                                    <option value="id_card">ID Card (1.5x2 inches)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="background" class="form-label fw-semibold">Background</label>
+                                <select class="form-control" id="background" name="background">
+                                    <option value="white">White</option>
+                                    <option value="blue">Blue</option>
+                                    <option value="gray">Gray</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="ti ti-photo me-2"></i>Create Passport Photo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('passportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Passport photo creator functionality coming soon!');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,8 @@
+modules = ["python-3.11"]
+[nix]
+packages = ["unzipNLS"]
+channel = "stable-24_05"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

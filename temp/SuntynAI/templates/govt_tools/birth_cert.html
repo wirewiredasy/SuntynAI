@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Birth Certificate Generator - Government Tools{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-file-plus" style="font-size: 3rem; color: #10b981;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Birth Certificate Generator</h1>
+                <p class="text-muted">Generate official birth certificate documents</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="birthForm" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="child_name" class="form-label fw-semibold">Child's Full Name</label>
+                                <input type="text" class="form-control" id="child_name" name="child_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="birth_date" class="form-label fw-semibold">Date of Birth</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="father_name" class="form-label fw-semibold">Father's Name</label>
+                                <input type="text" class="form-control" id="father_name" name="father_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="mother_name" class="form-label fw-semibold">Mother's Name</label>
+                                <input type="text" class="form-control" id="mother_name" name="mother_name" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="birth_place" class="form-label fw-semibold">Place of Birth</label>
+                            <input type="text" class="form-control" id="birth_place" name="birth_place" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="ti ti-download me-2"></i>Generate Birth Certificate
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('birthForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Birth certificate generator functionality coming soon!');
+});
+</script>
+{% endblock %}

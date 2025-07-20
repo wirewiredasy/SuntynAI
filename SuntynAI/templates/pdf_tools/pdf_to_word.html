@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}PDF to Word Converter{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-file-word" style="font-size: 3rem; color: #2563eb;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PDF to Word Converter</h1>
+                <p class="text-muted">Convert PDF documents to editable Word format</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="pdfToWordForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-file-pdf" style="font-size: 2rem; color: #dc2626;"></i>
+                            <h5 class="mt-2">Upload PDF Document</h5>
+                            <input type="file" id="pdfFile" name="file" accept=".pdf" class="form-control mt-3" required>
+                        </div>
+
+                        <div class="conversion-options mb-4">
+                            <h6 class="fw-semibold mb-3">Conversion Options</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="output_format" class="form-label">Output Format</label>
+                                    <select class="form-control" id="output_format" name="output_format">
+                                        <option value="docx">DOCX (Word 2007+)</option>
+                                        <option value="doc">DOC (Word 97-2003)</option>
+                                        <option value="rtf">RTF (Rich Text Format)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="page_range" class="form-label">Page Range (Optional)</label>
+                                    <input type="text" class="form-control" id="page_range" name="page_range" 
+                                           placeholder="e.g., 1-5 or leave blank for all">
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="preserve_layout" name="preserve_layout" checked>
+                                    <label class="form-check-label" for="preserve_layout">
+                                        Preserve original layout and formatting
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="ocr_enabled" name="ocr_enabled">
+                                    <label class="form-check-label" for="ocr_enabled">
+                                        Enable OCR for scanned PDFs
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="ti ti-arrow-right me-2"></i>Convert to Word
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Feature highlights -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="feature-box text-center p-3">
+                        <i class="ti ti-layout-2" style="font-size: 2rem; color: #2563eb;"></i>
+                        <h6 class="mt-2">Layout Preservation</h6>
+                        <p class="small text-muted">Maintains original formatting</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box text-center p-3">
+                        <i class="ti ti-eye" style="font-size: 2rem; color: #10b981;"></i>
+                        <h6 class="mt-2">OCR Support</h6>
+                        <p class="small text-muted">Extract text from images</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box text-center p-3">
+                        <i class="ti ti-edit" style="font-size: 2rem; color: #f59e0b;"></i>
+                        <h6 class="mt-2">Fully Editable</h6>
+                        <p class="small text-muted">Edit text, images, tables</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #2563eb;
+    border-radius: 1rem;
+    background: #eff6ff;
+}
+
+.feature-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.feature-box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.getElementById('pdfToWordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('PDF to Word converter functionality coming soon!');
+});
+</script>
+{% endblock %}

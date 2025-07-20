@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Merger - Combine Multiple PDFs{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-file-plus" style="font-size: 3rem; color: #dc2626;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PDF Merger</h1>
+                <p class="text-muted">Combine multiple PDF files into a single document</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-content">
+                            <i class="ti ti-cloud-upload" style="font-size: 3rem; color: #6b7280;"></i>
+                            <h4>Drop PDF files here or click to browse</h4>
+                            <p class="text-muted">Select multiple PDF files to merge</p>
+                            <input type="file" id="pdfFiles" multiple accept=".pdf" style="display: none;">
+                            <button class="btn btn-outline-primary" onclick="document.getElementById('pdfFiles').click()">
+                                <i class="ti ti-upload me-2"></i>Choose Files
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="fileList" class="mt-4" style="display: none;">
+                        <h5>Selected Files:</h5>
+                        <div id="files"></div>
+                        <button class="btn btn-success btn-lg w-100 mt-3" id="mergeBtn">
+                            <i class="ti ti-file-plus me-2"></i>Merge PDFs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-zone:hover {
+    border-color: #3b82f6;
+    background-color: #f8fafc;
+}
+
+.upload-zone.dragover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+</style>
+
+<script>
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('pdfFiles');
+const fileList = document.getElementById('fileList');
+const filesDiv = document.getElementById('files');
+const mergeBtn = document.getElementById('mergeBtn');
+
+let selectedFiles = [];
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+});
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(files) {
+    selectedFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+    if (selectedFiles.length > 0) {
+        displayFiles();
+        fileList.style.display = 'block';
+    }
+}
+
+function displayFiles() {
+    filesDiv.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <div class="d-flex align-items-center flex-grow-1">
+                <i class="ti ti-file-pdf text-danger me-2"></i>
+                <span>${file.name}</span>
+                <small class="text-muted ms-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                <i class="ti ti-x"></i>
+            </button>
+        `;
+        filesDiv.appendChild(fileItem);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    if (selectedFiles.length === 0) {
+        fileList.style.display = 'none';
+    } else {
+        displayFiles();
+    }
+}
+
+mergeBtn.addEventListener('click', () => {
+    if (selectedFiles.length < 2) {
+        alert('Please select at least 2 PDF files to merge');
+        return;
+    }
+    
+    const formData = new FormData();
+    selectedFiles.forEach(file => formData.append('files', file));
+    
+    mergeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Merging...';
+    mergeBtn.disabled = true;
+    
+    fetch('/pdf-merger', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'merged_document.pdf';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        mergeBtn.innerHTML = '<i class="ti ti-check me-2"></i>Merged Successfully!';
+        mergeBtn.classList.add('btn-success');
+        setTimeout(() => {
+            mergeBtn.innerHTML = '<i class="ti ti-file-plus me-2"></i>Merge PDFs';
+            mergeBtn.classList.remove('btn-success');
+            mergeBtn.disabled = false;
+        }, 3000);
+    })
+    .catch(error => {
+        alert('Error merging PDFs. Please try again.');
+        mergeBtn.innerHTML = '<i class="ti ti-file-plus me-2"></i>Merge PDFs';
+        mergeBtn.disabled = false;
+    });
+});
+</script>
+{% endblock %}

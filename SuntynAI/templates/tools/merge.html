@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Merger - Combine Multiple PDFs{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">PDF Toolkit</a></li>
+                    <li class="breadcrumb-item active">PDF Merger</li>
+                </ol>
+            </nav>
+
+            <!-- Tool Header -->
+            <div class="tool-header mb-5 text-center">
+                <div class="tool-icon-large mb-3">
+                    <i class="ti ti-files"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-3">PDF Merger</h1>
+                <p class="lead text-muted">Combine multiple PDF files into one document</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            <form id="mergeForm" enctype="multipart/form-data">
+                                <!-- Step 1: Upload Files -->
+                                <div class="step-section mb-5">
+                                    <h4 class="mb-3">
+                                        <span class="step-number">1</span>
+                                        Select PDF Files
+                                    </h4>
+                                    
+                                    <div class="upload-zone" id="dropZone">
+                                        <div class="upload-content">
+                                            <i class="ti ti-cloud-upload upload-icon"></i>
+                                            <h5>Drop PDF files here</h5>
+                                            <p class="text-muted mb-3">or click to browse</p>
+                                            <input type="file" id="pdfFiles" name="pdfs" multiple accept=".pdf" class="d-none">
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('pdfFiles').click()">
+                                                <i class="ti ti-plus"></i>
+                                                Choose Files
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="fileList" class="file-list mt-4" style="display: none;">
+                                        <!-- Selected files will appear here -->
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Process -->
+                                <div class="step-section">
+                                    <h4 class="mb-3">
+                                        <span class="step-number">2</span>
+                                        Merge PDFs
+                                    </h4>
+                                    
+                                    <div class="text-center">
+                                        <button type="submit" id="mergeBtn" class="btn btn-success btn-lg px-5" disabled>
+                                            <i class="ti ti-files"></i>
+                                            Merge PDFs
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="processingIndicator" class="mt-4" style="display: none;">
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="spinner-border text-success" role="status"></div>
+                                            <p class="mt-2">Merging your PDFs...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>How it works</h5>
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <span class="step-number-small">1</span>
+                                    Upload multiple PDF files
+                                </div>
+                                <div class="feature-item">
+                                    <span class="step-number-small">2</span>
+                                    Arrange files in desired order
+                                </div>
+                                <div class="feature-item">
+                                    <span class="step-number-small">3</span>
+                                    Click merge to combine them
+                                </div>
+                                <div class="feature-item">
+                                    <span class="step-number-small">4</span>
+                                    Download the merged PDF
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    margin-right: 1rem;
+}
+
+.step-number-small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #e9ecef;
+    color: #495057;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-right: 0.75rem;
+}
+
+.upload-zone {
+    border: 2px dashed #007bff;
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.upload-zone:hover {
+    background: #e3f2fd;
+    border-color: #0056b3;
+}
+
+.upload-zone.dragover {
+    background: #e3f2fd;
+    border-color: #0056b3;
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.file-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.file-item:last-child {
+    margin-bottom: 0;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.feature-item:last-child {
+    margin-bottom: 0;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('pdfFiles');
+    const fileList = document.getElementById('fileList');
+    const mergeBtn = document.getElementById('mergeBtn');
+    const mergeForm = document.getElementById('mergeForm');
+    const processingIndicator = document.getElementById('processingIndicator');
+    
+    let selectedFiles = [];
+
+    // Drag and drop functionality
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+        selectedFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+        displayFiles();
+        updateMergeButton();
+    }
+
+    function displayFiles() {
+        if (selectedFiles.length === 0) {
+            fileList.style.display = 'none';
+            return;
+        }
+
+        fileList.style.display = 'block';
+        fileList.innerHTML = '<h6>Selected Files:</h6>';
+        
+        selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="d-flex align-items-center flex-grow-1">
+                    <i class="ti ti-file-type-pdf text-danger me-3"></i>
+                    <div>
+                        <div class="fw-medium">${file.name}</div>
+                        <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                    <i class="ti ti-x"></i>
+                </button>
+            `;
+            fileList.appendChild(fileItem);
+        });
+    }
+
+    function updateMergeButton() {
+        mergeBtn.disabled = selectedFiles.length < 2;
+    }
+
+    // Remove file function
+    window.removeFile = function(index) {
+        selectedFiles.splice(index, 1);
+        displayFiles();
+        updateMergeButton();
+    };
+
+    // Form submission
+    mergeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (selectedFiles.length < 2) {
+            alert('Please select at least 2 PDF files to merge.');
+            return;
+        }
+
+        const formData = new FormData();
+        selectedFiles.forEach(file => {
+            formData.append('pdfs', file);
+        });
+
+        // Show processing indicator
+        processingIndicator.style.display = 'block';
+        mergeBtn.disabled = true;
+
+        try {
+            const response = await fetch('/merge', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                // Download the merged PDF
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'merged.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                // Show success message
+                alert('PDFs merged successfully!');
+            } else {
+                const error = await response.json();
+                alert('Error: ' + error.error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            processingIndicator.style.display = 'none';
+            mergeBtn.disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

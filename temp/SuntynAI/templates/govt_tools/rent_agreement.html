@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Rent Agreement Generator - Government Tools{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-file-text" style="font-size: 3rem; color: #8b5cf6;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Rent Agreement Generator</h1>
+                <p class="text-muted">Create legal rental agreement documents</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="rentForm" method="POST">
+                        <h5 class="mb-3">Landlord Details</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="landlord_name" class="form-label fw-semibold">Landlord Name</label>
+                                <input type="text" class="form-control" id="landlord_name" name="landlord_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="landlord_phone" class="form-label fw-semibold">Phone Number</label>
+                                <input type="tel" class="form-control" id="landlord_phone" name="landlord_phone" required>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3 mt-4">Tenant Details</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tenant_name" class="form-label fw-semibold">Tenant Name</label>
+                                <input type="text" class="form-control" id="tenant_name" name="tenant_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tenant_phone" class="form-label fw-semibold">Phone Number</label>
+                                <input type="tel" class="form-control" id="tenant_phone" name="tenant_phone" required>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3 mt-4">Property Details</h5>
+                        <div class="mb-3">
+                            <label for="property_address" class="form-label fw-semibold">Property Address</label>
+                            <textarea class="form-control" id="property_address" name="property_address" rows="3" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rent_amount" class="form-label fw-semibold">Monthly Rent</label>
+                                <input type="number" class="form-control" id="rent_amount" name="rent_amount" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="security_deposit" class="form-label fw-semibold">Security Deposit</label>
+                                <input type="number" class="form-control" id="security_deposit" name="security_deposit" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="ti ti-download me-2"></i>Generate Rent Agreement
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('rentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Rent agreement generator functionality coming soon!');
+});
+</script>
+{% endblock %}

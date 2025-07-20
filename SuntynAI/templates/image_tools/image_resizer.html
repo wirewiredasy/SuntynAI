@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Image Resizer - Resize Images{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-resize" style="font-size: 3rem; color: #10b981;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Image Resizer</h1>
+                <p class="text-muted">Resize images to custom dimensions</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="resizeForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-photo" style="font-size: 2rem; color: #6b7280;"></i>
+                            <h5 class="mt-2">Upload Image to Resize</h5>
+                            <input type="file" id="imageFile" name="file" accept="image/*" class="form-control mt-3" required>
+                        </div>
+
+                        <div class="resize-options">
+                            <h6 class="fw-semibold mb-3">Resize Options</h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="width" class="form-label">Width (px)</label>
+                                    <input type="number" class="form-control" id="width" name="width" placeholder="800">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="height" class="form-label">Height (px)</label>
+                                    <input type="number" class="form-control" id="height" name="height" placeholder="600">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="maintain_ratio" name="maintain_ratio" checked>
+                                    <label class="form-check-label" for="maintain_ratio">
+                                        Maintain aspect ratio
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="preset-sizes mb-3">
+                                <h6 class="fw-semibold mb-2">Quick Presets</h6>
+                                <div class="btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-secondary preset-btn" data-width="1920" data-height="1080">1920x1080</button>
+                                    <button type="button" class="btn btn-outline-secondary preset-btn" data-width="1280" data-height="720">1280x720</button>
+                                    <button type="button" class="btn btn-outline-secondary preset-btn" data-width="800" data-height="600">800x600</button>
+                                    <button type="button" class="btn btn-outline-secondary preset-btn" data-width="400" data-height="400">400x400</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="ti ti-resize me-2"></i>Resize Image
+                        </button>
+                    </form>
+
+                    <div id="preview" class="mt-4" style="display: none;">
+                        <h6>Preview:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="preview-box">
+                                    <h6>Original</h6>
+                                    <img id="originalImg" class="img-fluid" style="max-height: 200px;">
+                                    <p><small id="originalDims">-</small></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="preview-box">
+                                    <h6>Resized</h6>
+                                    <img id="resizedImg" class="img-fluid" style="max-height: 200px;">
+                                    <p><small id="resizedDims">-</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="downloadBtn">
+                            <i class="ti ti-download me-2"></i>Download Resized Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #d1d5db;
+    border-radius: 1rem;
+    background: #f0fdf4;
+}
+
+.preset-btn {
+    margin: 0.25rem;
+}
+
+.preview-box {
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+</style>
+
+<script>
+// Preset buttons
+document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('width').value = btn.dataset.width;
+        document.getElementById('height').value = btn.dataset.height;
+    });
+});
+
+// File preview
+document.getElementById('imageFile').addEventListener('change', function(e) {
+    if (e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                document.getElementById('originalImg').src = e.target.result;
+                document.getElementById('originalDims').textContent = `${img.width} x ${img.height} px`;
+                
+                // Auto-fill dimensions
+                if (!document.getElementById('width').value) {
+                    document.getElementById('width').value = img.width;
+                }
+                if (!document.getElementById('height').value) {
+                    document.getElementById('height').value = img.height;
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+});
+
+// Form submission
+document.getElementById('resizeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Resizing...';
+    submitBtn.disabled = true;
+    
+    fetch('/image-resizer', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        // Show preview
+        const url = window.URL.createObjectURL(blob);
+        document.getElementById('resizedImg').src = url;
+        document.getElementById('resizedDims').textContent = `${document.getElementById('width').value} x ${document.getElementById('height').value} px`;
+        document.getElementById('preview').style.display = 'block';
+        
+        // Download functionality
+        document.getElementById('downloadBtn').onclick = () => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resized_image.png';
+            a.click();
+        };
+        
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    })
+    .catch(error => {
+        alert('Error resizing image. Please try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+</script>
+{% endblock %}

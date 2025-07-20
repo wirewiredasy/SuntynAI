@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+{% block title %}PDF Password Protector{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h2><i class="ti ti-shield me-2"></i>PDF Password Protector</h2>
+                    <p class="mb-0">Add password protection to your PDF files</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="pdf" class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" class="form-control form-control-lg" id="pdf" name="pdf" accept=".pdf" required>
+                            <div class="invalid-feedback">Please select a PDF file.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold">Set Password</label>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Enter a strong password" required>
+                            <div class="invalid-feedback">Please enter a password.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="ti ti-shield-check me-2"></i>Protect PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

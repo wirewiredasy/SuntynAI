@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Professional PDF Toolkit{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-4">
+                <div class="tool-icon-large mx-auto mb-3">
+                    <i class="ti ti-package"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-2">PDF Compressor</h1>
+                <p class="lead text-muted">Reduce PDF file size while maintaining quality</p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control form-control-lg" 
+                                   accept=".pdf" required>
+                            <div class="form-text">Select a PDF file to compress</div>
+                        </div>
+
+                        <!-- Compression Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Compression Level</label>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="light" id="light" checked>
+                                        <label class="form-check-label fw-bold" for="light">
+                                            Light Compression
+                                            <div class="text-muted small">20% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="medium" id="medium">
+                                        <label class="form-check-label fw-bold" for="medium">
+                                            Medium Compression
+                                            <div class="text-muted small">45% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="high" id="high">
+                                        <label class="form-check-label fw-bold" for="high">
+                                            High Compression
+                                            <div class="text-muted small">65% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 h-100">
+                                        <input class="form-check-input" type="radio" name="compression_level" value="maximum" id="maximum">
+                                        <label class="form-check-label fw-bold" for="maximum">
+                                            Maximum Compression
+                                            <div class="text-muted small">80% size reduction</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">
+                                <i class="ti ti-package me-2"></i>Compress PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-icon-large i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-control-lg {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.form-control-lg:focus {
+    border-color: #fa709a;
+    box-shadow: 0 0 0 0.2rem rgba(250, 112, 154, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(250, 112, 154, 0.3);
+}
+
+.form-check.card {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.form-check.card:hover {
+    border-color: #fa709a;
+    transform: translateY(-2px);
+}
+
+.form-check-input:checked ~ .form-check-label {
+    color: #fa709a;
+}
+</style>
+{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Reduce PDF File Size{% endblock %}
+
+{% block content %}
+<div class="tool-container">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Tool Header -->
+            <div class="col-12">
+                <div class="tool-header">
+                    <div class="tool-icon-large">
+                        <i class="ti ti-package"></i>
+                    </div>
+                    <h1 class="tool-title">PDF Compressor</h1>
+                    <p class="tool-description">Reduce PDF file size with advanced compression</p>
+                </div>
+            </div>
+            
+            <!-- Main Tool Content -->
+            <div class="col-lg-8">
+                <div class="tool-card">
+                    <form method="POST" enctype="multipart/form-data" class="tool-form">
+                        <!-- File Upload Section -->
+                        <div class="upload-section">
+                            <div class="upload-zone" id="uploadZone">
+                                <i class="ti ti-cloud-upload upload-icon"></i>
+                                <h3>Drop PDF file here</h3>
+                                <p>or click to browse</p>
+                                <input type="file" name="pdf" accept=".pdf" required class="file-input" id="pdfFile">
+                            </div>
+                        </div>
+                        
+                        <!-- Compression Options -->
+                        <div class="options-section">
+                            <h4>Compression Level</h4>
+                            <div class="compression-options">
+                                <div class="compression-card active" data-level="low">
+                                    <i class="ti ti-leaf"></i>
+                                    <h5>Light Compression</h5>
+                                    <p>Minimal size reduction, best quality</p>
+                                    <div class="compression-stats">
+                                        <span class="size-reduction">10-20%</span>
+                                        <span class="quality">High Quality</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="compression-card" data-level="medium">
+                                    <i class="ti ti-adjustments"></i>
+                                    <h5>Balanced</h5>
+                                    <p>Good balance of size and quality</p>
+                                    <div class="compression-stats">
+                                        <span class="size-reduction">30-50%</span>
+                                        <span class="quality">Good Quality</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="compression-card" data-level="high">
+                                    <i class="ti ti-stack"></i>
+                                    <h5>Maximum</h5>
+                                    <p>Maximum size reduction</p>
+                                    <div class="compression-stats">
+                                        <span class="size-reduction">50-70%</span>
+                                        <span class="quality">Standard Quality</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="level" value="low">
+                        
+                        <button type="submit" class="btn-process">
+                            <i class="ti ti-package"></i>
+                            Compress PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tool Info Sidebar -->
+            <div class="col-lg-4">
+                <div class="tool-sidebar">
+                    <div class="info-card">
+                        <h4>How it works</h4>
+                        <ul>
+                            <li>Upload your PDF file</li>
+                            <li>Choose compression level</li>
+                            <li>Download compressed file</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="features-card">
+                        <h4>Features</h4>
+                        <div class="feature-list">
+                            <span class="feature-tag">4 Compression Levels</span>
+                            <span class="feature-tag">Quality Preview</span>
+                            <span class="feature-tag">Size Estimation</span>
+                            <span class="feature-tag">Batch Processing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tool-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 2rem 0;
+}
+
+.tool-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+}
+
+.tool-icon-large {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.tool-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.tool-description {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.tool-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.upload-zone {
+    border: 3px dashed #f093fb;
+    border-radius: 15px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+
+.upload-zone:hover {
+    border-color: #f5576c;
+    background: rgba(240, 147, 251, 0.05);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #f093fb;
+    margin-bottom: 1rem;
+}
+
+.compression-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.compression-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.compression-card:hover,
+.compression-card.active {
+    border-color: #f093fb;
+    background: rgba(240, 147, 251, 0.05);
+    transform: translateY(-2px);
+}
+
+.compression-card i {
+    font-size: 2rem;
+    color: #f093fb;
+    margin-bottom: 1rem;
+}
+
+.compression-stats {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.size-reduction {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.quality {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.btn-process {
+    width: 100%;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-process:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+}
+
+.tool-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-card,
+.features-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h4,
+.features-card h4 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 2rem;
+}
+
+.info-card li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #f093fb;
+    font-weight: bold;
+}
+
+.feature-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.feature-tag {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('pdfFile');
+    const compressionCards = document.querySelectorAll('.compression-card');
+    const levelInput = document.querySelector('input[name="level"]');
+    
+    // File upload handling
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.style.background = 'rgba(240, 147, 251, 0.1)';
+    });
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.style.background = '';
+    });
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        uploadZone.style.background = '';
+    });
+    
+    // Compression level selection
+    compressionCards.forEach(card => {
+        card.addEventListener('click', function() {
+            compressionCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            levelInput.value = this.dataset.level;
+        });
+    });
+});
+</script>
+{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}PDF Compressor - Reduce File Size{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h2><i class="ti ti-package"></i> PDF Compressor</h2>
+                    <p class="mb-0">Reduce PDF file size while maintaining quality</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Compression Level</label>
+                            <select name="level" class="form-select">
+                                <option value="low">Low Compression (Better Quality)</option>
+                                <option value="medium" selected>Medium Compression (Balanced)</option>
+                                <option value="high">High Compression (Smaller Size)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="ti ti-package"></i> Compress PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

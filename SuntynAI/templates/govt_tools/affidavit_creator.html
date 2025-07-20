@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Affidavit Creator - Government Tools{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-file-description" style="font-size: 3rem; color: #ef4444;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Affidavit Creator</h1>
+                <p class="text-muted">Generate legal affidavit documents</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="affidavitForm" method="POST">
+                        <div class="mb-3">
+                            <label for="affidavit_type" class="form-label fw-semibold">Affidavit Type</label>
+                            <select class="form-control" id="affidavit_type" name="affidavit_type" required>
+                                <option value="">Select Type</option>
+                                <option value="identity">Identity Affidavit</option>
+                                <option value="income">Income Affidavit</option>
+                                <option value="domicile">Domicile Affidavit</option>
+                                <option value="name_change">Name Change Affidavit</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deponent_name" class="form-label fw-semibold">Deponent Name</label>
+                                <input type="text" class="form-control" id="deponent_name" name="deponent_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="father_name" class="form-label fw-semibold">Father's Name</label>
+                                <input type="text" class="form-control" id="father_name" name="father_name" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label fw-semibold">Complete Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="content" class="form-label fw-semibold">Affidavit Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="5" 
+                                      placeholder="Describe the facts you want to affirm under oath..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-lg w-100">
+                            <i class="ti ti-download me-2"></i>Generate Affidavit
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('affidavitForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Affidavit creator functionality coming soon!');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Bookmarks{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-bookmark me-2"></i>
+                        PDF Bookmarks
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if not show_result %}
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-info">
+                            <i class="ti ti-bookmark me-2"></i>Extract Bookmarks
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <h5>Bookmarks Found:</h5>
+                        <ul>
+                        {% for bookmark in bookmarks %}
+                            <li>{{ bookmark }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

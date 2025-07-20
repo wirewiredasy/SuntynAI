@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}PAN Validator - Government Tools{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tool Header -->
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-id-badge-2" style="font-size: 3rem; color: #6366f1;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PAN Validator</h1>
+                <p class="text-muted">Validate PAN number format and check authenticity</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="panForm" method="POST">
+                        <div class="mb-4">
+                            <label for="pan_number" class="form-label fw-semibold">
+                                <i class="ti ti-id-badge-2 me-2"></i>PAN Number
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="pan_number" name="pan_number" 
+                                   placeholder="Enter PAN number (e.g., ABCDE1234F)"
+                                   maxlength="10" style="text-transform: uppercase;"
+                                   required>
+                            <div class="form-text">Format: AAAAA9999A (5 letters, 4 digits, 1 letter)</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="ti ti-check me-2"></i>Validate PAN
+                        </button>
+                    </form>
+
+                    <!-- Result Display -->
+                    <div id="result" class="mt-4 d-none">
+                        <div class="alert" role="alert">
+                            <i class="ti ti-info-circle me-2"></i>
+                            <span id="resultMessage"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Use -->
+            <div class="card mt-4 border-0" style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-3">
+                        <i class="ti ti-info-circle me-2"></i>How to Use
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="step-number me-3">1</div>
+                                <div>
+                                    <h6 class="fw-semibold">Enter PAN</h6>
+                                    <p class="text-muted small mb-0">Type your 10-character PAN number</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="step-number me-3">2</div>
+                                <div>
+                                    <h6 class="fw-semibold">Validate</h6>
+                                    <p class="text-muted small mb-0">Click validate to check format</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="step-number me-3">3</div>
+                                <div>
+                                    <h6 class="fw-semibold">Get Result</h6>
+                                    <p class="text-muted small mb-0">View validation status and details</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('panForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const panNumber = document.getElementById('pan_number').value;
+    const resultDiv = document.getElementById('result');
+    const resultMessage = document.getElementById('resultMessage');
+    
+    try {
+        const response = await fetch('/pan-validator', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `pan_number=${encodeURIComponent(panNumber)}`
+        });
+        
+        const data = await response.json();
+        
+        resultDiv.classList.remove('d-none');
+        const alertDiv = resultDiv.querySelector('.alert');
+        
+        if (data.valid) {
+            alertDiv.className = 'alert alert-success';
+            alertDiv.innerHTML = `<i class="ti ti-check-circle me-2"></i>${data.message}`;
+        } else {
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.innerHTML = `<i class="ti ti-x-circle me-2"></i>${data.message}`;
+        }
+    } catch (error) {
+        resultDiv.classList.remove('d-none');
+        const alertDiv = resultDiv.querySelector('.alert');
+        alertDiv.className = 'alert alert-danger';
+        alertDiv.innerHTML = `<i class="ti ti-x-circle me-2"></i>Error validating PAN number`;
+    }
+});
+
+// Auto-format PAN input
+document.getElementById('pan_number').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase();
+});
+</script>
+
+<style>
+.step-number {
+    width: 30px;
+    height: 30px;
+    background: #6366f1;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.tool-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
+}
+</style>
+{% endblock %}

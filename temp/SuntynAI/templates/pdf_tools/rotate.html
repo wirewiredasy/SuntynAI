@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+
+{% block title %}PDF Rotate - Rotate PDF Pages{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="ti ti-rotate me-2"></i>
+                        PDF Rotate
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF File</label>
+                            <input type="file" name="pdf" class="form-control" accept=".pdf" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Rotation Angle</label>
+                            <select name="angle" class="form-select" required>
+                                <option value="90">90° Clockwise</option>
+                                <option value="180">180°</option>
+                                <option value="270">270° Clockwise</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Pages</label>
+                            <input type="text" name="pages" class="form-control" 
+                                   placeholder="all or 1,2,3" value="all">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="ti ti-rotate me-2"></i>Rotate PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

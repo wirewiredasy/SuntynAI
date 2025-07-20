@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+{% block title %}PDF Password Remover{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h2><i class="ti ti-lock-open me-2"></i>PDF Password Remover</h2>
+                    <p class="mb-0">Remove password protection from PDF files</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="pdf" class="form-label fw-bold">Select Protected PDF</label>
+                            <input type="file" class="form-control form-control-lg" id="pdf" name="pdf" accept=".pdf" required>
+                            <div class="invalid-feedback">Please select a PDF file.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold">Enter Current Password</label>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Enter the PDF password" required>
+                            <div class="invalid-feedback">Please enter the current password.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="ti ti-lock-open me-2"></i>Remove Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

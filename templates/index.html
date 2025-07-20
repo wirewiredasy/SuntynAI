@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuntynAI - Beautiful Homepage</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#home">
+                <i class="fas fa-rocket me-2"></i>SuntynAI
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light ms-2" href="#get-started">Get Started</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-4 fw-bold mb-4 hero-title">
+                            Transform Your Ideas into 
+                            <span class="text-info">Reality</span>
+                        </h1>
+                        <p class="lead mb-4 text-light-emphasis">
+                            Experience the power of cutting-edge technology with our innovative solutions. 
+                            Build, create, and scale your projects with confidence.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#get-started" class="btn btn-info btn-lg me-3 smooth-scroll">
+                                <i class="fas fa-rocket me-2"></i>Get Started
+                            </a>
+                            <a href="#features" class="btn btn-outline-light btn-lg smooth-scroll">
+                                <i class="fas fa-play me-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-illustration">
+                        <div class="floating-card">
+                            <i class="fas fa-code text-info fa-3x mb-3"></i>
+                            <h5>Innovation</h5>
+                        </div>
+                        <div class="floating-card delay-1">
+                            <i class="fas fa-lightbulb text-warning fa-3x mb-3"></i>
+                            <h5>Creativity</h5>
+                        </div>
+                        <div class="floating-card delay-2">
+                            <i class="fas fa-chart-line text-success fa-3x mb-3"></i>
+                            <h5>Growth</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">Powerful Features</h2>
+                    <p class="lead text-light-emphasis">Discover what makes us different</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt text-warning"></i>
+                        </div>
+                        <h4 class="mb-3">Lightning Fast</h4>
+                        <p class="text-light-emphasis">
+                            Experience blazing fast performance with our optimized infrastructure 
+                            and cutting-edge technology stack.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt text-success"></i>
+                        </div>
+                        <h4 class="mb-3">Secure & Reliable</h4>
+                        <p class="text-light-emphasis">
+                            Your data is protected with enterprise-grade security and 99.9% uptime guarantee.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt text-info"></i>
+                        </div>
+                        <h4 class="mb-3">Mobile First</h4>
+                        <p class="text-light-emphasis">
+                            Designed for mobile devices with responsive layouts that work perfectly on any screen.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-cogs text-secondary"></i>
+                        </div>
+                        <h4 class="mb-3">Easy Integration</h4>
+                        <p class="text-light-emphasis">
+                            Seamlessly integrate with your existing tools and workflows with our comprehensive APIs.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-users text-primary"></i>
+                        </div>
+                        <h4 class="mb-3">Team Collaboration</h4>
+                        <p class="text-light-emphasis">
+                            Work together efficiently with real-time collaboration tools and team management features.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset text-danger"></i>
+                        </div>
+                        <h4 class="mb-3">24/7 Support</h4>
+                        <p class="text-light-emphasis">
+                            Get help whenever you need it with our round-the-clock customer support team.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5 bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">What Our Users Say</h2>
+                    <p class="lead text-light-emphasis">Join thousands of satisfied customers</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "This platform has revolutionized how we work. The interface is intuitive 
+                            and the performance is outstanding."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Sarah Johnson</h6>
+                                <small class="text-light-emphasis">Product Manager</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "Incredible value and amazing support team. They helped us migrate 
+                            our entire infrastructure seamlessly."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Mike Chen</h6>
+                                <small class="text-light-emphasis">CTO</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "The best investment we've made for our business. Highly recommend 
+                            to anyone looking for quality and reliability."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Emily Rodriguez</h6>
+                                <small class="text-light-emphasis">Founder</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">Get In Touch</h2>
+                    <p class="lead text-light-emphasis">Ready to start your journey with us?</p>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="contact-card">
+                        <div class="row g-4">
+                            <div class="col-md-4 text-center">
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope fa-2x text-info mb-3"></i>
+                                    <h5>Email</h5>
+                                    <p class="text-light-emphasis">hello@suntynai.com</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="contact-item">
+                                    <i class="fas fa-phone fa-2x text-success mb-3"></i>
+                                    <h5>Phone</h5>
+                                    <p class="text-light-emphasis">+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt fa-2x text-warning mb-3"></i>
+                                    <h5>Location</h5>
+                                    <p class="text-light-emphasis">San Francisco, CA</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="#get-started" class="btn btn-info btn-lg">
+                                <i class="fas fa-rocket me-2"></i>Start Your Project
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand">
+                        <i class="fas fa-rocket me-2"></i>
+                        <span class="fw-bold">SuntynAI</span>
+                    </div>
+                    <p class="text-light-emphasis mb-0">Building the future, one project at a time.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-discord"></i></a>
+                    </div>
+                    <p class="text-light-emphasis mb-0 mt-2">&copy; 2024 SuntynAI. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

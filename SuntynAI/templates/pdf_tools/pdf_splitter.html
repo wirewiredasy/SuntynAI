@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Splitter - Split PDF Pages{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-cut" style="font-size: 3rem; color: #dc2626;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">PDF Splitter</h1>
+                <p class="text-muted">Split PDF into multiple files by page ranges</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="splitForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-file-pdf" style="font-size: 2rem; color: #dc2626;"></i>
+                            <h5 class="mt-2">Upload PDF to Split</h5>
+                            <input type="file" id="pdfFile" name="file" accept=".pdf" class="form-control mt-3" required>
+                        </div>
+
+                        <div class="split-options">
+                            <h6 class="fw-semibold mb-3">Split Options</h6>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="split_type" value="pages" id="splitPages" checked>
+                                    <label class="form-check-label" for="splitPages">
+                                        Split by page ranges (e.g., 1-5, 6-10)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="split_type" value="every" id="splitEvery">
+                                    <label class="form-check-label" for="splitEvery">
+                                        Split every N pages
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="split_type" value="individual" id="splitIndividual">
+                                    <label class="form-check-label" for="splitIndividual">
+                                        Split into individual pages
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="pageRanges" class="mb-3">
+                                <label for="ranges" class="form-label">Page Ranges</label>
+                                <input type="text" class="form-control" id="ranges" name="ranges" 
+                                       placeholder="e.g., 1-3, 5-7, 9">
+                                <div class="form-text">Enter page ranges separated by commas</div>
+                            </div>
+
+                            <div id="everyPages" class="mb-3" style="display: none;">
+                                <label for="every_n" class="form-label">Split every N pages</label>
+                                <input type="number" class="form-control" id="every_n" name="every_n" 
+                                       value="2" min="1">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-lg w-100">
+                            <i class="ti ti-cut me-2"></i>Split PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #dc2626;
+    border-radius: 1rem;
+    background: #fef2f2;
+}
+</style>
+
+<script>
+// Handle split type changes
+document.querySelectorAll('input[name="split_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById('pageRanges').style.display = this.value === 'pages' ? 'block' : 'none';
+        document.getElementById('everyPages').style.display = this.value === 'every' ? 'block' : 'none';
+    });
+});
+
+document.getElementById('splitForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('PDF splitter functionality coming soon!');
+});
+</script>
+{% endblock %}

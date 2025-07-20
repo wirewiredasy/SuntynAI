@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Suntyn AI - Professional AI Tools Platform{% endblock %}</title>
+
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="{% block description %}Professional AI-powered tools platform with 85+ tools for PDF, Image, Finance, and more. Real-time collaboration and offline support.{% endblock %}">
+    <meta name="keywords" content="AI tools, PDF tools, Image tools, Finance calculator, Online tools, Productivity">
+    <meta name="author" content="Suntyn AI">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}Suntyn AI - Professional AI Tools Platform{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Professional AI-powered tools platform with 85+ tools{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Suntyn AI">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='../manifest.json') }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='22' fill='none' stroke='%236366f1' stroke-width='2' opacity='0.3'/><g transform='translate(24,24)'><circle cx='0' cy='0' r='8' fill='%236366f1'/><circle cx='12' cy='0' r='3' fill='%238b5cf6'/><circle cx='-12' cy='0' r='3' fill='%238b5cf6'/><circle cx='0' cy='12' r='3' fill='%238b5cf6'/><circle cx='0' cy='-12' r='3' fill='%238b5cf6'/><line x1='-8' y1='0' x2='8' y2='0' stroke='%236366f1' stroke-width='2'/><line x1='0' y1='-8' x2='0' y2='8' stroke='%236366f1' stroke-width='2'/></g></svg>">
+
+    <!-- Performance and SEO Meta Tags -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="{{ url_for('static', filename='css/main.css') }}" as="style">
+    <link rel="preload" href="{{ url_for('static', filename='js/main.js') }}" as="script">
+
+    <!-- Resource hints -->
+    <link rel="prefetch" href="{{ url_for('static', filename='js/lazy-loader.js') }}">
+
+    <!-- Critical CSS inline -->
+    <style>
+        .hero-section{min-height:60vh;display:flex;align-items:center;justify-content:center}
+        .tool-card{transition:transform 0.2s ease,box-shadow 0.2s ease;will-change:transform}
+        .loading-spinner{border:3px solid #f3f3f3;border-top:3px solid #3498db;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    </style>
+
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professional.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/performance.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-modern.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/categories-modern.css') }}">
+
+    <!-- Non-critical CSS with media query trick for faster loading -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></noscript>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css" media="print" onload="this.media='all'">
+
+    <!-- Lazy load animation and hero CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- Lenis Smooth Scroll - load only if needed -->
+    <link href="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.34/dist/lenis.css" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- Essential JavaScript Libraries - Load Early -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer 
+            onerror="console.warn('External library error handled:', 'GSAP library failed to load'); window.gsap = { to: () => {}, from: () => {}, set: () => {}, timeline: () => ({ to: () => {}, from: () => {}, set: () => {} }) };"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" defer 
+            onerror="console.warn('External library error handled:', 'Chart.js library failed to load'); window.Chart = class { constructor() {} static register() {} static defaults = {} };"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer 
+            onerror="console.warn('External library error handled:', 'SortableJS library failed to load'); window.Sortable = { create: () => ({}) };"></script>
+
+    <!-- Fallback for old browsers -->
+    <noscript>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+    </noscript>
+
+    <!-- Custom styles -->
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-bg: #1f2937;
+            --dark-surface: #374151;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tool-card {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: transform: rotate(360deg); }
+        }
+
+        .drag-drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .drag-drop-zone.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transition: width 0.3s ease;
+        }
+
+        /* Dark mode styles */
+        [data-theme="dark"] {
+            --tw-bg-opacity: 1;
+            background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+            color: rgb(243 244 246 / var(--tw-text-opacity));
+        }
+
+        [data-theme="dark"] .tool-card {
+            background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+            border-color: rgb(75 85 99 / var(--tw-border-opacity));
+        }
+
+        [data-theme="dark"] .glass-morphism {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+
+            .tool-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top professional-navbar">
+        <div class="container-fluid px-4">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <div class="brand-logo me-3">
+                    <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Outer Ring -->
+                        <circle cx="24" cy="24" r="22" fill="none" stroke="url(#primaryGradient)" stroke-width="2" opacity="0.3"/>
+
+                        <!-- Main Logo Shape - Complex Geometric Design -->
+                        <g transform="translate(24,24)">
+                            <!-- Central Core -->
+                            <circle cx="0" cy="0" r="8" fill="url(#coreGradient)"/>
+
+                            <!-- Dynamic Orbiting Elements -->
+                            <g class="orbit-1">
+                                <circle cx="12" cy="0" r="3" fill="url(#accentGradient)"/>
+                                <circle cx="-12" cy="0" r="3" fill="url(#accentGradient)"/>
+                                <circle cx="0" cy="12" r="3" fill="url(#accentGradient)"/>
+                                <circle cx="0" cy="-12" r="3" fill="url(#accentGradient)"/>
+                            </g>
+
+                            <!-- Connecting Lines -->
+                            <line x1="-8" y1="0" x2="8" y2="0" stroke="url(#primaryGradient)" stroke-width="2"/>
+                            <line x1="0" y1="-8" x2="0" y2="8" stroke="url(#primaryGradient)" stroke-width="2"/>
+
+                            <!-- Diagonal Connectors -->
+                            <line x1="-6" y1="-6" x2="6" y2="6" stroke="url(#accentGradient)" stroke-width="1.5" opacity="0.8"/>
+                            <line x1="6" y1="-6" x2="-6" y2="6" stroke="url(#accentGradient)" stroke-width="1.5" opacity="0.8"/>
+
+                            <!-- Neural Network Nodes -->
+                            <circle cx="8" cy="8" r="1.5" fill="#6366f1"/>
+                            <circle cx="-8" cy="8" r="1.5" fill="#6366f1"/>
+                            <circle cx="8" cy="-8" r="1.5" fill="#6366f1"/>
+                            <circle cx="-8" cy="-8" r="1.5" fill="#6366f1"/>
+                        </g>
+
+                        <!-- Gradient Definitions -->
+                        <defs>
+                            <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Animation -->
+                        <style>
+                            .orbit-1 {
+                                animation: rotate 8s linear infinite;
+                                transform-origin: 0 0;
+                            }
+                            @keyframes rotate {
+                                from { transform: rotate(0deg); }
+                                to { transform: rotate(360deg); }
+                            }
+                        </style>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Suntyn AI</span>
+                    <span class="brand-tagline">Neural Intelligence</span>
+                </div>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{{ url_for('index') }}">
+                            <i class="ti ti-home me-1"></i>Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle nav-link-custom" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="ti ti-tool me-1"></i>Tools
+                        </a>
+                        <ul class="dropdown-menu custom-dropdown">
+                            <li class="dropdown-header">
+                                <i class="ti ti-category-2 me-1"></i>Tool Categories
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-file-type-pdf me-2 text-danger"></i>PDF Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-photo-edit me-2 text-primary"></i>Image Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-currency-rupee me-2 text-warning"></i>Finance Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-video-plus me-2 text-success"></i>Video/Audio Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-shield-check me-2 text-info"></i>Government Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-brain me-2 text-primary"></i>AI Tools
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-primary" href="{{ url_for('index') }}#tools-section">
+                                <i class="ti ti-apps me-2"></i>View All Tools
+                            </a></li>
+                        </ul>
+                    </li>
+
+
+
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{{ url_for('dashboard') }}">
+                            <i class="ti ti-dashboard me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Right Side Navigation -->
+                <ul class="navbar-nav align-items-center">
+                    <!-- Search -->
+                    <li class="nav-item me-2">
+                        <div class="search-container">
+                            <input type="text" class="form-control search-input" placeholder="Search tools...">
+                            <i class="ti ti-search search-icon"></i>
+                        </div>
+                    </li>
+
+                    <!-- Theme Toggle -->
+                    <li class="nav-item me-2">
+                        <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle theme">
+                            <i class="ti ti-sun theme-icon" id="theme-icon"></i>
+                        </button>
+                    </li>
+
+                    {% if current_user.is_authenticated %}
+                    <!-- User Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-menu" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar">
+                                <i class="ti ti-user"></i>
+                            </div>
+                            <span class="user-name">{{ current_user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                            <li class="dropdown-header">
+                                <div class="user-info">
+                                    <strong>{{ current_user.username }}</strong>
+                                    <small class="text-muted">{{ current_user.email }}</small>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                <i class="ti ti-dashboard me-2"></i>Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">
+                                <i class="ti ti-user me-2"></i>Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('settings') }}">
+                                <i class="ti ti-settings me-2"></i>Settings
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                <i class="ti ti-logout me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <!-- Auth Buttons -->
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-primary auth-btn" href="{{ url_for('login') }}">
+                            <i class="ti ti-login me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary auth-btn" href="{{ url_for('register') }}">
+                            <i class="ti ti-user-plus me-1"></i>Sign Up
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-5 mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="container mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-dark text-white mt-5 py-4">
+        <div class="container">
+            <!-- Main Footer Content -->
+            <div class="row mb-4">
+                <!-- Company Info -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="footer-logo me-2">
+                            <svg width="32" height="32" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="24" cy="24" r="22" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+                                <g transform="translate(24,24)">
+                                    <circle cx="0" cy="0" r="8" fill="#6366f1"/>
+                                    <circle cx="12" cy="0" r="3" fill="#8b5cf6"/>
+                                    <circle cx="-12" cy="0" r="3" fill="#8b5cf6"/>
+                                    <circle cx="0" cy="12" r="3" fill="#8b5cf6"/>
+                                    <circle cx="0" cy="-12" r="3" fill="#8b5cf6"/>
+                                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#6366f1" stroke-width="2"/>
+                                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#6366f1" stroke-width="2"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <h5 class="mb-0" style="color: var(--primary-color);">Suntyn AI</h5>
+                    </div>
+                    <p class="text-light mb-3">Professional AI-powered tools platform with 85+ tools for productivity and efficiency.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-twitter"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-linkedin"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-github"></i></a>
+                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-discord"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-link me-2"></i>Quick Links</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-file-type-pdf me-2"></i>PDF Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-photo-edit me-2"></i>Image Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-currency-rupee me-2"></i>Finance Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-video-plus me-2"></i>Video Tools</a></li>
+                        <li><a href="{{ url_for('index') }}#tools-section" class="text-warning"><i class="ti ti-apps me-2"></i>All Tools</a></li>
+                    </ul>
+                </div>
+
+                <!-- Popular Tools -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-star me-2"></i>Popular</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light"><i class="ti ti-file-plus me-2"></i>PDF Merge</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light"><i class="ti ti-compress me-2"></i>Image Compress</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='qr-code-generator') }}" class="text-light"><i class="ti ti-qrcode me-2"></i>QR Generator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light"><i class="ti ti-calculator me-2"></i>EMI Calculator</a></li>
+                        <li><a href="{{ url_for('tool_page', tool_name='password-generator') }}" class="text-light"><i class="ti ti-key me-2"></i>Password Gen</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-building me-2"></i>Company</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="/about" class="text-light"><i class="ti ti-info-circle me-2"></i>About</a></li>
+                        <li><a href="/contact" class="text-light"><i class="ti ti-mail me-2"></i>Contact</a></li>
+                        <li><a href="/blog" class="text-light"><i class="ti ti-news me-2"></i>Blog</a></li>
+                        <li><a href="/faq" class="text-light"><i class="ti ti-help-circle me-2"></i>FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-scale me-2"></i>Legal</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="/privacy" class="text-light"><i class="ti ti-shield-lock me-2"></i>Privacy</a></li>
+                        <li><a href="/terms" class="text-light"><i class="ti ti-file-text me-2"></i>Terms</a></li>
+                        <li><a href="/cookies" class="text-light"><i class="ti ti-cookie me-2"></i>Cookies</a></li>
+                        <li><a href="/security" class="text-light"><i class="ti ti-shield-check me-2"></i>Security</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <hr class="my-3 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-light mb-0">
+                        © 2025 Suntyn AI. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="text-light mb-0">
+                        Made with ❤️ using Flask & AI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SortableJS for drag and drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <!-- Lazy Loading System -->
+    <script src="{{ url_for('static', filename='js/lazy-loader.js') }}" defer></script>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/performance-optimizer.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/scroll-to-top.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/categories-modern.js') }}" defer></script>
+
+    <!-- Essential Third-party Libraries -->
+    <script>
+        // Load GSAP only if needed
+        if (document.querySelector('[data-animation]')) {
+            const gsapScript = document.createElement('script');
+            gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
+            gsapScript.async = true;
+            document.head.appendChild(gsapScript);
+        }
+
+        // Load Chart.js only if needed
+        if (document.querySelector('[data-chart]')) {
+            const chartScript = document.createElement('script');
+            chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js';
+            chartScript.async = true;
+            document.head.appendChild(chartScript);
+        }
+    </script>
+
+    <!-- Deferred Non-Critical Scripts -->
+    <script>
+        // Safe library loading with proper error handling
+        window.addEventListener('load', function() {
+            const optionalScripts = [
+                { 
+                    src: 'https://cdn.socket.io/4.0.0/socket.io.min.js', 
+                    condition: () => document.querySelector('[data-websocket]')
+                },
+                { 
+                    src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js', 
+                    condition: () => document.querySelector('.sortable') 
+                },
+                { 
+                    src: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js', 
+                    condition: () => document.querySelector('[data-qr]') 
+                },
+                { 
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 
+                    condition: () => document.querySelector('[data-pdf]') 
+                }
+            ];
+
+            function loadOptionalScript({ src, condition }) {
+                if (!condition()) return;
+
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = true;
+                script.crossOrigin = 'anonymous';
+
+                script.onload = () => console.log(`✅ Loaded: ${src.split('/').pop()}`);
+                script.onerror = () => console.warn(`⚠️ Failed to load: ${src.split('/').pop()}`);
+
+                document.head.appendChild(script);
+            }
+
+            // Load optional scripts with delay
+            if (requestIdleCallback) {
+                requestIdleCallback(() => {
+                    optionalScripts.forEach(loadOptionalScript);
+                });
+            } else {
+                setTimeout(() => {
+                    optionalScripts.forEach(loadOptionalScript);
+                }, 1000);
+            }
+        });
+    </script>
+
+    <!-- Enhanced Error Handling -->
+    <script>
+        // Global error handler with proper fallbacks
+        window.addEventListener('error', function(e) {
+            // Silently handle library loading failures
+            if (e.message.includes('gsap') || e.message.includes('Chart') || e.message.includes('Lenis')) {
+                console.warn('External library error handled:', e.message);
+                return true; // Prevent error from bubbling up
+            }
+
+            // Only log actual application errors
+            if (e.filename && e.filename.includes(window.location.hostname)) {
+                console.error('Application error:', e.message, 'at', e.filename + ':' + e.lineno);
+            }
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.warn('Promise rejection handled:', e.reason);
+            e.preventDefault(); // Prevent console errors
+        });
+    </script>
+
+    <!-- Load secondary scripts with lazy loading -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load utility scripts after main app is ready
+            const utilityScripts = [
+                '{{ url_for("static", filename="js/smooth-scroll.js") }}',
+                '{{ url_for("static", filename="js/scroll-to-top.js") }}',
+                '{{ url_for("static", filename="js/drag-drop.js") }}'
+            ];
+
+            // Load scripts progressively
+            let loadIndex = 0;
+            function loadNextScript() {
+                if (loadIndex < utilityScripts.length) {
+                    const script = document.createElement('script');
+                    script.src = utilityScripts[loadIndex];
+                    script.async = true;
+                    script.defer = true;
+                    script.onload = () => {
+                        loadIndex++;
+                        setTimeout(loadNextScript, 100); // Small delay between loads
+                    };
+                    document.head.appendChild(script);
+                }
+            }
+
+            // Start loading after a short delay
+            setTimeout(loadNextScript, 500);
+
+            // Load hero modern script only if hero section exists
+            if (document.getElementById('hero-section')) {
+                setTimeout(() => {
+                    const heroScript = document.createElement('script');
+                    heroScript.src = '{{ url_for("static", filename="js/hero-modern.js") }}';
+                    heroScript.async = true;
+                    heroScript.defer = true;
+                    document.head.appendChild(heroScript);                }, 1000);
+            }
+
+            // Load websocket script only if needed
+            if (document.querySelector('[data-websocket]')) {
+                setTimeout(() => {
+                    const wsScript = document.createElement('script');
+                    wsScript.src = '{{ url_for("static", filename="websocket.js") }}';
+                    wsScript.async = true;
+                    wsScript.defer = true;
+                    document.head.appendChild(wsScript);
+                }, 1500);
+            }
+        });
+    </script>
+
+    <!-- Initialize smooth scrolling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize smooth scroll manager
+            if (typeof SmoothScrollManager !== 'undefined') {
+                window.smoothScroll = new SmoothScrollManager();
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+
+    <!-- Performance monitoring -->
+    <script>
+    (function() {
+        const startTime = performance.now();
+
+        window.addEventListener('load', function() {
+            const loadTime = performance.now() - startTime;
+            console.log(`🚀 Page loaded in ${Math.round(loadTime)}ms`);
+        });
+
+        // Simplified error tracking
+        window.addEventListener('error', function(e) {
+            if (e.filename && e.filename.includes(window.location.hostname)) {
+                console.error('App error:', e.message);
+            }
+        });
+    })();
+    </script>
+
+    <!-- Optimized Performance Monitoring -->
+    <script>
+        (function() {
+            const startTime = performance.now();
+
+            // Service Worker registration handled in main.js - avoiding duplicate registration
+
+            // Performance monitoring
+            window.addEventListener('load', function() {
+                const loadTime = performance.now() - startTime;
+                console.log(`🚀 Page loaded in ${Math.round(loadTime)}ms`);
+
+                // Only warn for very slow loads
+                if (loadTime > 5000) {
+                    console.warn('⚠️ Slow page load detected');
+                }
+            });
+
+            // Resource hints for better performance
+            const hints = [
+                'https://cdn.jsdelivr.net',
+                'https://cdnjs.cloudflare.com'
+            ];
+
+            hints.forEach(domain => {
+                const link = document.createElement('link');
+                link.rel = 'dns-prefetch';
+                link.href = domain;
+                document.head.appendChild(link);
+            });
+        })();
+    </script>
+
+    <!-- Include cookie consent -->
+    {% include 'cookie_consent.html' %}
+</body>
+</html>

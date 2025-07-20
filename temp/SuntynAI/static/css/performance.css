@@ -1,0 +1,135 @@
+
+/* Critical Performance Optimizations */
+
+/* Preload critical resources */
+.preload-critical {
+    font-display: swap;
+}
+
+/* Optimize images with lazy loading */
+img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+img[loading="lazy"].loaded {
+    opacity: 1;
+}
+
+/* Reduce paint complexity */
+.tool-card {
+    contain: layout style paint;
+}
+
+/* Optimize animations for 60fps */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 30px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* GPU acceleration for smooth scrolling */
+.smooth-scroll {
+    will-change: scroll-position;
+    transform: translateZ(0);
+}
+
+/* Optimize text rendering */
+* {
+    text-rendering: optimizeSpeed;
+}
+
+h1, h2, h3, .important-text {
+    text-rendering: optimizeLegibility;
+}
+
+/* Critical loading states */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Optimize for Core Web Vitals */
+.above-fold {
+    contain: layout;
+}
+
+/* Reduce layout thrashing */
+.dynamic-content {
+    min-height: 200px;
+    contain: size layout;
+}
+
+/* Performance indicator improvements */
+.performance-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: monospace;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.performance-indicator.show {
+    opacity: 1;
+}
+
+/* Optimize for mobile performance */
+@media (max-width: 768px) {
+    .tool-card {
+        will-change: auto;
+    }
+    
+    .parallax-element {
+        transform: none !important;
+    }
+    
+    .animated-element {
+        animation-duration: 0.3s !important;
+    }
+}
+
+/* Memory optimization */
+.offscreen {
+    content-visibility: auto;
+    contain-intrinsic-size: 200px;
+}
+
+/* Reduce motion for performance */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Critical CSS inlining helper */
+.critical-css-loaded {
+    visibility: visible;
+}
+
+.critical-css-loading {
+    visibility: hidden;
+}

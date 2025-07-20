@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Convert to WebP - Modern Image Format{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="tool-icon mx-auto mb-3">
+                    <i class="ti ti-photo-bolt" style="font-size: 3rem; color: #10b981;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Convert to WebP</h1>
+                <p class="text-muted">Convert images to modern WebP format for better compression</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form id="webpForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-area text-center p-4 mb-4">
+                            <i class="ti ti-photo" style="font-size: 2rem; color: #10b981;"></i>
+                            <h5 class="mt-2">Upload Images to Convert</h5>
+                            <input type="file" id="imageFiles" name="files" accept="image/*" class="form-control mt-3" multiple required>
+                            <div class="form-text">Supports JPG, PNG, GIF, BMP formats</div>
+                        </div>
+
+                        <div class="conversion-settings mb-4">
+                            <h6 class="fw-semibold mb-3">WebP Settings</h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="quality" class="form-label">Quality: <span id="qualityValue">85</span>%</label>
+                                    <input type="range" class="form-range" id="quality" name="quality" min="10" max="100" value="85">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="compression_method" class="form-label">Compression Method</label>
+                                    <select class="form-control" id="compression_method" name="compression_method">
+                                        <option value="4">Balanced (Recommended)</option>
+                                        <option value="6">High Quality</option>
+                                        <option value="2">Fast</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="advanced-options">
+                                <h6 class="fw-semibold mb-2">Advanced Options</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="lossless" name="lossless">
+                                    <label class="form-check-label" for="lossless">
+                                        Lossless compression (larger file size)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="preserve_metadata" name="preserve_metadata" checked>
+                                    <label class="form-check-label" for="preserve_metadata">
+                                        Preserve image metadata
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="ti ti-photo-bolt me-2"></i>Convert to WebP
+                        </button>
+                    </form>
+
+                    <div class="benefits mt-4">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <i class="ti ti-file-zip" style="font-size: 2rem; color: #10b981;"></i>
+                                <h6 class="mt-2">30% Smaller</h6>
+                                <p class="small text-muted">Smaller than PNG/JPG</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <i class="ti ti-eye" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <h6 class="mt-2">Better Quality</h6>
+                                <p class="small text-muted">Superior compression</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <i class="ti ti-world" style="font-size: 2rem; color: #8b5cf6;"></i>
+                                <h6 class="mt-2">Web Optimized</h6>
+                                <p class="small text-muted">Faster page loading</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #10b981;
+    border-radius: 1rem;
+    background: #f0fdf4;
+}
+</style>
+
+<script>
+document.getElementById('quality').addEventListener('input', function() {
+    document.getElementById('qualityValue').textContent = this.value;
+});
+
+document.getElementById('webpForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('WebP conversion functionality coming soon!');
+});
+</script>
+{% endblock %}
