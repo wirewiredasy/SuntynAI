@@ -780,6 +780,7 @@ dependencies = [
     { name = "qrcode" },
     { name = "reportlab" },
     { name = "requests" },
+    { name = "werkzeug" },
 ]
 
 [package.metadata]
@@ -800,6 +801,7 @@ requires-dist = [
     { name = "qrcode", specifier = ">=8.2" },
     { name = "reportlab", specifier = ">=4.4.2" },
     { name = "requests", specifier = ">=2.32.4" },
+    { name = "werkzeug", specifier = ">=3.1.3" },
 ]
 
 [[package]]
