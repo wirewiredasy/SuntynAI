@@ -20,13 +20,18 @@ except Exception as e:
         print("✅ Successfully imported app as fallback from SuntynAI")
     except Exception as e2:
         print(f"❌ Error importing app: {e2}")
-        # Create basic fallback app
-        from flask import Flask
-        app = Flask(__name__)
-        
-        @app.route('/')
-        def hello():
-            return '<h1>PDF Toolkit</h1><p>Application starting...</p><a href="/SuntynAI">Go to SuntynAI</a>'
+        try:
+            from app_minimal import app
+            print("✅ Successfully imported minimal app")
+        except Exception as e3:
+            print(f"❌ Error importing minimal app: {e3}")
+            # Create basic fallback app
+            from flask import Flask
+            app = Flask(__name__)
+            
+            @app.route('/')
+            def hello():
+                return '<h1>PDF Toolkit</h1><p>Application starting...</p><p>Basic tools will be available soon!</p>'
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
