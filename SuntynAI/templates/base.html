@@ -25,8 +25,8 @@
     <!-- Manifest -->
     <link rel="manifest" href="{{ url_for('static', filename='../manifest.json') }}">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='22' fill='none' stroke='%236366f1' stroke-width='2' opacity='0.3'/><g transform='translate(24,24)'><circle cx='0' cy='0' r='8' fill='%236366f1'/><circle cx='12' cy='0' r='3' fill='%238b5cf6'/><circle cx='-12' cy='0' r='3' fill='%238b5cf6'/><circle cx='0' cy='12' r='3' fill='%238b5cf6'/><circle cx='0' cy='-12' r='3' fill='%238b5cf6'/><line x1='-8' y1='0' x2='8' y2='0' stroke='%236366f1' stroke-width='2'/><line x1='0' y1='-8' x2='0' y2='8' stroke='%236366f1' stroke-width='2'/></g></svg>">
+    <!-- Original Suntyn Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='22' fill='none' stroke='%236366f1' stroke-width='2' opacity='0.3'/><g transform='translate(24,24)'><circle cx='0' cy='0' r='8' fill='%236366f1'/><circle cx='12' cy='0' r='3' fill='%238b5cf6'/><circle cx='-12' cy='0' r='3' fill='%238b5cf6'/><circle cx='0' cy='12' r='3' fill='%238b5cf6'/><circle cx='0' cy='-12' r='3' fill='%238b5cf6'/><line x1='-8' y1='0' x2='8' y2='0' stroke='%23ffffff' stroke-width='2'/><line x1='0' y1='-8' x2='0' y2='8' stroke='%23ffffff' stroke-width='2'/></g></svg>">
 
     <!-- Performance and SEO Meta Tags -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -201,236 +201,84 @@
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
                 <div class="brand-logo me-3">
                     <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="suntyn-logo">
-                        <!-- Outer Ring with Pulse -->
-                        <circle cx="24" cy="24" r="22" fill="none" stroke="url(#primaryGradient)" stroke-width="2" opacity="0.4" class="outer-ring"/>
-
-                        <!-- Secondary Ring -->
-                        <circle cx="24" cy="24" r="18" fill="none" stroke="url(#accentGradient)" stroke-width="1" opacity="0.6" class="mid-ring"/>
-
-                        <!-- Main Logo Shape - Complex Geometric Design -->
+                        <!-- Original Suntyn Logo Design - Recovered -->
+                        <circle cx="24" cy="24" r="22" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.3" class="outer-ring"/>
+                        
+                        <!-- Main Logo Shape -->
                         <g transform="translate(24,24)" class="logo-center">
-                            <!-- Central Core with Glow -->
-                            <circle cx="0" cy="0" r="8" fill="url(#coreGradient)" class="core-glow"/>
-                            <circle cx="0" cy="0" r="6" fill="url(#innerGradient)" class="inner-core"/>
-
-                            <!-- Dynamic Orbiting Elements -->
-                            <g class="orbit-nodes">
-                                <circle cx="12" cy="0" r="3" fill="url(#accentGradient)" class="orbit-dot"/>
-                                <circle cx="-12" cy="0" r="3" fill="url(#accentGradient)" class="orbit-dot"/>
-                                <circle cx="0" cy="12" r="3" fill="url(#accentGradient)" class="orbit-dot"/>
-                                <circle cx="0" cy="-12" r="3" fill="url(#accentGradient)" class="orbit-dot"/>
-                            </g>
-
-                            <!-- Connecting Lines with Energy Flow -->
-                            <g class="connection-lines">
-                                <line x1="-8" y1="0" x2="8" y2="0" stroke="url(#energyGradient)" stroke-width="2" class="energy-line"/>
-                                <line x1="0" y1="-8" x2="0" y2="8" stroke="url(#energyGradient)" stroke-width="2" class="energy-line"/>
-                            </g>
-
-                            <!-- Diagonal Connectors -->
-                            <g class="diagonal-connectors">
-                                <line x1="-6" y1="-6" x2="6" y2="6" stroke="url(#accentGradient)" stroke-width="1.5" opacity="0.8" class="diagonal-line"/>
-                                <line x1="6" y1="-6" x2="-6" y2="6" stroke="url(#accentGradient)" stroke-width="1.5" opacity="0.8" class="diagonal-line"/>
-                            </g>
-
-                            <!-- Neural Network Nodes -->
-                            <g class="neural-nodes">
-                                <circle cx="8" cy="8" r="1.5" fill="#6366f1" class="neural-node"/>
-                                <circle cx="-8" cy="8" r="1.5" fill="#6366f1" class="neural-node"/>
-                                <circle cx="8" cy="-8" r="1.5" fill="#6366f1" class="neural-node"/>
-                                <circle cx="-8" cy="-8" r="1.5" fill="#6366f1" class="neural-node"/>
-                            </g>
-
-                            <!-- Data Particles -->
-                            <g class="data-particles">
-                                <circle cx="10" cy="2" r="0.5" fill="#fff" opacity="0.8" class="particle"/>
-                                <circle cx="-10" cy="-2" r="0.5" fill="#fff" opacity="0.8" class="particle"/>
-                                <circle cx="2" cy="10" r="0.5" fill="#fff" opacity="0.8" class="particle"/>
-                                <circle cx="-2" cy="-10" r="0.5" fill="#fff" opacity="0.8" class="particle"/>
-                            </g>
+                            <!-- Central Core -->
+                            <circle cx="0" cy="0" r="8" fill="#6366f1" class="core-main"/>
+                            
+                            <!-- Orbiting Elements -->
+                            <circle cx="12" cy="0" r="3" fill="#8b5cf6" class="orbit-dot"/>
+                            <circle cx="-12" cy="0" r="3" fill="#8b5cf6" class="orbit-dot"/>
+                            <circle cx="0" cy="12" r="3" fill="#8b5cf6" class="orbit-dot"/>
+                            <circle cx="0" cy="-12" r="3" fill="#8b5cf6" class="orbit-dot"/>
+                            
+                            <!-- Cross Lines -->
+                            <line x1="-8" y1="0" x2="8" y2="0" stroke="#6366f1" stroke-width="2" class="cross-line"/>
+                            <line x1="0" y1="-8" x2="0" y2="8" stroke="#6366f1" stroke-width="2" class="cross-line"/>
                         </g>
-
-                        <!-- Enhanced Gradient Definitions -->
-                        <defs>
-                            <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
-                            </linearGradient>
-                            
-                            <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
-                            </radialGradient>
-                            
-                            <radialGradient id="innerGradient" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
-                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
-                            </radialGradient>
-                            
-                            <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
-                            </linearGradient>
-                            
-                            <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.2" />
-                                <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.2" />
-                            </linearGradient>
-                        </defs>
-
-                        <!-- Enhanced Animations -->
+                        
+                        <!-- Animation Styles -->
                         <style>
                             .suntyn-logo {
-                                transition: all 0.3s ease;
+                                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                                filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
                             }
                             
                             .suntyn-logo:hover {
-                                transform: scale(1.1);
-                                filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+                                transform: scale(1.1) rotate(5deg);
+                                filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.6));
                             }
                             
                             .outer-ring {
-                                animation: pulse-ring 3s ease-in-out infinite;
-                                transform-origin: center;
+                                animation: logo-pulse 3s ease-in-out infinite;
                             }
                             
-                            .mid-ring {
-                                animation: pulse-ring 3s ease-in-out infinite reverse;
-                                animation-delay: 0.5s;
-                                transform-origin: center;
-                            }
-                            
-                            .orbit-nodes {
-                                animation: rotate-orbit 8s linear infinite;
-                                transform-origin: 0 0;
+                            .core-main {
+                                animation: logo-core-glow 4s ease-in-out infinite alternate;
                             }
                             
                             .orbit-dot {
-                                animation: dot-pulse 2s ease-in-out infinite;
+                                animation: logo-orbit-pulse 2s ease-in-out infinite;
                             }
                             
-                            .orbit-dot:nth-child(1) { animation-delay: 0s; }
-                            .orbit-dot:nth-child(2) { animation-delay: 0.5s; }
-                            .orbit-dot:nth-child(3) { animation-delay: 1s; }
-                            .orbit-dot:nth-child(4) { animation-delay: 1.5s; }
+                            .orbit-dot:nth-child(2) { animation-delay: 0.3s; }
+                            .orbit-dot:nth-child(3) { animation-delay: 0.6s; }
+                            .orbit-dot:nth-child(4) { animation-delay: 0.9s; }
+                            .orbit-dot:nth-child(5) { animation-delay: 1.2s; }
                             
-                            .core-glow {
-                                animation: core-pulse 4s ease-in-out infinite;
-                                filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.8));
+                            .cross-line {
+                                animation: logo-line-glow 3s ease-in-out infinite alternate;
                             }
                             
-                            .inner-core {
-                                animation: inner-spin 6s linear infinite;
+                            /* Keyframe Animations */
+                            @keyframes logo-pulse {
+                                0%, 100% { opacity: 0.3; transform: scale(1); }
+                                50% { opacity: 0.6; transform: scale(1.05); }
                             }
                             
-                            .energy-line {
-                                animation: energy-flow 2s ease-in-out infinite;
+                            @keyframes logo-core-glow {
+                                0% { filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.5)); }
+                                100% { filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.9)); }
                             }
                             
-                            .diagonal-line {
-                                animation: diagonal-glow 3s ease-in-out infinite alternate;
+                            @keyframes logo-orbit-pulse {
+                                0%, 100% { opacity: 0.8; transform: scale(1); }
+                                50% { opacity: 1; transform: scale(1.2); }
                             }
                             
-                            .neural-node {
-                                animation: neural-blink 4s ease-in-out infinite;
-                            }
-                            
-                            .neural-node:nth-child(1) { animation-delay: 0s; }
-                            .neural-node:nth-child(2) { animation-delay: 1s; }
-                            .neural-node:nth-child(3) { animation-delay: 2s; }
-                            .neural-node:nth-child(4) { animation-delay: 3s; }
-                            
-                            .particle {
-                                animation: particle-flow 6s linear infinite;
-                            }
-                            
-                            .particle:nth-child(1) { animation-delay: 0s; }
-                            .particle:nth-child(2) { animation-delay: 1.5s; }
-                            .particle:nth-child(3) { animation-delay: 3s; }
-                            .particle:nth-child(4) { animation-delay: 4.5s; }
-                            
-                            /* Keyframes */
-                            @keyframes pulse-ring {
-                                0%, 100% { 
-                                    opacity: 0.4; 
-                                    transform: scale(1); 
-                                }
-                                50% { 
-                                    opacity: 0.8; 
-                                    transform: scale(1.05); 
-                                }
-                            }
-                            
-                            @keyframes rotate-orbit {
-                                from { transform: rotate(0deg); }
-                                to { transform: rotate(360deg); }
-                            }
-                            
-                            @keyframes dot-pulse {
-                                0%, 100% { 
-                                    opacity: 0.8; 
-                                    transform: scale(1); 
-                                }
-                                50% { 
-                                    opacity: 1; 
-                                    transform: scale(1.2); 
-                                }
-                            }
-                            
-                            @keyframes core-pulse {
-                                0%, 100% { 
-                                    opacity: 0.9; 
-                                    transform: scale(1); 
-                                }
-                                50% { 
-                                    opacity: 1; 
-                                    transform: scale(1.1); 
-                                }
-                            }
-                            
-                            @keyframes inner-spin {
-                                from { transform: rotate(0deg); }
-                                to { transform: rotate(-360deg); }
-                            }
-                            
-                            @keyframes energy-flow {
-                                0%, 100% { opacity: 0.6; }
-                                50% { opacity: 1; }
-                            }
-                            
-                            @keyframes diagonal-glow {
-                                0% { opacity: 0.5; }
-                                100% { opacity: 0.9; }
-                            }
-                            
-                            @keyframes neural-blink {
-                                0%, 90%, 100% { opacity: 0.6; }
-                                5%, 85% { opacity: 1; }
-                            }
-                            
-                            @keyframes particle-flow {
-                                0%, 100% { 
-                                    opacity: 0; 
-                                    transform: scale(0.5); 
-                                }
-                                25%, 75% { 
-                                    opacity: 1; 
-                                    transform: scale(1); 
-                                }
-                                50% { 
-                                    opacity: 0.8; 
-                                    transform: scale(1.2); 
-                                }
+                            @keyframes logo-line-glow {
+                                0% { opacity: 0.8; }
+                                100% { opacity: 1; filter: drop-shadow(0 0 8px #6366f1); }
                             }
                         </style>
                     </svg>
                 </div>
                 <div class="brand-text">
-                    <span class="brand-name">Suntyn AI</span>
-                    <span class="brand-tagline">Neural Intelligence</span>
+                    <span class="brand-name">Suntyn</span>
+                    <span class="brand-tagline">AI Tools Platform</span>
                 </div>
             </a>
 
@@ -586,94 +434,83 @@
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="d-flex align-items-center mb-3">
                         <div class="footer-logo me-2">
-                            <svg width="32" height="32" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="footer-suntyn-logo">
-                                <circle cx="24" cy="24" r="22" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.4" class="footer-outer-ring"/>
-                                <circle cx="24" cy="24" r="18" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.6" class="footer-mid-ring"/>
+                            <svg width="36" height="36" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="footer-suntyn-logo">
+                                <!-- Original Suntyn Footer Logo Design -->
+                                <circle cx="24" cy="24" r="22" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.3" class="footer-outer-ring"/>
+                                
                                 <g transform="translate(24,24)" class="footer-logo-center">
+                                    <!-- Central Core -->
                                     <circle cx="0" cy="0" r="8" fill="#6366f1" class="footer-core"/>
-                                    <circle cx="0" cy="0" r="5" fill="#8b5cf6" class="footer-inner"/>
-                                    <g class="footer-orbit-nodes">
-                                        <circle cx="12" cy="0" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                        <circle cx="-12" cy="0" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                        <circle cx="0" cy="12" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                        <circle cx="0" cy="-12" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                    </g>
+                                    
+                                    <!-- Orbiting Elements -->
+                                    <circle cx="12" cy="0" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
+                                    <circle cx="-12" cy="0" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
+                                    <circle cx="0" cy="12" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
+                                    <circle cx="0" cy="-12" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
+                                    
+                                    <!-- Cross Lines -->
                                     <line x1="-8" y1="0" x2="8" y2="0" stroke="#6366f1" stroke-width="2" class="footer-line"/>
                                     <line x1="0" y1="-8" x2="0" y2="8" stroke="#6366f1" stroke-width="2" class="footer-line"/>
-                                    <line x1="-6" y1="-6" x2="6" y2="6" stroke="#8b5cf6" stroke-width="1" opacity="0.7" class="footer-diagonal"/>
-                                    <line x1="6" y1="-6" x2="-6" y2="6" stroke="#8b5cf6" stroke-width="1" opacity="0.7" class="footer-diagonal"/>
                                 </g>
                                 
                                 <style>
+                                    .footer-suntyn-logo {
+                                        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                                        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.3));
+                                    }
+                                    
                                     .footer-suntyn-logo:hover {
-                                        transform: scale(1.1);
-                                        filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
-                                        transition: all 0.3s ease;
+                                        transform: scale(1.15) rotate(-5deg);
+                                        filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.7));
                                     }
                                     
                                     .footer-outer-ring {
                                         animation: footer-pulse 4s ease-in-out infinite;
                                     }
                                     
-                                    .footer-mid-ring {
-                                        animation: footer-pulse 4s ease-in-out infinite reverse;
-                                        animation-delay: 0.5s;
-                                    }
-                                    
-                                    .footer-orbit-nodes {
-                                        animation: footer-rotate 10s linear infinite;
-                                        transform-origin: 0 0;
-                                    }
-                                    
                                     .footer-core {
-                                        animation: footer-core-glow 3s ease-in-out infinite;
+                                        animation: footer-core-glow 3s ease-in-out infinite alternate;
                                     }
                                     
-                                    .footer-inner {
-                                        animation: footer-inner-rotate 8s linear infinite reverse;
+                                    .footer-orbit-dot {
+                                        animation: footer-orbit-pulse 2.5s ease-in-out infinite;
                                     }
+                                    
+                                    .footer-orbit-dot:nth-child(2) { animation-delay: 0.4s; }
+                                    .footer-orbit-dot:nth-child(3) { animation-delay: 0.8s; }
+                                    .footer-orbit-dot:nth-child(4) { animation-delay: 1.2s; }
+                                    .footer-orbit-dot:nth-child(5) { animation-delay: 1.6s; }
                                     
                                     .footer-line {
-                                        animation: footer-line-glow 2s ease-in-out infinite alternate;
-                                    }
-                                    
-                                    .footer-diagonal {
-                                        animation: footer-diagonal-fade 3s ease-in-out infinite alternate;
+                                        animation: footer-line-glow 3s ease-in-out infinite alternate;
                                     }
                                     
                                     @keyframes footer-pulse {
-                                        0%, 100% { opacity: 0.4; transform: scale(1); }
-                                        50% { opacity: 0.8; transform: scale(1.05); }
-                                    }
-                                    
-                                    @keyframes footer-rotate {
-                                        from { transform: rotate(0deg); }
-                                        to { transform: rotate(360deg); }
+                                        0%, 100% { opacity: 0.3; transform: scale(1); }
+                                        50% { opacity: 0.6; transform: scale(1.03); }
                                     }
                                     
                                     @keyframes footer-core-glow {
-                                        0%, 100% { opacity: 0.8; }
-                                        50% { opacity: 1; filter: drop-shadow(0 0 8px #6366f1); }
+                                        0% { filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.4)); }
+                                        100% { filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.8)); }
                                     }
                                     
-                                    @keyframes footer-inner-rotate {
-                                        from { transform: rotate(0deg); }
-                                        to { transform: rotate(-360deg); }
+                                    @keyframes footer-orbit-pulse {
+                                        0%, 100% { opacity: 0.7; transform: scale(1); }
+                                        50% { opacity: 1; transform: scale(1.15); }
                                     }
                                     
                                     @keyframes footer-line-glow {
                                         0% { opacity: 0.8; }
-                                        100% { opacity: 1; filter: drop-shadow(0 0 5px #6366f1); }
-                                    }
-                                    
-                                    @keyframes footer-diagonal-fade {
-                                        0% { opacity: 0.5; }
-                                        100% { opacity: 0.9; }
+                                        100% { opacity: 1; filter: drop-shadow(0 0 6px #6366f1); }
                                     }
                                 </style>
                             </svg>
                         </div>
-                        <h5 class="mb-0" style="color: var(--primary-color);">Suntyn AI</h5>
+                        <div>
+                            <h5 class="mb-0" style="color: var(--primary-color); font-weight: 700;">Suntyn</h5>
+                            <small style="color: var(--text-secondary); opacity: 0.8;">AI Tools Platform</small>
+                        </div>
                     </div>
                     <p class="text-light mb-3">Professional AI-powered tools platform with 85+ tools for productivity and efficiency.</p>
                     <div class="d-flex gap-3">
