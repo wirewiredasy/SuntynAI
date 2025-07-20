@@ -1,4 +1,3 @@
-
 /**
  * Professional AI Tools Platform - Main JavaScript
  * Enhanced search, animations, and interactions
@@ -7,7 +6,7 @@
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Professional AI Tools Platform initialized');
-    
+
     // Initialize all components
     initializeThemeManager();
     initializeAnalytics();
@@ -24,11 +23,11 @@ function initializeProfessionalSearch() {
     const searchInput = document.getElementById('globalSearch');
     const filterToggle = document.getElementById('filterToggle');
     const searchFilters = document.getElementById('searchFilters');
-    
+
     if (!searchInput) return;
-    
+
     console.log('🔍 Initializing professional search system');
-    
+
     // Search with debouncing
     let searchTimeout;
     searchInput.addEventListener('input', function() {
@@ -37,7 +36,7 @@ function initializeProfessionalSearch() {
             performAdvancedSearch(this.value);
         }, 300);
     });
-    
+
     // Filter toggle
     if (filterToggle) {
         filterToggle.addEventListener('click', function() {
@@ -47,7 +46,7 @@ function initializeProfessionalSearch() {
             }
         });
     }
-    
+
     // Suggestion tags
     document.querySelectorAll('.suggestion-tag').forEach(tag => {
         tag.addEventListener('click', function() {
@@ -56,7 +55,7 @@ function initializeProfessionalSearch() {
             performAdvancedSearch(searchTerm);
         });
     });
-    
+
     // Filter options
     document.querySelectorAll('.filter-option').forEach(option => {
         option.addEventListener('click', function() {
@@ -66,7 +65,7 @@ function initializeProfessionalSearch() {
                 opt.classList.remove('active');
             });
             this.classList.add('active');
-            
+
             // Apply filters
             applyAdvancedFilters();
         });
@@ -79,20 +78,20 @@ function performAdvancedSearch(query) {
         showAllTools();
         return;
     }
-    
+
     const tools = document.querySelectorAll('.tool-card');
     const searchQuery = query.toLowerCase().trim();
     let visibleCount = 0;
-    
+
     tools.forEach(tool => {
         const title = tool.querySelector('.tool-title')?.textContent.toLowerCase() || '';
         const description = tool.querySelector('.tool-description')?.textContent.toLowerCase() || '';
         const features = Array.from(tool.querySelectorAll('.feature-tag')).map(tag => 
             tag.textContent.toLowerCase()
         ).join(' ');
-        
+
         const searchContent = `${title} ${description} ${features}`;
-        
+
         if (searchContent.includes(searchQuery)) {
             showTool(tool);
             visibleCount++;
@@ -100,7 +99,7 @@ function performAdvancedSearch(query) {
             hideTool(tool);
         }
     });
-    
+
     updateSearchResults(visibleCount, query);
     trackSearchInteraction(query, visibleCount);
 }
@@ -109,13 +108,13 @@ function performAdvancedSearch(query) {
 function applyAdvancedFilters() {
     const activeCategory = document.querySelector('.filter-option[data-category].active');
     const activeType = document.querySelector('.filter-option[data-type].active');
-    
+
     const tools = document.querySelectorAll('.tool-card');
     let visibleCount = 0;
-    
+
     tools.forEach(tool => {
         let shouldShow = true;
-        
+
         // Category filter
         if (activeCategory && activeCategory.dataset.category !== 'all') {
             const toolCategory = tool.closest('.tools-category')?.id.replace('-tools', '');
@@ -123,7 +122,7 @@ function applyAdvancedFilters() {
                 shouldShow = false;
             }
         }
-        
+
         // Type filter
         if (shouldShow && activeType && activeType.dataset.type) {
             const toolType = tool.dataset.type;
@@ -131,7 +130,7 @@ function applyAdvancedFilters() {
                 shouldShow = false;
             }
         }
-        
+
         if (shouldShow) {
             showTool(tool);
             visibleCount++;
@@ -139,7 +138,7 @@ function applyAdvancedFilters() {
             hideTool(tool);
         }
     });
-    
+
     updateSearchResults(visibleCount, 'filtered');
 }
 
@@ -182,7 +181,7 @@ function updateSearchResults(count, query) {
 // Tool interactions
 function initializeToolInteractions() {
     console.log('🔧 Initializing tool interactions');
-    
+
     // Category navigation
     document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -190,7 +189,7 @@ function initializeToolInteractions() {
             switchCategory(category, this);
         });
     });
-    
+
     // Subcategory filters
     document.querySelectorAll('.subcategory-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -198,19 +197,19 @@ function initializeToolInteractions() {
             filterSubcategory(subcategory, this);
         });
     });
-    
+
     // Tool card hover effects
     document.querySelectorAll('.tool-card').forEach(card => {
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-10px) scale(1.02)';
             this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
         });
-        
+
         card.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0) scale(1)';
             this.style.boxShadow = '';
         });
-        
+
         // Track tool clicks
         card.addEventListener('click', function(e) {
             if (!e.target.closest('.tool-btn')) {
@@ -228,16 +227,16 @@ function switchCategory(category, tabElement) {
         tab.classList.remove('active');
     });
     tabElement.classList.add('active');
-    
+
     // Show category content
     document.querySelectorAll('.tools-category').forEach(cat => {
         cat.classList.remove('active');
     });
-    
+
     const targetCategory = document.getElementById(category + '-tools');
     if (targetCategory) {
         targetCategory.classList.add('active');
-        
+
         // Animate tools
         const tools = targetCategory.querySelectorAll('.tool-card');
         tools.forEach((tool, index) => {
@@ -246,7 +245,7 @@ function switchCategory(category, tabElement) {
             }, index * 100);
         });
     }
-    
+
     trackToolInteraction('tab_switch', category);
 }
 
@@ -257,11 +256,11 @@ function filterSubcategory(subcategory, btnElement) {
         btn.classList.remove('active');
     });
     btnElement.classList.add('active');
-    
+
     // Filter tools
     const category = btnElement.closest('.tools-category').id.replace('-tools', '');
     const tools = btnElement.closest('.tools-category').querySelectorAll('.tool-card');
-    
+
     tools.forEach(tool => {
         if (subcategory === 'all' || tool.dataset.subcategory === subcategory) {
             showTool(tool);
@@ -269,35 +268,35 @@ function filterSubcategory(subcategory, btnElement) {
             hideTool(tool);
         }
     });
-    
+
     trackToolInteraction('subcategory_filter', `${category}_${subcategory}`);
 }
 
 // Animation system
 function initializeAnimations() {
     console.log('✨ Initializing animations');
-    
+
     // Intersection Observer for scroll animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-in');
-                
+
                 // Special handling for stats
                 if (entry.target.querySelector('.stat-number[data-count]')) {
                     animateStats();
                 }
-                
+
                 observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
-    
+
     // Observe elements
     document.querySelectorAll('.hero-stats, .tool-card, .feature-card, .category-header').forEach(el => {
         observer.observe(el);
@@ -307,20 +306,20 @@ function initializeAnimations() {
 // Animate statistics
 function animateStats() {
     const statNumbers = document.querySelectorAll('.stat-number[data-count]');
-    
+
     statNumbers.forEach(stat => {
         const target = parseInt(stat.dataset.count);
         const duration = 2000;
         const start = performance.now();
-        
+
         const animate = (currentTime) => {
             const elapsed = currentTime - start;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             // Easing function
             const easeOutQuart = 1 - Math.pow(1 - progress, 4);
             const current = Math.floor(target * easeOutQuart);
-            
+
             if (target >= 1000) {
                 stat.textContent = Math.floor(current / 1000) + 'K+';
             } else if (target >= 99) {
@@ -328,12 +327,12 @@ function animateStats() {
             } else {
                 stat.textContent = current + '+';
             }
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             }
         };
-        
+
         requestAnimationFrame(animate);
     });
 }
@@ -341,18 +340,18 @@ function animateStats() {
 // Scroll effects
 function initializeScrollEffects() {
     let scrollTimeout;
-    
+
     window.addEventListener('scroll', function() {
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             const scrolled = window.pageYOffset;
-            
+
             // Parallax effect for floating elements
             document.querySelectorAll('.float-element').forEach((element, index) => {
                 const speed = 0.5 + (index * 0.1);
                 element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.1}deg)`;
             });
-            
+
             // Update navbar on scroll
             const navbar = document.querySelector('.navbar');
             if (navbar) {
@@ -369,20 +368,20 @@ function initializeScrollEffects() {
 // Theme Management
 function initializeThemeManager() {
     console.log('🎨 Enhanced theme manager initialized');
-    
+
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    
+
     // Theme toggle functionality
     const themeToggle = document.querySelector('.theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', function() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
+
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            
+
             // Smooth transition
             document.body.style.transition = 'all 0.3s ease';
             setTimeout(() => {
@@ -395,7 +394,7 @@ function initializeThemeManager() {
 // Analytics and tracking
 function initializeAnalytics() {
     console.log('📊 Analytics initialized');
-    
+
     // Check for analytics cookies
     const cookieConsent = getCookie('cookieConsent');
     if (cookieConsent) {
@@ -415,7 +414,7 @@ function initializeCookieConsent() {
         console.log('🍪 Cookies loaded based on preferences:', consent);
         return;
     }
-    
+
     // Show cookie consent banner if needed
     // Implementation depends on your cookie consent UI
 }
@@ -426,7 +425,7 @@ function initializePerformanceMonitoring() {
     window.addEventListener('load', function() {
         const loadTime = performance.now();
         console.log(`🚀 Page loaded in ${Math.round(loadTime)}ms`);
-        
+
         // Track performance
         if (loadTime > 3000) {
             console.warn('⚠️ Slow page load detected');
@@ -450,7 +449,7 @@ function setCookie(name, value, days) {
 // Track interactions
 function trackToolInteraction(action, tool) {
     console.log(`📊 Tool interaction: ${action} - ${tool}`);
-    
+
     // Send to analytics if enabled
     const cookieConsent = getCookie('cookieConsent');
     if (cookieConsent) {
@@ -464,7 +463,7 @@ function trackToolInteraction(action, tool) {
 
 function trackSearchInteraction(query, results) {
     console.log(`🔍 Search: "${query}" - ${results} results`);
-    
+
     // Track search analytics
     const cookieConsent = getCookie('cookieConsent');
     if (cookieConsent) {
@@ -506,3 +505,101 @@ window.ProfessionalToolkit = {
     trackToolInteraction,
     animateStats
 };
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎨 Enhanced theme manager initialized');
+
+    // Initialize theme first
+    initTheme();
+
+    // Initialize logo animations
+    initLogoAnimations();
+
+    // Initialize other components
+    if (typeof initSearchSystem === 'function') {
+        initSearchSystem();
+    }
+
+    if (typeof initToolInteractions === 'function') {
+        initToolInteractions();
+    }
+
+    // Initialize category system
+    if (typeof CategorySystem === 'function') {
+        console.log('🚀 Initializing Professional Category System...');
+        window.categorySystem = new CategorySystem();
+    }
+
+    // Initialize analytics
+    console.log('📊 Analytics initialized');
+
+    // Performance monitoring
+    const startTime = performance.now();
+    window.addEventListener('load', () => {
+        const loadTime = Math.round(performance.now() - startTime);
+        console.log(`🚀 Page loaded in ${loadTime}ms`);
+
+        if (loadTime > 3000) {
+            console.warn('⚠️ Slow page load detected');
+        }
+    });
+});
+
+// Initialize logo animations
+function initLogoAnimations() {
+    const logos = document.querySelectorAll('.suntyn-logo, .footer-suntyn-logo');
+
+    logos.forEach(logo => {
+        // Add entrance animation
+        logo.style.opacity = '0';
+        logo.style.transform = 'scale(0.5)';
+
+        setTimeout(() => {
+            logo.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            logo.style.opacity = '1';
+            logo.style.transform = 'scale(1)';
+        }, 100);
+
+        // Add hover effects
+        logo.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1) rotate(5deg)';
+            this.style.filter = 'drop-shadow(0 0 20px rgba(99, 102, 241, 0.6))';
+        });
+
+        logo.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1) rotate(0deg)';
+            this.style.filter = 'drop-shadow(0 0 10px rgba(99, 102, 241, 0.3))';
+        });
+
+        // Add click animation
+        logo.addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            }, 100);
+        });
+    });
+
+    // Add special effects for brand text
+    const brandTexts = document.querySelectorAll('.brand-text');
+    brandTexts.forEach(brandText => {
+        brandText.addEventListener('mouseenter', function() {
+            const brandName = this.querySelector('.brand-name');
+            const brandTagline = this.querySelector('.brand-tagline');
+
+            if (brandName) {
+                brandName.style.animation = 'gradient-shift 0.5s ease-in-out';
+            }
+
+            if (brandTagline) {
+                brandTagline.style.animation = 'tagline-glow 0.5s ease-in-out';
+            }
+        });
+    });
+
+    console.log('🎨 Logo animations initialized');
+}
