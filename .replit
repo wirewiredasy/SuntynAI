@@ -1,6 +1,6 @@
 modules = ["python-3.11"]
 [nix]
-packages = ["unzipNLS"]
+packages = ["cargo", "freetype", "glibcLocales", "lcms2", "libGL", "libGLU", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "rustc", "tcl", "tk", "unzipNLS", "zlib"]
 channel = "stable-24_05"
 
 [[ports]]
