@@ -425,249 +425,483 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gradient-dark text-white mt-5 py-4">
-        <div class="container">
+    <!-- Ultra Professional Footer -->
+    <footer class="ultra-professional-footer text-white mt-5">
+        <!-- Decorative Top Border -->
+        <div class="footer-border-animation"></div>
+        
+        <div class="container position-relative">
+            <!-- Floating Background Elements -->
+            <div class="footer-bg-elements">
+                <div class="floating-circle circle-1"></div>
+                <div class="floating-circle circle-2"></div>
+                <div class="floating-circle circle-3"></div>
+            </div>
+            
             <!-- Main Footer Content -->
-            <div class="row mb-4">
-                <!-- Company Info -->
+            <div class="row mb-5 position-relative z-index-2">
+                <!-- Enhanced Company Branding -->
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="footer-logo me-2">
-                            <svg width="36" height="36" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="footer-suntyn-logo">
-                                <!-- Original Suntyn Footer Logo Design -->
-                                <circle cx="24" cy="24" r="22" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.3" class="footer-outer-ring"/>
-                                
-                                <g transform="translate(24,24)" class="footer-logo-center">
-                                    <!-- Central Core -->
-                                    <circle cx="0" cy="0" r="8" fill="#6366f1" class="footer-core"/>
+                    <div class="company-brand-section">
+                        <div class="brand-header d-flex align-items-center mb-4">
+                            <div class="footer-logo-wrapper me-3">
+                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="professional-footer-logo">
+                                    <defs>
+                                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
                                     
-                                    <!-- Orbiting Elements -->
-                                    <circle cx="12" cy="0" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                    <circle cx="-12" cy="0" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                    <circle cx="0" cy="12" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
-                                    <circle cx="0" cy="-12" r="3" fill="#8b5cf6" class="footer-orbit-dot"/>
+                                    <!-- Enhanced outer ring with gradient -->
+                                    <circle cx="24" cy="24" r="22" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.4" class="footer-outer-ring"/>
                                     
-                                    <!-- Cross Lines -->
-                                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#6366f1" stroke-width="2" class="footer-line"/>
-                                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#6366f1" stroke-width="2" class="footer-line"/>
-                                </g>
-                                
-                                <style>
-                                    .footer-suntyn-logo {
-                                        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                                        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.3));
-                                    }
+                                    <!-- Pulsing middle ring -->
+                                    <circle cx="24" cy="24" r="18" fill="none" stroke="url(#logoGradient)" stroke-width="1" opacity="0.2" class="footer-middle-ring"/>
                                     
-                                    .footer-suntyn-logo:hover {
-                                        transform: scale(1.15) rotate(-5deg);
-                                        filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.7));
-                                    }
-                                    
-                                    .footer-outer-ring {
-                                        animation: footer-pulse 4s ease-in-out infinite;
-                                    }
-                                    
-                                    .footer-core {
-                                        animation: footer-core-glow 3s ease-in-out infinite alternate;
-                                    }
-                                    
-                                    .footer-orbit-dot {
-                                        animation: footer-orbit-pulse 2.5s ease-in-out infinite;
-                                    }
-                                    
-                                    .footer-orbit-dot:nth-child(2) { animation-delay: 0.4s; }
-                                    .footer-orbit-dot:nth-child(3) { animation-delay: 0.8s; }
-                                    .footer-orbit-dot:nth-child(4) { animation-delay: 1.2s; }
-                                    .footer-orbit-dot:nth-child(5) { animation-delay: 1.6s; }
-                                    
-                                    .footer-line {
-                                        animation: footer-line-glow 3s ease-in-out infinite alternate;
-                                    }
-                                    
-                                    @keyframes footer-pulse {
-                                        0%, 100% { opacity: 0.3; transform: scale(1); }
-                                        50% { opacity: 0.6; transform: scale(1.03); }
-                                    }
-                                    
-                                    @keyframes footer-core-glow {
-                                        0% { filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.4)); }
-                                        100% { filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.8)); }
-                                    }
-                                    
-                                    @keyframes footer-orbit-pulse {
-                                        0%, 100% { opacity: 0.7; transform: scale(1); }
-                                        50% { opacity: 1; transform: scale(1.15); }
-                                    }
-                                    
-                                    @keyframes footer-line-glow {
-                                        0% { opacity: 0.8; }
-                                        100% { opacity: 1; filter: drop-shadow(0 0 6px #6366f1); }
-                                    }
-                                </style>
-                            </svg>
+                                    <g transform="translate(24,24)" class="footer-logo-center">
+                                        <!-- Enhanced Central Core with gradient -->
+                                        <circle cx="0" cy="0" r="10" fill="url(#logoGradient)" class="footer-core"/>
+                                        
+                                        <!-- Inner glow effect -->
+                                        <circle cx="0" cy="0" r="6" fill="rgba(255,255,255,0.2)" class="footer-inner-glow"/>
+                                        
+                                        <!-- Enhanced Orbiting Elements -->
+                                        <circle cx="14" cy="0" r="4" fill="#8b5cf6" class="footer-orbit-dot dot-1"/>
+                                        <circle cx="-14" cy="0" r="4" fill="#a78bfa" class="footer-orbit-dot dot-2"/>
+                                        <circle cx="0" cy="14" r="4" fill="#c084fc" class="footer-orbit-dot dot-3"/>
+                                        <circle cx="0" cy="-14" r="4" fill="#e879f9" class="footer-orbit-dot dot-4"/>
+                                        
+                                        <!-- Dynamic Cross Lines with glow -->
+                                        <line x1="-10" y1="0" x2="10" y2="0" stroke="#6366f1" stroke-width="2" class="footer-line horizontal-line"/>
+                                        <line x1="0" y1="-10" x2="0" y2="10" stroke="#6366f1" stroke-width="2" class="footer-line vertical-line"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="brand-text-content">
+                                <h4 class="brand-title mb-1">Suntyn AI</h4>
+                                <p class="brand-tagline mb-0">Next-Gen AI Platform</p>
+                            </div>
                         </div>
-                        <div>
-                            <h5 class="mb-0" style="color: var(--primary-color); font-weight: 700;">Suntyn</h5>
-                            <small style="color: var(--text-secondary); opacity: 0.8;">AI Tools Platform</small>
+                        
+                        <div class="company-description mb-4">
+                            <p class="text-light-gray mb-3 lh-lg">
+                                Leading the future of AI-powered productivity tools. Our comprehensive suite of 85+ advanced tools 
+                                empowers professionals and businesses to achieve unprecedented efficiency.
+                            </p>
+                            <div class="company-stats d-flex flex-wrap gap-4 mb-4">
+                                <div class="stat-item">
+                                    <span class="stat-number">85+</span>
+                                    <small class="stat-label">AI Tools</small>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">1M+</span>
+                                    <small class="stat-label">Users</small>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">99.9%</span>
+                                    <small class="stat-label">Uptime</small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <p class="text-light mb-3">Professional AI-powered tools platform with 85+ tools for productivity and efficiency.</p>
-                    <div class="d-flex gap-3">
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-twitter"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-linkedin"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-github"></i></a>
-                        <a href="#" style="color: var(--primary-color);"><i class="ti ti-brand-discord"></i></a>
+                        
+                        <!-- Enhanced Social Media Section -->
+                        <div class="social-media-section">
+                            <h6 class="social-title mb-3">Connect With Us</h6>
+                            <div class="social-links d-flex gap-3">
+                                <a href="#" class="social-btn twitter" data-tooltip="Follow on Twitter">
+                                    <i class="ti ti-brand-twitter"></i>
+                                </a>
+                                <a href="#" class="social-btn linkedin" data-tooltip="Connect on LinkedIn">
+                                    <i class="ti ti-brand-linkedin"></i>
+                                </a>
+                                <a href="#" class="social-btn github" data-tooltip="View on GitHub">
+                                    <i class="ti ti-brand-github"></i>
+                                </a>
+                                <a href="#" class="social-btn discord" data-tooltip="Join Discord">
+                                    <i class="ti ti-brand-discord"></i>
+                                </a>
+                                <a href="#" class="social-btn youtube" data-tooltip="Subscribe YouTube">
+                                    <i class="ti ti-brand-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Quick Links -->
+                <!-- Tool Categories with Enhanced Design -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-link me-2"></i>Quick Links</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-file-type-pdf me-2"></i>PDF Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-photo-edit me-2"></i>Image Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-currency-rupee me-2"></i>Finance Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-light"><i class="ti ti-video-plus me-2"></i>Video Tools</a></li>
-                        <li><a href="{{ url_for('index') }}#tools-section" class="text-warning"><i class="ti ti-apps me-2"></i>All Tools</a></li>
-                    </ul>
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-tools section-icon me-2"></i>
+                            Tool Categories
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="{{ url_for('index') }}#pdf-tools" class="footer-link pdf-link">
+                                <i class="ti ti-file-type-pdf link-icon"></i>PDF Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="{{ url_for('index') }}#image-tools" class="footer-link image-link">
+                                <i class="ti ti-photo-edit link-icon"></i>Image Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="{{ url_for('index') }}#finance-tools" class="footer-link finance-link">
+                                <i class="ti ti-currency-rupee link-icon"></i>Finance Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="{{ url_for('index') }}#video-tools" class="footer-link video-link">
+                                <i class="ti ti-video-plus link-icon"></i>Video/Audio
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="{{ url_for('index') }}#ai-tools" class="footer-link ai-link">
+                                <i class="ti ti-brain link-icon"></i>AI Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="{{ url_for('index') }}#all-tools" class="footer-link featured-link">
+                                <i class="ti ti-apps link-icon"></i>All Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Popular Tools -->
+                <!-- Popular Tools with Usage Stats -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-star me-2"></i>Popular</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="text-light"><i class="ti ti-file-plus me-2"></i>PDF Merge</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="text-light"><i class="ti ti-compress me-2"></i>Image Compress</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='qr-code-generator') }}" class="text-light"><i class="ti ti-qrcode me-2"></i>QR Generator</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="text-light"><i class="ti ti-calculator me-2"></i>EMI Calculator</a></li>
-                        <li><a href="{{ url_for('tool_page', tool_name='password-generator') }}" class="text-light"><i class="ti ti-key me-2"></i>Password Gen</a></li>
-                    </ul>
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-star section-icon me-2"></i>
+                            Most Popular
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="{{ url_for('tool_page', tool_name='pdf-merger') }}" class="footer-link">
+                                <i class="ti ti-file-plus link-icon"></i>PDF Merger
+                                <span class="usage-badge">Hot</span>
+                            </a></li>
+                            <li><a href="{{ url_for('tool_page', tool_name='image-compressor') }}" class="footer-link">
+                                <i class="ti ti-compress link-icon"></i>Image Compress
+                                <span class="usage-badge">Trending</span>
+                            </a></li>
+                            <li><a href="{{ url_for('tool_page', tool_name='qr-code-generator') }}" class="footer-link">
+                                <i class="ti ti-qrcode link-icon"></i>QR Generator
+                                <span class="usage-badge">New</span>
+                            </a></li>
+                            <li><a href="{{ url_for('tool_page', tool_name='emi-calculator') }}" class="footer-link">
+                                <i class="ti ti-calculator link-icon"></i>EMI Calculator
+                                <span class="usage-badge">Pro</span>
+                            </a></li>
+                            <li><a href="{{ url_for('tool_page', tool_name='password-generator') }}" class="footer-link">
+                                <i class="ti ti-key link-icon"></i>Password Gen
+                                <span class="usage-badge">Secure</span>
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Company -->
+                <!-- Company & Services -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-building me-2"></i>Company</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('about') }}" class="text-light"><i class="ti ti-info-circle me-2"></i>About Suntyn</a></li>
-                        <li><a href="{{ url_for('contact') }}" class="text-light"><i class="ti ti-mail me-2"></i>Contact Us</a></li>
-                        <li><a href="/careers" class="text-light"><i class="ti ti-briefcase me-2"></i>Careers</a></li>
-                        <li><a href="/partnerships" class="text-light"><i class="ti ti-handshake me-2"></i>Partners</a></li>
-                        <li><a href="/press" class="text-light"><i class="ti ti-news me-2"></i>Press Kit</a></li>
-                        <li><a href="/blog" class="text-light"><i class="ti ti-article me-2"></i>Blog</a></li>
-                        <li><a href="{{ url_for('faq') }}" class="text-light"><i class="ti ti-help-circle me-2"></i>FAQ</a></li>
-                    </ul>
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-building section-icon me-2"></i>
+                            Company
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="{{ url_for('about') }}" class="footer-link">
+                                <i class="ti ti-info-circle link-icon"></i>About Us
+                            </a></li>
+                            <li><a href="{{ url_for('contact') }}" class="footer-link">
+                                <i class="ti ti-mail link-icon"></i>Contact
+                            </a></li>
+                            <li><a href="/careers" class="footer-link">
+                                <i class="ti ti-briefcase link-icon"></i>Careers
+                                <span class="hiring-badge">We're Hiring!</span>
+                            </a></li>
+                            <li><a href="/partnerships" class="footer-link">
+                                <i class="ti ti-handshake link-icon"></i>Partners
+                            </a></li>
+                            <li><a href="/press" class="footer-link">
+                                <i class="ti ti-news link-icon"></i>Press Kit
+                            </a></li>
+                            <li><a href="/blog" class="footer-link">
+                                <i class="ti ti-article link-icon"></i>Blog
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Legal & Policies -->
+                <!-- Support & Legal -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-scale me-2"></i>Legal & Policies</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ url_for('privacy') }}" class="text-light"><i class="ti ti-shield-lock me-2"></i>Privacy Policy</a></li>
-                        <li><a href="{{ url_for('terms') }}" class="text-light"><i class="ti ti-file-text me-2"></i>Terms of Service</a></li>
-                        <li><a href="{{ url_for('cookies') }}" class="text-light"><i class="ti ti-cookie me-2"></i>Cookie Policy</a></li>
-                        <li><a href="{{ url_for('security') }}" class="text-light"><i class="ti ti-shield-check me-2"></i>Security Policy</a></li>
-                        <li><a href="/gdpr" class="text-light"><i class="ti ti-file-certificate me-2"></i>GDPR Compliance</a></li>
-                        <li><a href="/accessibility" class="text-light"><i class="ti ti-accessible me-2"></i>Accessibility</a></li>
-                    </ul>
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-shield-check section-icon me-2"></i>
+                            Support & Legal
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/help" class="footer-link">
+                                <i class="ti ti-help-circle link-icon"></i>Help Center
+                            </a></li>
+                            <li><a href="{{ url_for('faq') }}" class="footer-link">
+                                <i class="ti ti-question-mark link-icon"></i>FAQ
+                            </a></li>
+                            <li><a href="{{ url_for('privacy') }}" class="footer-link">
+                                <i class="ti ti-shield-lock link-icon"></i>Privacy Policy
+                            </a></li>
+                            <li><a href="{{ url_for('terms') }}" class="footer-link">
+                                <i class="ti ti-file-text link-icon"></i>Terms of Service
+                            </a></li>
+                            <li><a href="{{ url_for('cookies') }}" class="footer-link">
+                                <i class="ti ti-cookie link-icon"></i>Cookie Policy
+                            </a></li>
+                            <li><a href="{{ url_for('security') }}" class="footer-link">
+                                <i class="ti ti-shield link-icon"></i>Security
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <!-- Professional Newsletter Section -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="newsletter-section p-4 rounded-3" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid rgba(99, 102, 241, 0.2);">
-                        <div class="row align-items-center">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="ti ti-mail-forward me-2" style="color: var(--primary-color); font-size: 1.5rem;"></i>
-                                    <h5 class="mb-0" style="color: var(--primary-color);">Stay Updated with Suntyn AI</h5>
+            <!-- Premium Newsletter Section -->
+            <div class="newsletter-premium-section mb-5">
+                <div class="newsletter-content-wrapper">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <div class="newsletter-branding">
+                                <div class="newsletter-icon-wrapper mb-3">
+                                    <i class="ti ti-mail-forward newsletter-main-icon"></i>
+                                    <div class="icon-decoration"></div>
                                 </div>
-                                <p class="text-light mb-0">Get the latest updates on new AI tools, features, and productivity tips directly in your inbox.</p>
-                                <small class="text-muted">Join 50,000+ professionals who trust our insights</small>
-                            </div>
-                            <div class="col-md-6">
-                                <form class="newsletter-form d-flex gap-2" action="/newsletter/subscribe" method="POST">
-                                    <div class="flex-grow-1">
-                                        <input type="email" class="form-control" placeholder="Enter your professional email" required 
-                                               style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white;">
+                                <h4 class="newsletter-title mb-2">Stay Ahead with Suntyn AI</h4>
+                                <p class="newsletter-subtitle mb-3">
+                                    Join 50,000+ professionals who receive exclusive insights, early access to new tools, 
+                                    and productivity tips that drive results.
+                                </p>
+                                <div class="newsletter-benefits">
+                                    <div class="benefit-item">
+                                        <i class="ti ti-check-circle benefit-icon"></i>
+                                        <span>Weekly AI insights & trends</span>
                                     </div>
-                                    <button type="submit" class="btn btn-primary px-4" style="background: var(--primary-color); border: none;">
-                                        <i class="ti ti-send me-1"></i>Subscribe
-                                    </button>
-                                </form>
-                                <div class="d-flex align-items-center mt-2">
-                                    <i class="ti ti-shield-check me-1" style="color: #10b981; font-size: 0.9rem;"></i>
-                                    <small class="text-muted">We respect your privacy. Unsubscribe anytime.</small>
+                                    <div class="benefit-item">
+                                        <i class="ti ti-check-circle benefit-icon"></i>
+                                        <span>Early access to new features</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <i class="ti ti-check-circle benefit-icon"></i>
+                                        <span>Exclusive productivity tips</span>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="newsletter-form-wrapper">
+                                <form class="premium-newsletter-form" action="/newsletter/subscribe" method="POST">
+                                    <div class="input-group-premium">
+                                        <div class="input-wrapper">
+                                            <i class="ti ti-mail input-icon"></i>
+                                            <input type="email" 
+                                                   class="premium-email-input" 
+                                                   placeholder="Enter your professional email" 
+                                                   required>
+                                            <div class="input-focus-line"></div>
+                                        </div>
+                                        <button type="submit" class="premium-submit-btn">
+                                            <span class="btn-text">Subscribe</span>
+                                            <i class="ti ti-arrow-right btn-icon"></i>
+                                            <div class="btn-ripple"></div>
+                                        </button>
+                                    </div>
+                                    <div class="form-footer mt-3">
+                                        <div class="privacy-note">
+                                            <i class="ti ti-shield-check privacy-icon"></i>
+                                            <span>We respect your privacy. Unsubscribe anytime. No spam, ever.</span>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Professional Links & Resources -->
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-book me-2"></i>Resources & Support</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="/documentation" class="text-light"><i class="ti ti-book-2 me-2"></i>Documentation</a></li>
-                        <li><a href="/tutorials" class="text-light"><i class="ti ti-video me-2"></i>Video Tutorials</a></li>
-                        <li><a href="/api-docs" class="text-light"><i class="ti ti-api me-2"></i>API Documentation</a></li>
-                        <li><a href="/support" class="text-light"><i class="ti ti-lifebuoy me-2"></i>Support Center</a></li>
-                        <li><a href="/status" class="text-light"><i class="ti ti-activity me-2"></i>System Status</a></li>
-                    </ul>
+            <!-- Professional Services & Resources -->
+            <div class="row mb-5">
+                <!-- Resources & Documentation -->
+                <div class="col-md-4 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-book section-icon me-2"></i>
+                            Resources & Learning
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/documentation" class="footer-link">
+                                <i class="ti ti-book-2 link-icon"></i>Documentation
+                            </a></li>
+                            <li><a href="/tutorials" class="footer-link">
+                                <i class="ti ti-video link-icon"></i>Video Tutorials
+                            </a></li>
+                            <li><a href="/api-docs" class="footer-link">
+                                <i class="ti ti-api link-icon"></i>API Reference
+                            </a></li>
+                            <li><a href="/webinars" class="footer-link">
+                                <i class="ti ti-presentation link-icon"></i>Webinars
+                            </a></li>
+                            <li><a href="/case-studies" class="footer-link">
+                                <i class="ti ti-file-analytics link-icon"></i>Case Studies
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-users me-2"></i>Community & Social</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="/community" class="text-light"><i class="ti ti-users-group me-2"></i>Community Forum</a></li>
-                        <li><a href="/discord" class="text-light"><i class="ti ti-brand-discord me-2"></i>Discord Server</a></li>
-                        <li><a href="/feedback" class="text-light"><i class="ti ti-message-circle me-2"></i>Feedback Portal</a></li>
-                        <li><a href="/testimonials" class="text-light"><i class="ti ti-quote me-2"></i>Testimonials</a></li>
-                        <li><a href="/case-studies" class="text-light"><i class="ti ti-file-analytics me-2"></i>Case Studies</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-award me-2"></i>Professional Services</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="/enterprise" class="text-light"><i class="ti ti-building-skyscraper me-2"></i>Enterprise Solutions</a></li>
-                        <li><a href="/consulting" class="text-light"><i class="ti ti-users me-2"></i>AI Consulting</a></li>
-                        <li><a href="/custom-development" class="text-light"><i class="ti ti-code me-2"></i>Custom Development</a></li>
-                        <li><a href="/training" class="text-light"><i class="ti ti-school me-2"></i>Professional Training</a></li>
-                        <li><a href="/certification" class="text-light"><i class="ti ti-certificate me-2"></i>Certification Program</a></li>
-                    </ul>
-                </div>
-            </div>
 
-            <!-- Copyright & Professional Info -->
-            <hr class="my-3 border-secondary">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="text-light mb-1">
-                        © 2025 Suntyn AI Technologies Pvt. Ltd. All rights reserved.
-                    </p>
-                    <small class="text-muted">
-                        Registered in India | CIN: U72900DL2025PTC123456 | GST: 07AABCS1234N1Z5
-                    </small>
+                <!-- Community & Support -->
+                <div class="col-md-4 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-users section-icon me-2"></i>
+                            Community & Support
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/community" class="footer-link">
+                                <i class="ti ti-users-group link-icon"></i>Community Forum
+                            </a></li>
+                            <li><a href="/discord" class="footer-link">
+                                <i class="ti ti-brand-discord link-icon"></i>Discord Server
+                            </a></li>
+                            <li><a href="/support" class="footer-link">
+                                <i class="ti ti-lifebuoy link-icon"></i>24/7 Support
+                            </a></li>
+                            <li><a href="/status" class="footer-link">
+                                <i class="ti ti-activity link-icon"></i>System Status
+                            </a></li>
+                            <li><a href="/feedback" class="footer-link">
+                                <i class="ti ti-message-circle link-icon"></i>Feedback Portal
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="text-light mb-1">
-                        Powered by Advanced AI & Machine Learning
-                    </p>
-                    <div class="d-flex justify-content-center justify-content-md-end gap-3 mt-2">
-                        <a href="/iso-certification" class="text-muted text-decoration-none">
-                            <small><i class="ti ti-certificate me-1"></i>ISO 27001 Certified</small>
-                        </a>
-                        <a href="/gdpr-compliant" class="text-muted text-decoration-none">
-                            <small><i class="ti ti-shield-check me-1"></i>GDPR Compliant</small>
-                        </a>
-                        <a href="/ssl-secured" class="text-muted text-decoration-none">
-                            <small><i class="ti ti-lock me-1"></i>SSL Secured</small>
-                        </a>
+
+                <!-- Enterprise Solutions -->
+                <div class="col-md-4 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="ti ti-building-skyscraper section-icon me-2"></i>
+                            Enterprise Solutions
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/enterprise" class="footer-link">
+                                <i class="ti ti-briefcase link-icon"></i>Enterprise Plans
+                            </a></li>
+                            <li><a href="/consulting" class="footer-link">
+                                <i class="ti ti-user-star link-icon"></i>AI Consulting
+                            </a></li>
+                            <li><a href="/custom-development" class="footer-link">
+                                <i class="ti ti-code link-icon"></i>Custom Development
+                            </a></li>
+                            <li><a href="/training" class="footer-link">
+                                <i class="ti ti-school link-icon"></i>Team Training
+                            </a></li>
+                            <li><a href="/white-label" class="footer-link">
+                                <i class="ti ti-tag link-icon"></i>White Label
+                            </a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
+
+            <!-- Security & Compliance Badges -->
+            <div class="security-compliance-section mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="security-title mb-3">Security & Compliance</h6>
+                        <div class="security-badges d-flex flex-wrap gap-3">
+                            <div class="security-badge">
+                                <i class="ti ti-certificate badge-icon"></i>
+                                <div class="badge-content">
+                                    <strong>ISO 27001</strong>
+                                    <small>Certified</small>
+                                </div>
+                            </div>
+                            <div class="security-badge">
+                                <i class="ti ti-shield-check badge-icon"></i>
+                                <div class="badge-content">
+                                    <strong>GDPR</strong>
+                                    <small>Compliant</small>
+                                </div>
+                            </div>
+                            <div class="security-badge">
+                                <i class="ti ti-lock badge-icon"></i>
+                                <div class="badge-content">
+                                    <strong>SSL</strong>
+                                    <small>Secured</small>
+                                </div>
+                            </div>
+                            <div class="security-badge">
+                                <i class="ti ti-shield-star badge-icon"></i>
+                                <div class="badge-content">
+                                    <strong>SOC 2</strong>
+                                    <small>Type II</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="trust-indicators">
+                            <div class="trust-item">
+                                <i class="ti ti-server trust-icon"></i>
+                                <span>99.9% Uptime SLA</span>
+                            </div>
+                            <div class="trust-item">
+                                <i class="ti ti-database trust-icon"></i>
+                                <span>Data Encrypted</span>
+                            </div>
+                            <div class="trust-item">
+                                <i class="ti ti-clock trust-icon"></i>
+                                <span>24/7 Monitoring</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Footer Bottom -->
+            <div class="footer-bottom-premium">
+                <hr class="footer-divider">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-3 mb-lg-0">
+                        <div class="copyright-section">
+                            <p class="copyright-text mb-2">
+                                © 2025 <strong>Suntyn AI Technologies Pvt. Ltd.</strong> All rights reserved.
+                            </p>
+                            <div class="company-details">
+                                <span class="detail-item">CIN: U72900DL2025PTC123456</span>
+                                <span class="detail-divider">|</span>
+                                <span class="detail-item">GST: 07AABCS1234N1Z5</span>
+                                <span class="detail-divider">|</span>
+                                <span class="detail-item">Registered in New Delhi, India</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="footer-meta text-lg-end">
+                            <p class="powered-by-text mb-2">
+                                Powered by <strong>Advanced AI & Machine Learning</strong>
+                            </p>
+                            <div class="footer-links-inline">
+                                <a href="/sitemap" class="inline-link">Sitemap</a>
+                                <span class="link-separator">•</span>
+                                <a href="/accessibility" class="inline-link">Accessibility</a>
+                                <span class="link-separator">•</span>
+                                <a href="/modern-slavery" class="inline-link">Modern Slavery Statement</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll to top enhancement for footer -->
+        <div class="footer-scroll-top">
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="ti ti-arrow-up"></i>
+                <span>Back to Top</span>
+            </button>
         </div>
     </footer>
 
