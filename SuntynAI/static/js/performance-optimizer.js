@@ -235,13 +235,13 @@ class PerformanceOptimizer {
         if ('performance' in window && 'getEntriesByType' in performance) {
             try {
                 const navigation = performance.getEntriesByType('navigation')[0];
-                
+
                 if (!navigation) return;
 
                 // Calculate metrics with proper validation
                 const totalLoadTime = navigation.loadEventEnd > 0 ? 
                     Math.round(navigation.loadEventEnd - navigation.navigationStart) : 0;
-                
+
                 const metrics = {
                     'DNS': Math.round(Math.max(0, navigation.domainLookupEnd - navigation.domainLookupStart)),
                     'Connection': Math.round(Math.max(0, navigation.connectEnd - navigation.connectStart)),
@@ -253,12 +253,12 @@ class PerformanceOptimizer {
                 // Only log if total load time is valid
                 if (totalLoadTime > 0) {
                     console.log('📊 Load Time:', totalLoadTime + 'ms');
-                    
+
                     // Show performance indicator
                     this.showPerformanceIndicator(totalLoadTime);
 
                     // Report slow performance (reduced threshold)
-                    if (totalLoadTime > 5000) {
+                    if (totalLoadTime > 8000) {
                         console.warn('🐌 Slow load:', totalLoadTime + 'ms');
                     }
                 }
