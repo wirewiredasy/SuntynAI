@@ -23,28 +23,48 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">
                 <svg width="32" height="32" viewBox="0 0 100 100" class="me-2">
-                    <!-- Neural Network Logo -->
-                    <circle cx="50" cy="50" r="48" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.3"/>
-                    <!-- Central Node -->
-                    <circle cx="50" cy="50" r="12" fill="#8b5cf6"/>
-                    <!-- Outer Nodes -->
-                    <circle cx="50" cy="25" r="6" fill="#a855f7"/>
-                    <circle cx="71" cy="35" r="6" fill="#a855f7"/>
-                    <circle cx="79" cy="50" r="6" fill="#a855f7"/>
-                    <circle cx="71" cy="65" r="6" fill="#a855f7"/>
-                    <circle cx="50" cy="75" r="6" fill="#a855f7"/>
-                    <circle cx="29" cy="65" r="6" fill="#a855f7"/>
-                    <circle cx="21" cy="50" r="6" fill="#a855f7"/>
-                    <circle cx="29" cy="35" r="6" fill="#a855f7"/>
-                    <!-- Connection Lines -->
-                    <line x1="50" y1="38" x2="50" y2="25" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="59" y1="41" x2="71" y2="35" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="62" y1="50" x2="79" y2="50" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="59" y1="59" x2="71" y2="65" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="50" y1="62" x2="50" y2="75" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="41" y1="59" x2="29" y2="65" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="38" y1="50" x2="21" y2="50" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                    <line x1="41" y1="41" x2="29" y2="35" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
+                    <defs>
+                        <radialGradient id="navSunGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+                        </radialGradient>
+                    </defs>
+                    
+                    <!-- Sun Rays - Mini -->
+                    <g class="nav-sun-rays">
+                        <line x1="50" y1="8" x2="50" y2="15" stroke="#fbbf24" stroke-width="2" opacity="0.7"/>
+                        <line x1="71" y1="21" x2="68" y2="25" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="85" y1="29" x2="82" y2="32" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="92" y1="50" x2="85" y2="50" stroke="#fbbf24" stroke-width="2" opacity="0.7"/>
+                        <line x1="85" y1="71" x2="82" y2="68" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="71" y1="79" x2="68" y2="75" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="50" y1="92" x2="50" y2="85" stroke="#fbbf24" stroke-width="2" opacity="0.7"/>
+                        <line x1="29" y1="79" x2="32" y2="75" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="15" y1="71" x2="18" y2="68" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="8" y1="50" x2="15" y2="50" stroke="#fbbf24" stroke-width="2" opacity="0.7"/>
+                        <line x1="15" y1="29" x2="18" y2="32" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="29" y1="21" x2="32" y2="25" stroke="#fbbf24" stroke-width="1.5" opacity="0.6"/>
+                    </g>
+                    
+                    <!-- Outer ring -->
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
+                    
+                    <!-- Central Sun Core -->
+                    <circle cx="50" cy="50" r="10" fill="url(#navSunGradient)"/>
+                    
+                    <!-- Inner glow -->
+                    <circle cx="50" cy="50" r="6" fill="rgba(255,255,255,0.3)"/>
+                    
+                    <!-- Orbiting Elements -->
+                    <circle cx="65" cy="50" r="3" fill="#8b5cf6" opacity="0.8"/>
+                    <circle cx="35" cy="50" r="3" fill="#a78bfa" opacity="0.8"/>
+                    <circle cx="50" cy="35" r="3" fill="#c084fc" opacity="0.8"/>
+                    <circle cx="50" cy="65" r="3" fill="#e879f9" opacity="0.8"/>
+                    
+                    <!-- Cross Lines -->
+                    <line x1="40" y1="50" x2="60" y2="50" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                    <line x1="50" y1="40" x2="50" y2="60" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
                 </svg>
                 <span class="brand-text">
                     <span class="brand-main">Suntyn AI</span>
@@ -86,6 +106,19 @@
                     <div class="hero-content">
                         <div class="hero-brand-large mb-4 text-center position-relative">
                             <svg width="120" height="120" viewBox="0 0 120 120" class="mb-3">
+                                <!-- Gradient Definitions -->
+                                <defs>
+                                    <radialGradient id="heroSunGradient" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.9" />
+                                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+                                    </radialGradient>
+                                    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                
                                 <!-- Sun Rays - Animated -->
                                 <g class="sun-rays">
                                     <line x1="60" y1="5" x2="60" y2="20" stroke="#fbbf24" stroke-width="3" opacity="0.7"/>
@@ -101,37 +134,35 @@
                                     <line x1="15" y1="35" x2="25" y2="40" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
                                     <line x1="35" y1="15" x2="40" y2="25" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
                                 </g>
-                                <!-- Neural Network Logo -->
-                                <circle cx="60" cy="60" r="48" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.4"/>
-                                <!-- Central Node - Sun Core -->
-                                <circle cx="60" cy="60" r="12" fill="url(#sunGradient)"/>
-                                <!-- Outer Nodes -->
-                                <circle cx="60" cy="35" r="6" fill="#a855f7"/>
-                                <circle cx="81" cy="45" r="6" fill="#a855f7"/>
-                                <circle cx="89" cy="60" r="6" fill="#a855f7"/>
-                                <circle cx="81" cy="75" r="6" fill="#a855f7"/>
-                                <circle cx="60" cy="85" r="6" fill="#a855f7"/>
-                                <circle cx="39" cy="75" r="6" fill="#a855f7"/>
-                                <circle cx="31" cy="60" r="6" fill="#a855f7"/>
-                                <circle cx="39" cy="45" r="6" fill="#a855f7"/>
-                                <!-- Connection Lines -->
-                                <line x1="60" y1="48" x2="60" y2="35" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="69" y1="51" x2="81" y2="45" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="72" y1="60" x2="89" y2="60" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="69" y1="69" x2="81" y2="75" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="60" y1="72" x2="60" y2="85" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="51" y1="69" x2="39" y2="75" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="48" y1="60" x2="31" y2="60" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-                                <line x1="51" y1="51" x2="39" y2="45" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
                                 
-                                <!-- Gradient Definitions -->
-                                <defs>
-                                    <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
-                                        <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.9" />
-                                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
-                                    </radialGradient>
-                                </defs>
+                                <!-- Outer ring with gradient -->
+                                <circle cx="60" cy="60" r="48" fill="none" stroke="url(#heroGradient)" stroke-width="2" opacity="0.4"/>
+                                
+                                <!-- Central Sun Core -->
+                                <circle cx="60" cy="60" r="15" fill="url(#heroSunGradient)"/>
+                                
+                                <!-- Inner glow -->
+                                <circle cx="60" cy="60" r="10" fill="rgba(255,255,255,0.3)"/>
+                                
+                                <!-- Enhanced Orbiting Elements with gradient colors -->
+                                <circle cx="60" cy="35" r="6" fill="#8b5cf6"/>
+                                <circle cx="81" cy="45" r="6" fill="#a78bfa"/>
+                                <circle cx="89" cy="60" r="6" fill="#c084fc"/>
+                                <circle cx="81" cy="75" r="6" fill="#e879f9"/>
+                                <circle cx="60" cy="85" r="6" fill="#8b5cf6"/>
+                                <circle cx="39" cy="75" r="6" fill="#a78bfa"/>
+                                <circle cx="31" cy="60" r="6" fill="#c084fc"/>
+                                <circle cx="39" cy="45" r="6" fill="#e879f9"/>
+                                
+                                <!-- Connection Lines with sun-like glow -->
+                                <line x1="60" y1="45" x2="60" y2="35" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="71" y1="49" x2="81" y2="45" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="75" y1="60" x2="89" y2="60" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="71" y1="71" x2="81" y2="75" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="60" y1="75" x2="60" y2="85" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="49" y1="71" x2="39" y2="75" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="45" y1="60" x2="31" y2="60" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
+                                <line x1="49" y1="49" x2="39" y2="45" stroke="#fbbf24" stroke-width="2" opacity="0.8"/>
                             </svg>
                         </div>
                         <h1 class="display-4 fw-bold mb-4 hero-title">
@@ -519,53 +550,302 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark py-4">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <div class="footer-brand d-flex align-items-center mb-2">
-                        <svg width="24" height="24" viewBox="0 0 100 100" class="me-2">
-                            <!-- Neural Network Logo -->
-                            <circle cx="50" cy="50" r="48" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.3"/>
-                            <!-- Central Node -->
-                            <circle cx="50" cy="50" r="12" fill="#8b5cf6"/>
-                            <!-- Outer Nodes -->
-                            <circle cx="50" cy="25" r="6" fill="#a855f7"/>
-                            <circle cx="71" cy="35" r="6" fill="#a855f7"/>
-                            <circle cx="79" cy="50" r="6" fill="#a855f7"/>
-                            <circle cx="71" cy="65" r="6" fill="#a855f7"/>
-                            <circle cx="50" cy="75" r="6" fill="#a855f7"/>
-                            <circle cx="29" cy="65" r="6" fill="#a855f7"/>
-                            <circle cx="21" cy="50" r="6" fill="#a855f7"/>
-                            <circle cx="29" cy="35" r="6" fill="#a855f7"/>
-                            <!-- Connection Lines -->
-                            <line x1="50" y1="38" x2="50" y2="25" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="59" y1="41" x2="71" y2="35" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="62" y1="50" x2="79" y2="50" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="59" y1="59" x2="71" y2="65" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="50" y1="62" x2="50" y2="75" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="41" y1="59" x2="29" y2="65" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="38" y1="50" x2="21" y2="50" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                            <line x1="41" y1="41" x2="29" y2="35" stroke="#a855f7" stroke-width="2" opacity="0.7"/>
-                        </svg>
-                        <div>
-                            <span class="fw-bold text-light">Suntyn AI</span>
-                            <small class="d-block text-muted" style="font-size: 0.7rem; letter-spacing: 1px;">NEURAL INTELLIGENCE</small>
+    <!-- Professional Footer -->
+    <footer class="ultra-professional-footer text-white mt-5">
+        <!-- Decorative Top Border -->
+        <div class="footer-border-animation"></div>
+        
+        <div class="container position-relative">
+            <!-- Floating Background Elements -->
+            <div class="footer-bg-elements">
+                <div class="floating-circle circle-1"></div>
+                <div class="floating-circle circle-2"></div>
+                <div class="floating-circle circle-3"></div>
+            </div>
+            
+            <!-- Main Footer Content -->
+            <div class="row mb-5 position-relative z-index-2">
+                <!-- Enhanced Company Branding -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="company-brand-section">
+                        <div class="brand-header d-flex align-items-center mb-4">
+                            <div class="footer-logo-wrapper me-3">
+                                <svg width="48" height="48" viewBox="0 0 120 120" class="professional-footer-logo">
+                                    <defs>
+                                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.9" />
+                                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+                                        </linearGradient>
+                                        <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.9" />
+                                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+                                        </radialGradient>
+                                    </defs>
+                                    
+                                    <!-- Sun Rays - Animated -->
+                                    <g class="sun-rays">
+                                        <line x1="60" y1="5" x2="60" y2="20" stroke="#fbbf24" stroke-width="3" opacity="0.7"/>
+                                        <line x1="85" y1="15" x2="80" y2="25" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="105" y1="35" x2="95" y2="40" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="115" y1="60" x2="100" y2="60" stroke="#fbbf24" stroke-width="3" opacity="0.7"/>
+                                        <line x1="105" y1="85" x2="95" y2="80" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="85" y1="105" x2="80" y2="95" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="60" y1="115" x2="60" y2="100" stroke="#fbbf24" stroke-width="3" opacity="0.7"/>
+                                        <line x1="35" y1="105" x2="40" y2="95" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="15" y1="85" x2="25" y2="80" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="5" y1="60" x2="20" y2="60" stroke="#fbbf24" stroke-width="3" opacity="0.7"/>
+                                        <line x1="15" y1="35" x2="25" y2="40" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                        <line x1="35" y1="15" x2="40" y2="25" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+                                    </g>
+                                    
+                                    <!-- Enhanced outer ring with gradient -->
+                                    <circle cx="60" cy="60" r="48" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.4" class="footer-outer-ring"/>
+                                    
+                                    <!-- Pulsing middle ring -->
+                                    <circle cx="60" cy="60" r="38" fill="none" stroke="url(#logoGradient)" stroke-width="1" opacity="0.2" class="footer-middle-ring"/>
+                                    
+                                    <g transform="translate(60,60)" class="footer-logo-center">
+                                        <!-- Enhanced Central Core - Sun Core -->
+                                        <circle cx="0" cy="0" r="12" fill="url(#sunGradient)" class="footer-core"/>
+                                        
+                                        <!-- Inner glow effect -->
+                                        <circle cx="0" cy="0" r="8" fill="rgba(255,255,255,0.3)" class="footer-inner-glow"/>
+                                        
+                                        <!-- Enhanced Orbiting Elements -->
+                                        <circle cx="25" cy="0" r="4" fill="#8b5cf6" class="footer-orbit-dot dot-1"/>
+                                        <circle cx="-25" cy="0" r="4" fill="#a78bfa" class="footer-orbit-dot dot-2"/>
+                                        <circle cx="0" cy="25" r="4" fill="#c084fc" class="footer-orbit-dot dot-3"/>
+                                        <circle cx="0" cy="-25" r="4" fill="#e879f9" class="footer-orbit-dot dot-4"/>
+                                        
+                                        <!-- Dynamic Cross Lines with glow -->
+                                        <line x1="-12" y1="0" x2="12" y2="0" stroke="#fbbf24" stroke-width="2" class="footer-line horizontal-line"/>
+                                        <line x1="0" y1="-12" x2="0" y2="12" stroke="#fbbf24" stroke-width="2" class="footer-line vertical-line"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="brand-text-content">
+                                <h4 class="brand-title mb-1">Suntyn AI</h4>
+                                <p class="brand-tagline mb-0">Next-Gen AI Platform</p>
+                            </div>
+                        </div>
+                        
+                        <div class="company-description mb-4">
+                            <p class="text-light-gray mb-3 lh-lg">
+                                Leading the future of AI-powered productivity tools. Our comprehensive suite of 85+ advanced tools 
+                                empowers professionals and businesses to achieve unprecedented efficiency.
+                            </p>
+                            <div class="company-stats d-flex flex-wrap gap-4 mb-4">
+                                <div class="stat-item">
+                                    <span class="stat-number">85+</span>
+                                    <small class="stat-label">AI Tools</small>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">1M+</span>
+                                    <small class="stat-label">Users</small>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">99.9%</span>
+                                    <small class="stat-label">Uptime</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Social Media Section -->
+                        <div class="social-media-section">
+                            <h6 class="social-title mb-3">Connect With Us</h6>
+                            <div class="social-links d-flex gap-3">
+                                <a href="#" class="social-btn twitter" data-tooltip="Follow on Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-btn linkedin" data-tooltip="Connect on LinkedIn">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="#" class="social-btn github" data-tooltip="View on GitHub">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="social-btn discord" data-tooltip="Join Discord">
+                                    <i class="fab fa-discord"></i>
+                                </a>
+                                <a href="#" class="social-btn youtube" data-tooltip="Subscribe YouTube">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <p class="text-light-emphasis mb-0">Professional AI-powered tools for everyone.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="social-links">
-                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-github"></i></a>
-                        <a href="#" class="text-light"><i class="fab fa-discord"></i></a>
+
+                <!-- Tool Categories with Enhanced Design -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="fas fa-tools section-icon me-2"></i>
+                            Tool Categories
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="#pdf-tools" class="footer-link pdf-link">
+                                <i class="fas fa-file-pdf link-icon"></i>PDF Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="#image-tools" class="footer-link image-link">
+                                <i class="fas fa-image link-icon"></i>Image Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="#finance-tools" class="footer-link finance-link">
+                                <i class="fas fa-calculator link-icon"></i>Finance Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="#video-tools" class="footer-link video-link">
+                                <i class="fas fa-video link-icon"></i>Video/Audio
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="#ai-tools" class="footer-link ai-link">
+                                <i class="fas fa-brain link-icon"></i>AI Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                            <li><a href="#all-tools" class="footer-link featured-link">
+                                <i class="fas fa-th link-icon"></i>All Tools
+                                <span class="link-arrow">→</span>
+                            </a></li>
+                        </ul>
                     </div>
-                    <p class="text-light-emphasis mb-0 mt-2">&copy; 2024 SuntynAI. All rights reserved.</p>
+                </div>
+
+                <!-- Popular Tools with Usage Stats -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="fas fa-star section-icon me-2"></i>
+                            Most Popular
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/tool/pdf-merger" class="footer-link">
+                                <i class="fas fa-plus link-icon"></i>PDF Merger
+                                <span class="usage-badge">Hot</span>
+                            </a></li>
+                            <li><a href="/tool/image-compressor" class="footer-link">
+                                <i class="fas fa-compress link-icon"></i>Image Compress
+                                <span class="usage-badge">Trending</span>
+                            </a></li>
+                            <li><a href="/tool/qr-code-generator" class="footer-link">
+                                <i class="fas fa-qrcode link-icon"></i>QR Generator
+                                <span class="usage-badge">New</span>
+                            </a></li>
+                            <li><a href="/tool/emi-calculator" class="footer-link">
+                                <i class="fas fa-calculator link-icon"></i>EMI Calculator
+                                <span class="usage-badge">Pro</span>
+                            </a></li>
+                            <li><a href="/tool/password-generator" class="footer-link">
+                                <i class="fas fa-key link-icon"></i>Password Gen
+                                <span class="usage-badge">Secure</span>
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Company & Services -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="fas fa-building section-icon me-2"></i>
+                            Company
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/about" class="footer-link">
+                                <i class="fas fa-info-circle link-icon"></i>About Us
+                            </a></li>
+                            <li><a href="/contact" class="footer-link">
+                                <i class="fas fa-envelope link-icon"></i>Contact
+                            </a></li>
+                            <li><a href="/careers" class="footer-link">
+                                <i class="fas fa-briefcase link-icon"></i>Careers
+                                <span class="hiring-badge">We're Hiring!</span>
+                            </a></li>
+                            <li><a href="/partnerships" class="footer-link">
+                                <i class="fas fa-handshake link-icon"></i>Partners
+                            </a></li>
+                            <li><a href="/press" class="footer-link">
+                                <i class="fas fa-newspaper link-icon"></i>Press Kit
+                            </a></li>
+                            <li><a href="/blog" class="footer-link">
+                                <i class="fas fa-blog link-icon"></i>Blog
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Support & Legal -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h6 class="section-title mb-4">
+                            <i class="fas fa-shield-alt section-icon me-2"></i>
+                            Support & Legal
+                        </h6>
+                        <ul class="list-unstyled enhanced-footer-links">
+                            <li><a href="/help" class="footer-link">
+                                <i class="fas fa-question-circle link-icon"></i>Help Center
+                            </a></li>
+                            <li><a href="/faq" class="footer-link">
+                                <i class="fas fa-question link-icon"></i>FAQ
+                            </a></li>
+                            <li><a href="/privacy" class="footer-link">
+                                <i class="fas fa-user-shield link-icon"></i>Privacy Policy
+                            </a></li>
+                            <li><a href="/terms" class="footer-link">
+                                <i class="fas fa-file-contract link-icon"></i>Terms of Service
+                            </a></li>
+                            <li><a href="/cookies" class="footer-link">
+                                <i class="fas fa-cookie-bite link-icon"></i>Cookie Policy
+                            </a></li>
+                            <li><a href="/security" class="footer-link">
+                                <i class="fas fa-shield-alt link-icon"></i>Security
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+
+            <!-- Premium Footer Bottom -->
+            <div class="footer-bottom-premium">
+                <hr class="footer-divider">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-3 mb-lg-0">
+                        <div class="copyright-section">
+                            <p class="copyright-text mb-2">
+                                © 2025 <strong>Suntyn AI Technologies Pvt. Ltd.</strong> All rights reserved.
+                            </p>
+                            <div class="company-details">
+                                <span class="detail-item">Building the Future of AI</span>
+                                <span class="detail-divider">|</span>
+                                <span class="detail-item">Made with ❤️ in India</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="footer-meta text-lg-end">
+                            <p class="powered-by-text mb-2">
+                                Powered by <strong>Advanced AI & Machine Learning</strong>
+                            </p>
+                            <div class="footer-links-inline">
+                                <a href="/sitemap" class="inline-link">Sitemap</a>
+                                <span class="link-separator">•</span>
+                                <a href="/accessibility" class="inline-link">Accessibility</a>
+                                <span class="link-separator">•</span>
+                                <a href="/status" class="inline-link">System Status</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll to top enhancement for footer -->
+        <div class="footer-scroll-top">
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="fas fa-arrow-up"></i>
+                <span>Back to Top</span>
+            </button>
         </div>
     </footer>
 
