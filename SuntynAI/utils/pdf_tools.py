@@ -53,11 +53,14 @@ def allowed_file(filename):
 
 def save_uploaded_file(file):
     """Save uploaded file and return path"""
-    if file and allowed_file(file.filename):
+    if file and file.filename and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_")
         filename = timestamp + filename
         filepath = os.path.join(UPLOAD_FOLDER, filename)
+        
+        # Reset file pointer to beginning
+        file.seek(0)
         file.save(filepath)
         return filepath
     return None
@@ -73,20 +76,36 @@ def create_temp_file(suffix='.pdf'):
 def merge_pdfs(files):
     """Merge multiple PDF files into one"""
     try:
+        if not files or len(files) < 2:
+            raise Exception("Please select at least 2 PDF files")
+            
         output_pdf = fitz.open()
+        temp_files = []
 
         for file in files:
-            if file and file.filename:
+            if file and file.filename and file.filename.lower().endswith('.pdf'):
+                # Reset file pointer
+                file.seek(0)
                 file_path = save_uploaded_file(file)
                 if file_path:
+                    temp_files.append(file_path)
                     pdf = fitz.open(file_path)
                     output_pdf.insert_pdf(pdf)
                     pdf.close()
-                    os.remove(file_path)  # Clean up temp file
+
+        if not temp_files:
+            raise Exception("No valid PDF files found")
 
         output_path = create_temp_file()
         output_pdf.save(output_path)
         output_pdf.close()
+
+        # Clean up temp files
+        for temp_file in temp_files:
+            try:
+                os.remove(temp_file)
+            except:
+                pass
 
         return output_path
     except Exception as e:
@@ -95,6 +114,7 @@ def merge_pdfs(files):
 def split_pdf_by_pages(file, pages_str):
     """Split PDF by specific pages (e.g., '1,3,5-10')"""
     try:
+        file.seek(0)
         file_path = save_uploaded_file(file)
         if not file_path:
             raise Exception("Invalid file")
@@ -104,25 +124,42 @@ def split_pdf_by_pages(file, pages_str):
 
         # Parse page numbers
         pages = []
-        for part in pages_str.split(','):
-            part = part.strip()
-            if '-' in part:
-                start, end = map(int, part.split('-'))
-                pages.extend(range(start-1, end))  # Convert to 0-based
-            else:
-                pages.append(int(part)-1)  # Convert to 0-based
+        if pages_str:
+            for part in pages_str.split(','):
+                part = part.strip()
+                if '-' in part:
+                    try:
+                        start, end = map(int, part.split('-'))
+                        pages.extend(range(start-1, end))  # Convert to 0-based
+                    except ValueError:
+                        continue
+                else:
+                    try:
+                        pages.append(int(part)-1)  # Convert to 0-based
+                    except ValueError:
+                        continue
+        
+        # If no pages specified, extract first page
+        if not pages:
+            pages = [0]
 
         # Extract specified pages
         for page_num in pages:
             if 0 <= page_num < pdf.page_count:
                 output_pdf.insert_pdf(pdf, from_page=page_num, to_page=page_num)
 
+        if output_pdf.page_count == 0:
+            raise Exception("No valid pages found to extract")
+
         output_path = create_temp_file()
         output_pdf.save(output_path)
 
         pdf.close()
         output_pdf.close()
-        os.remove(file_path)
+        try:
+            os.remove(file_path)
+        except:
+            pass
 
         return output_path
     except Exception as e:

@@ -18,15 +18,19 @@
             <!-- Upload Form -->
             <div class="card shadow-lg border-0">
                 <div class="card-body p-4">
-                    <form method="POST" enctype="multipart/form-data">
-                        <!-- File Upload -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Select PDF Files</label>
-                            <input type="file" name="pdfs" class="form-control form-control-lg" 
-                                   accept=".pdf" multiple required>
-                            <div class="form-text">Select 2 or more PDF files to merge. Files will be combined in the order selected.</div>
+                    <form method="POST" enctype="multipart/form-data" id="mergeForm">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i data-lucide="upload"></i>
                         </div>
-
+                        <h3>Select PDF Files to Merge</h3>
+                        <p>Choose multiple PDF files to combine into one document</p>
+                        <input type="file" name="pdfs" id="pdfFiles" multiple accept=".pdf" required>
+                        <div class="file-list" id="fileList"></div>
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('pdfFiles').click()">
+                            Choose Files
+                        </button>
+                    </div>
                         <!-- Submit Button -->
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg py-3">
@@ -112,36 +116,76 @@
 }
 </style>
 {% endblock %}
-{% extends "base.html" %}
 
-{% block title %}PDF Merger - Merge Multiple PDFs{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('pdfFiles');
+    const fileList = document.getElementById('fileList');
+    const form = document.getElementById('mergeForm');
 
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary text-white text-center">
-                    <h2><i class="ti ti-files"></i> PDF Merger</h2>
-                    <p class="mb-0">Merge multiple PDF files into one document</p>
-                </div>
-                <div class="card-body p-4">
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Select PDF Files</label>
-                            <input type="file" name="pdfs" class="form-control" multiple accept=".pdf" required>
-                            <div class="form-text">Select multiple PDF files to merge</div>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="ti ti-files"></i> Merge PDFs
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    // File input change handler
+    fileInput.addEventListener('change', function() {
+        displaySelectedFiles();
+    });
+
+    // Drag and drop handlers
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.style.backgroundColor = '#f0f8ff';
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.style.backgroundColor = '';
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.style.backgroundColor = '';
+
+        const files = Array.from(e.dataTransfer.files).filter(file => 
+            file.type === 'application/pdf'
+        );
+
+        if (files.length > 0) {
+            const dt = new DataTransfer();
+            files.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+            displaySelectedFiles();
+        }
+    });
+
+    function displaySelectedFiles() {
+        const files = fileInput.files;
+        fileList.innerHTML = '';
+
+        if (files.length > 0) {
+            const ul = document.createElement('ul');
+            ul.style.marginTop = '10px';
+
+            for (let i = 0; i < files.length; i++) {
+                const li = document.createElement('li');
+                li.textContent = files[i].name;
+                li.style.padding = '5px';
+                li.style.backgroundColor = '#f8f9fa';
+                li.style.margin = '2px 0';
+                li.style.borderRadius = '4px';
+                ul.appendChild(li);
+            }
+
+            fileList.appendChild(ul);
+        }
+    }
+
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        if (fileInput.files.length < 2) {
+            e.preventDefault();
+            alert('Please select at least 2 PDF files to merge.');
+        }
+    });
+});
+</script>
 {% endblock %}

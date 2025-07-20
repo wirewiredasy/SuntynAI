@@ -139,32 +139,34 @@ document.querySelectorAll('input[name="split_method"]').forEach(radio => {
                     <p class="tool-description">Split PDF files by pages, ranges, or intervals</p>
                 </div>
             </div>
-            
+
             <!-- Main Tool Content -->
             <div class="col-lg-8">
                 <div class="tool-card">
                     <form method="POST" enctype="multipart/form-data" class="tool-form">
                         <!-- File Upload Section -->
                         <div class="upload-section">
-                            <div class="upload-zone" id="uploadZone">
+                            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pdfFile').click()">
                                 <i class="ti ti-cloud-upload upload-icon"></i>
                                 <h3>Drop PDF file here</h3>
                                 <p>or click to browse</p>
-                                <input type="file" name="pdf" accept=".pdf" required class="file-input" id="pdfFile">
+                                <input type="file" name="pdf" accept=".pdf" required class="file-input" id="pdfFile" style="display: none;">
                             </div>
                         </div>
-                        
+
                         <!-- Split Options -->
                         <div class="options-section">
                             <h4>Split Options</h4>
                             <div class="split-options">
+                                <input type="hidden" name="split_type" value="pages" id="splitTypeInput">
+
                                 <div class="option-card active" data-type="pages">
                                     <i class="ti ti-file-text"></i>
                                     <h5>Specific Pages</h5>
                                     <p>Extract specific pages</p>
                                     <input type="text" name="pages" placeholder="e.g., 1,3,5-10" class="form-control">
                                 </div>
-                                
+
                                 <div class="option-card" data-type="range">
                                     <i class="ti ti-arrows-horizontal"></i>
                                     <h5>Page Range</h5>
@@ -174,7 +176,7 @@ document.querySelectorAll('input[name="split_method"]').forEach(radio => {
                                         <input type="number" name="end_page" placeholder="End" class="form-control">
                                     </div>
                                 </div>
-                                
+
                                 <div class="option-card" data-type="interval">
                                     <i class="ti ti-stack-2"></i>
                                     <h5>Every N Pages</h5>
@@ -183,9 +185,7 @@ document.querySelectorAll('input[name="split_method"]').forEach(radio => {
                                 </div>
                             </div>
                         </div>
-                        
-                        <input type="hidden" name="split_type" value="pages">
-                        
+
                         <button type="submit" class="btn-process">
                             <i class="ti ti-cut"></i>
                             Split PDF
@@ -193,7 +193,7 @@ document.querySelectorAll('input[name="split_method"]').forEach(radio => {
                     </form>
                 </div>
             </div>
-            
+
             <!-- Tool Info Sidebar -->
             <div class="col-lg-4">
                 <div class="tool-sidebar">
@@ -205,7 +205,7 @@ document.querySelectorAll('input[name="split_method"]').forEach(radio => {
                             <li>Download individual files</li>
                         </ul>
                     </div>
-                    
+
                     <div class="features-card">
                         <h4>Features</h4>
                         <div class="feature-list">
@@ -398,8 +398,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadZone = document.getElementById('uploadZone');
     const fileInput = document.getElementById('pdfFile');
     const optionCards = document.querySelectorAll('.option-card');
-    const splitTypeInput = document.querySelector('input[name="split_type"]');
-    
+    const splitTypeInput = document.getElementById('splitTypeInput');
+
     // File upload handling
     uploadZone.addEventListener('click', () => fileInput.click());
     uploadZone.addEventListener('dragover', (e) => {
@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInput.files = e.dataTransfer.files;
         uploadZone.style.background = '';
     });
-    
+
     // Option selection
     optionCards.forEach(card => {
         card.addEventListener('click', function() {
@@ -445,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label fw-bold">Select PDF File</label>
                             <input type="file" name="pdf" class="form-control" accept=".pdf" required>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="form-label fw-bold">Split Type</label>
                             <select name="split_type" class="form-select">
@@ -454,12 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <option value="every_n">Every N Pages</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-4" id="pages-input">
                             <label class="form-label">Pages</label>
                             <input type="text" name="pages" class="form-control" placeholder="1,3,5-10">
                         </div>
-                        
+
                         <div class="mb-4" id="range-input" style="display:none;">
                             <div class="row">
                                 <div class="col-6">
@@ -472,12 +472,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mb-4" id="every-n-input" style="display:none;">
                             <label class="form-label">Every N Pages</label>
                             <input type="number" name="every_n" class="form-control" min="1" value="1">
                         </div>
-                        
+
                         <div class="d-grid">
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="ti ti-cut"></i> Split PDF
@@ -495,7 +495,7 @@ document.querySelector('select[name="split_type"]').addEventListener('change', f
     document.getElementById('pages-input').style.display = 'none';
     document.getElementById('range-input').style.display = 'none';
     document.getElementById('every-n-input').style.display = 'none';
-    
+
     if (this.value === 'pages') {
         document.getElementById('pages-input').style.display = 'block';
     } else if (this.value === 'range') {
