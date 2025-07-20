@@ -16,6 +16,143 @@ body {
 .navbar-brand {
     font-size: 1.5rem;
     color: var(--bs-info) !important;
+    display: flex;
+    align-items: center;
+    text-decoration: none !important;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brand-main {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #3b82f6;
+    letter-spacing: -0.5px;
+}
+
+.brand-tagline {
+    font-size: 0.65rem;
+    color: #6b7280;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-top: -2px;
+}
+
+/* Neural Network Logo Animations - Sun Effects */
+.navbar-brand svg, .footer-brand svg, .hero-brand-large svg {
+    animation: neuralPulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.4));
+}
+
+.navbar-brand svg circle, .footer-brand svg circle, .hero-brand-large svg circle {
+    animation: neuralRotate 6s linear infinite;
+    transform-origin: 50% 50%;
+}
+
+.hero-brand-large svg {
+    animation: sunGlow 4s ease-in-out infinite, neuralFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
+}
+
+/* Sun-like glow and rotation keyframes */
+@keyframes neuralPulse {
+    0%, 100% { 
+        filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.4));
+        transform: scale(1);
+    }
+    50% { 
+        filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.7));
+        transform: scale(1.05);
+    }
+}
+
+@keyframes neuralRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes sunGlow {
+    0%, 100% { 
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
+    }
+    50% { 
+        filter: drop-shadow(0 0 25px rgba(139, 92, 246, 0.9)) drop-shadow(0 0 35px rgba(168, 85, 247, 0.5));
+    }
+}
+
+@keyframes neuralFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Enhanced hover effects for navbar brand */
+.navbar-brand:hover svg {
+    animation: neuralPulse 1s ease-in-out infinite, neuralRotate 2s linear infinite;
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.9));
+}
+
+/* Sun Rays Animation */
+.sun-rays {
+    animation: sunRaysRotate 8s linear infinite;
+    transform-origin: 60px 60px;
+}
+
+.sun-rays line {
+    animation: sunRaysPulse 2s ease-in-out infinite;
+}
+
+.sun-rays line:nth-child(even) {
+    animation-delay: -1s;
+}
+
+@keyframes sunRaysRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes sunRaysPulse {
+    0%, 100% { 
+        opacity: 0.4;
+        stroke-width: 2;
+    }
+    50% { 
+        opacity: 0.8;
+        stroke-width: 3;
+    }
+}
+
+/* Hero brand enhanced animations */
+.hero-brand-large {
+    position: relative;
+}
+
+.hero-brand-large::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: sunAura 4s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes sunAura {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.3;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.6;
+    }
 }
 
 .nav-link {
