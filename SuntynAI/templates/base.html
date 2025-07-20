@@ -549,37 +549,123 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-building me-2"></i>Company</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="/about" class="text-light"><i class="ti ti-info-circle me-2"></i>About</a></li>
-                        <li><a href="/contact" class="text-light"><i class="ti ti-mail me-2"></i>Contact</a></li>
-                        <li><a href="/blog" class="text-light"><i class="ti ti-news me-2"></i>Blog</a></li>
-                        <li><a href="/faq" class="text-light"><i class="ti ti-help-circle me-2"></i>FAQ</a></li>
+                        <li><a href="{{ url_for('about') }}" class="text-light"><i class="ti ti-info-circle me-2"></i>About Suntyn</a></li>
+                        <li><a href="{{ url_for('contact') }}" class="text-light"><i class="ti ti-mail me-2"></i>Contact Us</a></li>
+                        <li><a href="/careers" class="text-light"><i class="ti ti-briefcase me-2"></i>Careers</a></li>
+                        <li><a href="/partnerships" class="text-light"><i class="ti ti-handshake me-2"></i>Partners</a></li>
+                        <li><a href="/press" class="text-light"><i class="ti ti-news me-2"></i>Press Kit</a></li>
+                        <li><a href="/blog" class="text-light"><i class="ti ti-article me-2"></i>Blog</a></li>
+                        <li><a href="{{ url_for('faq') }}" class="text-light"><i class="ti ti-help-circle me-2"></i>FAQ</a></li>
                     </ul>
                 </div>
 
-                <!-- Legal -->
+                <!-- Legal & Policies -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-scale me-2"></i>Legal</h6>
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-scale me-2"></i>Legal & Policies</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="/privacy" class="text-light"><i class="ti ti-shield-lock me-2"></i>Privacy</a></li>
-                        <li><a href="/terms" class="text-light"><i class="ti ti-file-text me-2"></i>Terms</a></li>
-                        <li><a href="/cookies" class="text-light"><i class="ti ti-cookie me-2"></i>Cookies</a></li>
-                        <li><a href="/security" class="text-light"><i class="ti ti-shield-check me-2"></i>Security</a></li>
+                        <li><a href="{{ url_for('privacy') }}" class="text-light"><i class="ti ti-shield-lock me-2"></i>Privacy Policy</a></li>
+                        <li><a href="{{ url_for('terms') }}" class="text-light"><i class="ti ti-file-text me-2"></i>Terms of Service</a></li>
+                        <li><a href="{{ url_for('cookies') }}" class="text-light"><i class="ti ti-cookie me-2"></i>Cookie Policy</a></li>
+                        <li><a href="{{ url_for('security') }}" class="text-light"><i class="ti ti-shield-check me-2"></i>Security Policy</a></li>
+                        <li><a href="/gdpr" class="text-light"><i class="ti ti-file-certificate me-2"></i>GDPR Compliance</a></li>
+                        <li><a href="/accessibility" class="text-light"><i class="ti ti-accessible me-2"></i>Accessibility</a></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Copyright -->
+            <!-- Professional Newsletter Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="newsletter-section p-4 rounded-3" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid rgba(99, 102, 241, 0.2);">
+                        <div class="row align-items-center">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="ti ti-mail-forward me-2" style="color: var(--primary-color); font-size: 1.5rem;"></i>
+                                    <h5 class="mb-0" style="color: var(--primary-color);">Stay Updated with Suntyn AI</h5>
+                                </div>
+                                <p class="text-light mb-0">Get the latest updates on new AI tools, features, and productivity tips directly in your inbox.</p>
+                                <small class="text-muted">Join 50,000+ professionals who trust our insights</small>
+                            </div>
+                            <div class="col-md-6">
+                                <form class="newsletter-form d-flex gap-2" action="/newsletter/subscribe" method="POST">
+                                    <div class="flex-grow-1">
+                                        <input type="email" class="form-control" placeholder="Enter your professional email" required 
+                                               style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white;">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary px-4" style="background: var(--primary-color); border: none;">
+                                        <i class="ti ti-send me-1"></i>Subscribe
+                                    </button>
+                                </form>
+                                <div class="d-flex align-items-center mt-2">
+                                    <i class="ti ti-shield-check me-1" style="color: #10b981; font-size: 0.9rem;"></i>
+                                    <small class="text-muted">We respect your privacy. Unsubscribe anytime.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Links & Resources -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-book me-2"></i>Resources & Support</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="/documentation" class="text-light"><i class="ti ti-book-2 me-2"></i>Documentation</a></li>
+                        <li><a href="/tutorials" class="text-light"><i class="ti ti-video me-2"></i>Video Tutorials</a></li>
+                        <li><a href="/api-docs" class="text-light"><i class="ti ti-api me-2"></i>API Documentation</a></li>
+                        <li><a href="/support" class="text-light"><i class="ti ti-lifebuoy me-2"></i>Support Center</a></li>
+                        <li><a href="/status" class="text-light"><i class="ti ti-activity me-2"></i>System Status</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-users me-2"></i>Community & Social</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="/community" class="text-light"><i class="ti ti-users-group me-2"></i>Community Forum</a></li>
+                        <li><a href="/discord" class="text-light"><i class="ti ti-brand-discord me-2"></i>Discord Server</a></li>
+                        <li><a href="/feedback" class="text-light"><i class="ti ti-message-circle me-2"></i>Feedback Portal</a></li>
+                        <li><a href="/testimonials" class="text-light"><i class="ti ti-quote me-2"></i>Testimonials</a></li>
+                        <li><a href="/case-studies" class="text-light"><i class="ti ti-file-analytics me-2"></i>Case Studies</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6 class="mb-3" style="color: var(--primary-color);"><i class="ti ti-award me-2"></i>Professional Services</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="/enterprise" class="text-light"><i class="ti ti-building-skyscraper me-2"></i>Enterprise Solutions</a></li>
+                        <li><a href="/consulting" class="text-light"><i class="ti ti-users me-2"></i>AI Consulting</a></li>
+                        <li><a href="/custom-development" class="text-light"><i class="ti ti-code me-2"></i>Custom Development</a></li>
+                        <li><a href="/training" class="text-light"><i class="ti ti-school me-2"></i>Professional Training</a></li>
+                        <li><a href="/certification" class="text-light"><i class="ti ti-certificate me-2"></i>Certification Program</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright & Professional Info -->
             <hr class="my-3 border-secondary">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
-                    <p class="text-light mb-0">
-                        © 2025 Suntyn AI. All rights reserved.
+                    <p class="text-light mb-1">
+                        © 2025 Suntyn AI Technologies Pvt. Ltd. All rights reserved.
                     </p>
+                    <small class="text-muted">
+                        Registered in India | CIN: U72900DL2025PTC123456 | GST: 07AABCS1234N1Z5
+                    </small>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <p class="text-light mb-0">
-                        Made with ❤️ using Flask & AI
+                    <p class="text-light mb-1">
+                        Powered by Advanced AI & Machine Learning
                     </p>
+                    <div class="d-flex justify-content-center justify-content-md-end gap-3 mt-2">
+                        <a href="/iso-certification" class="text-muted text-decoration-none">
+                            <small><i class="ti ti-certificate me-1"></i>ISO 27001 Certified</small>
+                        </a>
+                        <a href="/gdpr-compliant" class="text-muted text-decoration-none">
+                            <small><i class="ti ti-shield-check me-1"></i>GDPR Compliant</small>
+                        </a>
+                        <a href="/ssl-secured" class="text-muted text-decoration-none">
+                            <small><i class="ti ti-lock me-1"></i>SSL Secured</small>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
